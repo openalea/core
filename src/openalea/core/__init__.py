@@ -1,17 +1,11 @@
-"""
-See online documentation at 
-http://openalea.gforge.inria.fr/doc/sphinx/core/html/contents.html 
 
+# Redirect path
+import os
 
-"""
-__license__ = "Cecill-C"
-__revision__ = "$Id$"
+cdir = os.path.dirname(__file__)
+pdir = os.path.join(cdir, "../../core")
+pdir = os.path.abspath(pdir)
 
-from openalea.core.external import *
-from script_library import ScriptLibrary
+__path__ = [pdir] + __path__[:]
 
-def global_module(module):
-    """ Declare a module accessible everywhere"""
-    import __builtin__
-    __builtin__.__dict__[module.__name__] = module
-
+from openalea.core.__init__ import *
