@@ -1,32 +1,16 @@
-#
-#       OpenAlea.Core: OpenAlea Core
-#
-#       Copyright 2006 INRIA - CIRAD - INRA
-#
-#       File author(s): Christophe Pradal <christophe.prada@cirad.fr>
-#                       Samuel Dufour-Kowalski <samuel.dufour@sophia.inria.fr>
-#
-#       Distributed under the Cecill-C License.
-#       See accompanying file LICENSE.txt or copy at
-#           http://www.cecill.info/licences/Licence_CeCILL-C_V1-en.html
-#
-#       OpenAlea WebSite : http://openalea.gforge.inria.fr
-#
-"""Test the node src edition"""
+from nose import with_setup
+from os.path import join as pj
 
-__license__ = "Cecill-C"
-__revision__ = " $Id$ "
-
-import os
-import openalea
 from openalea.core.pkgmanager import PackageManager
-from openalea.core.node import RecursionError
-from openalea.core import Package
+
+from .small_tools import ensure_created, rmdir
 
 
-def setup_func():
-    """ Create test_module  and wralea """
+tmp_dir = 'toto_srcedit'
 
+
+def setup():
+    ensure_created(tmp_dir)
     modsrc = \
         """
 from openalea.core import *
@@ -41,9 +25,8 @@ class MyNode:
         return inputs
 """
 
-    file = open("mymodule.py", 'w')
-    file.write(modsrc)
-    file.close()
+    with open(pj(tmp_dir, "mymodule.py"), 'w') as f:
+        f.write(modsrc)
 
     wraleasrc = \
         """
@@ -67,34 +50,23 @@ def register_packages(pkgmanager):
     pkgmanager.add_package(package1)
 """
 
-    file = open("my_wralea.py", 'w')
-    file.write(wraleasrc)
-    file.close()
+    with open(pj(tmp_dir, "my_wralea.py"), 'w') as f:
+        f.write(wraleasrc)
 
 
-def teardown_func():
-    """ Delete created files """
-    try:
-        os.remove("my_wralea.py")
-    except:
-        pass
-    try:
-        os.remove("mymodule.py")
-    except:
-        pass
-
-from nose import with_setup
+def teardown():
+    rmdir(tmp_dir)
 
 
-@with_setup(setup_func, teardown_func)
+@with_setup(setup, teardown)
 def test_srcedit():
     """ Test src edition """
 
     # Change src
     pm = PackageManager()
-    pm.wraleapath = '.'
+    pm.wraleapath = tmp_dir
 
-    pm.init('.')
+    pm.init(tmp_dir)
     factory = pm['TestPackage']['test']
 
     node1 = factory.instantiate()
@@ -110,21 +82,18 @@ def test_srcedit():
     node2 = factory.instantiate()
     assert node2.func((1, 2, 3)) == 6
 
-    factory.save_new_src(newsrc)
-
-    src = factory.get_node_src()
-    print src
-
-    return
-
-    # Reinit src
-    pm = PackageManager()
-    pm.wraleapath = '.'
-
-    pm.init()
-
-    factory = pm['TestPackage']['test']
-
-    node = factory.instantiate()
-
-    assert node(((1, 2, 3), )) == 6
+    # factory.save_new_src(newsrc)
+    #
+    # src = factory.get_node_src()
+    #
+    # # Reinit src
+    # pm = PackageManager()
+    # pm.wraleapath = '.'
+    #
+    # pm.init()
+    #
+    # factory = pm['TestPackage']['test']
+    #
+    # node = factory.instantiate()
+    #
+    # assert node(((1, 2, 3), )) == 6
