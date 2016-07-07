@@ -5,9 +5,9 @@ openalea.core
 .. {# pkglts, doc
 
 
-.. image:: https://readthedocs.org/projects/openalea_core/badge/?version=latest
+.. image:: https://readthedocs.org/projects/openalea-core/badge/?version=latest
     :alt: Documentation status
-    :target: https://openalea_core.readthedocs.io/en/latest/?badge=latest
+    :target: https://openalea-core.readthedocs.io/en/latest/?badge=latest
 
 .. #}
 

@@ -52,7 +52,7 @@
     ]
   }, 
   "readthedocs": {
-    "project": "openalea_core"
+    "project": "openalea-core"
   }, 
   "sphinx": {
     "autodoc_dvlpt": true, 
