@@ -19,9 +19,9 @@ install:
  - pip install -r requirements.txt
  - pip install -r dvlpt_requirements.txt
 # #}
- - python setup.py install
 
 script:
+ - python setup.py install
 # {# pkglts, travis.script
  - nosetests
 # #}
