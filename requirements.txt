@@ -1,3 +1,5 @@
 # {# pkglts, pysetup
 
 # #}
+ipykernel
+ipython
