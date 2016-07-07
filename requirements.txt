@@ -1,5 +1,6 @@
 # {# pkglts, pysetup
 
 # #}
-ipykernel
+openalea.deploy
 ipython
+ipykernel
