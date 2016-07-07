@@ -22,7 +22,6 @@ __revision__ = " $Id$ "
 from nose.tools import with_setup
 import os
 
-import openalea
 from openalea.core.session import Session
 from openalea.core.pkgmanager import PackageManager
 from openalea.core.compositenode import CompositeNodeFactory, CompositeNode
