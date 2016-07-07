@@ -4,6 +4,12 @@ from shutil import rmtree
 from time import sleep
 
 
+def test_dir():
+    """Return path of test directory
+    """
+    return dirname(__file__)
+
+
 def ensure_created(dname):
     if not exists(dname):
         mkdir(dname)
