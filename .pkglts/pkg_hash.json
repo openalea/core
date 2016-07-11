@@ -5,6 +5,13 @@
   ".gitignore": {
     "github": "wVVlsQPP65I5Gg6bW37JENFtYxO6Naq7x+mO0DaDGFVbMPk2o5QJ3DUwMoYfkOfou9lcR/6DC0MXr7hnrTWc9g=="
   }, 
+  ".travis.yml": {
+    "travis": "p39laCS5PHN7gbwAtgU28Z+UXHRifGIORlali3ZkK7OQKjjRhn1Dbwscp76SZeocjKUEBtl3fI1857Ri37wPWQ==", 
+    "travis.addons": "z4PhNX7vuL3xVChQ1m2AB9Yg5AULVxXcg/SpIdNs6c5H0NE8XYXysP+DGNKHfuwvY7kxvUdBeoGlODJ6+SfaPg==", 
+    "travis.after": "z4PhNX7vuL3xVChQ1m2AB9Yg5AULVxXcg/SpIdNs6c5H0NE8XYXysP+DGNKHfuwvY7kxvUdBeoGlODJ6+SfaPg==", 
+    "travis.install": "CwigKKORJdg9WEl3DxAU095HFtme5Hwv7S2mH5Lgo0sUuwWuoSyhs+pBYWCzDXGyxZIcTPSIEY5/0PuaYqGR6Q==", 
+    "travis.script": "STjpu3u3YoOeTz4mBIflZ58OodPdFRPFtLt6c8CUciNwe/fYhCTxlKTMB/S7VL1ippUsQVIfrFGl+OQ/ALWmPQ=="
+  }, 
   "AUTHORS.rst": {
     "doc": "mr4dDvb808KCdcLSRWe9brxcIBamJp3DMpFzoEhHCeSLmr7Q0QfrNRZ79dnneEyWHgcs2srtibLIZlGOq1S0rQ=="
   }, 
@@ -17,7 +24,7 @@
     "pysetup": "vzgcfdwg7fafu0G3HEmFsZnC8jB8sa4zeSFQ2ReZO+pUfGeynOcw4+CIzP/ZV7n5nmpGGI7xqcdcPtOFfoivdQ=="
   }, 
   "README.rst": {
-    "doc": "z4PhNX7vuL3xVChQ1m2AB9Yg5AULVxXcg/SpIdNs6c5H0NE8XYXysP+DGNKHfuwvY7kxvUdBeoGlODJ6+SfaPg=="
+    "doc": "324FZvzs5aJAtcREXT4nIIv/zjrfc0EZj+qjxyrZ9EP+UXQERzKyDx+4u1FDMMfzP2WJhOkPf9QQXzV4T+92GA=="
   }, 
   "doc/Makefile": {
     "sphinx": "C58jxdu8XJNOoaWOw7VWy4LwFmS8lTQt/JeZLt5JozMSJ503plOZchucx+vAEzELbx/Czs/h9pshe9s+9HeOeQ=="
@@ -37,17 +44,17 @@
   "doc/readme.rst": {}, 
   "doc/usage.rst": {}, 
   "dvlpt_requirements.txt": {
-    "pysetup": "UQJqyb7YIaBZSsbBzHa4g943V6w4PfULzPZwHKLPmkkKthgekqqdh4XqGpVjQrr3D9hF4m1qAu34UIT1ceUidw=="
+    "pysetup": "XWPKeIfT2RoNPeDhPDgWWOssKAjkq/OXoEfIpSs8vJrYkPahRrEs1qXFvqxzqoV09MjmnVg0zrG9m/wRXfrRxw=="
   }, 
   "requirements.txt": {
-    "pysetup": "z4PhNX7vuL3xVChQ1m2AB9Yg5AULVxXcg/SpIdNs6c5H0NE8XYXysP+DGNKHfuwvY7kxvUdBeoGlODJ6+SfaPg=="
+    "pysetup": "/5djJXLbrvuFk7LIgtfgYR8RnQrY5BEmOB4zEd0PrKeswR/8sQkzj4yKy7Zl3LAdRzYjPDhWiRkS1oMCG4FX7Q=="
   }, 
   "setup.cfg": {
-    "pysetup": "atXk/FtNgQRzuYPRVnyEYUklWKEE8b+MhF34fuCbPvdN/STsGKbdQwNHEoiWc+XXo9OdhkL+4KNd4SgR19JRPg=="
+    "pysetup": "QBedkKDNLW8WmznOFdyIyCL2sTDHYcmudSzjx+7QUcRI1vVxIHnNm82aiMvaMeEAYpOCr+8+Nj4ZTr9P0dSxSg=="
   }, 
   "setup.py": {
     "pysetup.call": "2wHuP94SpWKZpqOzExkQGTxnhGPgBHK3qOdPn0Ncstj5FkZ7FBGGM/inqAXaI4QLKQtTNlOUYRGSkYUWAUcf1w==", 
-    "pysetup.kwds": "HVHaUYT2mDHu3gurBsA3P7pD9qF9G3Y9Rx+ZztbOnZbEIJN8ZA7vaLZUqG1Mb0D43WE7kjSZiv31sU/N+GZbag=="
+    "pysetup.kwds": "2Wo8eNut4J6R97mY1RTBwstqt7yVHd/9KVgNH17IV7oOc5Wb1g8Vcpgm7H9sabVWjkN9V7QQYNNZEneBkTNddw=="
   }, 
   "src/openalea/core/__init__.py": {
     "base": "gR33dW0qqYmsV9NSNB+DD8XmuxnC2t0mKjnMoU5728qh97fSER6MbX+3QKxpZDLByZToaAay4xhx8acxketJmA=="

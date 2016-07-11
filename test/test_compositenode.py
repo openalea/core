@@ -1,46 +1,29 @@
-# -*- python -*-
-#
-#       OpenAlea.SoftBus: OpenAlea Software Bus
-#
-#       Copyright 2006 INRIA - CIRAD - INRA
-#
-#       File author(s): Christophe Pradal <christophe.prada@cirad.fr>
-#                       Samuel Dufour-Kowalski <samuel.dufour@sophia.inria.fr>
-#
-#       Distributed under the Cecill-C License.
-#       See accompanying file LICENSE.txt or copy at
-#           http://www.cecill.info/licences/Licence_CeCILL-C_V1-en.html
-#
-#       OpenAlea WebSite : http://openalea.gforge.inria.fr
-#
-"""Test the composite node module"""
-
-__license__ = "Cecill-C"
-__revision__ = " $Id$ "
+from os.path import join as pj
 
 from openalea.core.pkgmanager import PackageManager
 from openalea.core.compositenode import CompositeNodeFactory, CompositeNode
-from openalea.core.node import gen_port_list, RecursionError
+from openalea.core.node import RecursionError
 from openalea.core import Package
-from openalea.core.path import path
+
+from .small_tools import test_dir
 
 
 class TestClass:
     def setUp(self):
-        d= {}
-        execfile('catalog.py', globals(), d)
+        d = {}
+        execfile(pj(test_dir(), 'catalog.py'), globals(), d)
         self.pkg = d['pkg']
-        self.plus_node= self.pkg['plus'].instantiate()
-        self.float_node= self.pkg['float'].instantiate()
-        self.int_node= self.pkg['int'].instantiate()
-        self.string_node= self.pkg['string'].instantiate()
+        self.plus_node = self.pkg['plus'].instantiate()
+        self.float_node = self.pkg['float'].instantiate()
+        self.int_node = self.pkg['int'].instantiate()
+        self.string_node = self.pkg['string'].instantiate()
         self.pm = PackageManager()
         self.pm.add_package(self.pkg)
 
     def test_instantiate_compositenode(self):
         """test instantiation"""
-        #pm = PackageManager()
-        #pm.init()
+        # pm = PackageManager()
+        # pm.init()
 
         sg = CompositeNode()
 
@@ -67,7 +50,6 @@ class TestClass:
 
         assert sg.node(val3id).get_output(0) == 5.
 
-
     def test_compositenode_creation_without_edges(self):
         """test compositenode creation without edges"""
 
@@ -84,8 +66,7 @@ class TestClass:
         # allocate the compositenode
         sg = sgfactory.instantiate()
 
-        assert len(sg) == 4+2
-
+        assert len(sg) == 4 + 2
 
     def test_to_factory(self):
         """ Create a compositenode, generate its factory and reintantiate it """
@@ -100,30 +81,28 @@ class TestClass:
 
         n1.set_input(0, 34.)
         sg()
-        assert n2.get_output(0)==34.
-    
+        assert n2.get_output(0) == 34.
+
         sgfactory = CompositeNodeFactory("factorytest")
         sg.to_factory(sgfactory)
 
         sg2 = sgfactory.instantiate()
 
-        assert len(list(sg2.vertices()))==2+2 # two nodes + in/ou
-        assert len(list(sg2.edges()))==1
+        assert len(list(sg2.vertices())) == 2 + 2  # two nodes + in/ou
+        assert len(list(sg2.edges())) == 1
 
         sg2.node(e1).set_input(0, 3.)
         sg2()
-        assert sg2.node(e2).get_output(0)==3.
+        assert sg2.node(e2).get_output(0) == 3.
 
         return sg, sgfactory
 
-
     def test_to_factory2(self):
         """ test factory """
-        sg, sgfactory= self.test_to_factory()
+        sg, sgfactory = self.test_to_factory()
         sg.to_factory(sgfactory)
-        sg2= sgfactory.instantiate()
-        assert len(sg)==len(sg2)
-
+        sg2 = sgfactory.instantiate()
+        assert len(sg) == len(sg2)
 
     # need to be checked. Order has changed
 
@@ -132,7 +111,7 @@ class TestClass:
         """ Test Recursion detection"""
 
         pm = self.pm
-        #pm.init()
+        # pm.init()
         pkg = Package("compositenode", {})
 
         sgfactory1 = CompositeNodeFactory("graph1")
@@ -143,7 +122,7 @@ class TestClass:
         assert len(pkg.get_names()) == 2
 
         pm.add_package(pkg)
-    
+
         n1 = sgfactory1.instantiate()
         n2 = sgfactory1.instantiate()
         # build the compositenode factory
@@ -153,8 +132,8 @@ class TestClass:
         n1.to_factory(sgfactory1)
         n2.to_factory(sgfactory2)
 
-        #sgfactory1.add_nodefactory ( ("compositenode", "graph2"))
-        #sgfactory2.add_nodefactory ( ("compositenode", "graph1"))
+        # sgfactory1.add_nodefactory ( ("compositenode", "graph2"))
+        # sgfactory2.add_nodefactory ( ("compositenode", "graph1"))
 
         try:
             sg = sgfactory1.instantiate()
@@ -162,19 +141,19 @@ class TestClass:
         except RecursionError:
             assert True
 
-
     def test_compositenodeio(self):
         """ Test IO"""
         pm = self.pm
-        #pm.init()
+        # pm.init()
 
         pkg = Package("compositenode", {})
 
         # create a compositenode with 2 in and 1 out
         # the compositenode does an addition
         sg = CompositeNode(inputs=(dict(name="in1", interface=None, value=None),
-                                  dict(name="in2", interface=None, value=None)),
-                          outputs=(dict(name="out", interface=None), ), )
+                                   dict(name="in2", interface=None,
+                                        value=None)),
+                           outputs=(dict(name="out", interface=None),), )
         addid = sg.add_node(self.plus_node)
 
         sg.connect(sg.id_in, 0, addid, 0)
@@ -184,12 +163,12 @@ class TestClass:
         sgfactory = CompositeNodeFactory("additionsg")
         sg.to_factory(sgfactory)
 
-        sg1= sgfactory.instantiate()
+        sg1 = sgfactory.instantiate()
         sg1.set_input(0, 2.)
         sg1.set_input(1, 3.)
         sg1()
 
-        assert sg1.get_output(0)==5.
+        assert sg1.get_output(0) == 5.
 
         pkg.add_factory(sgfactory)
         pm.add_package(pkg)
@@ -214,8 +193,7 @@ class TestClass:
 
         # evaluation
         sg()
-        assert sg.node(val3id).get_output(0)==5.
-
+        assert sg.node(val3id).get_output(0) == 5.
 
     def test_addnode(self):
         """Test  node addition"""
@@ -236,8 +214,7 @@ class TestClass:
 
         sg.node(val1id).set_input(0, 2.)
         sg()
-        assert sg.node(val2id).get_output(0)==2.
-
+        assert sg.node(val2id).get_output(0) == 2.
 
         # Add a new node
         addid = sg.add_node(self.plus_node)
@@ -248,8 +225,7 @@ class TestClass:
         sg = sgfactory.instantiate()
         sg.node(val1id).set_input(0, 3.)
         sg()
-        assert sg.node(addid).get_output(0)==6.
-
+        assert sg.node(addid).get_output(0) == 6.
 
     def test_multi_out_eval(self):
         """ Test multiple out connection"""
@@ -274,14 +250,13 @@ class TestClass:
         assert sg.node(val2id).get_output(0) == "teststring"
         assert sg.node(val3id).get_output(0) == "teststring"
 
-        #partial evaluation
+        # partial evaluation
         sg.node(val1id).set_input(0, "teststring2")
         sg.eval_as_expression(val2id)
         assert sg.node(val2id).get_output(0) == "teststring2"
 
         sg.eval_as_expression(val3id)
         assert sg.node(val3id).get_output(0) == "teststring2"
-
 
     def test_multi_in_eval(self):
         """ Test multiple out connection"""
@@ -295,7 +270,6 @@ class TestClass:
         sg.connect(val1id, 0, val3id, 0)
         sg.connect(val2id, 0, val3id, 0)
 
-
         sgfactory = CompositeNodeFactory("testlazyeval")
         sg.to_factory(sgfactory)
         # allocate the compositenode
@@ -304,10 +278,11 @@ class TestClass:
         sg.node(val1id).set_input(0, "teststring1")
         sg.node(val2id).set_input(0, "teststring2")
         sg()
-        assert (sg.node(val3id).get_output(0) == "['teststring1', 'teststring2']")\
-            or \
-            (sg.node(val3id).get_output(0) == "['teststring2', 'teststring1']")
-
+        assert (sg.node(val3id).get_output(
+            0) == "['teststring1', 'teststring2']") \
+               or \
+               (sg.node(val3id).get_output(
+                   0) == "['teststring2', 'teststring1']")
 
     def test_change_io(self):
         """ Test set_io"""
@@ -325,7 +300,6 @@ class TestClass:
         assert sg.get_nb_input() == 1
         assert sg.get_nb_output() == 3
 
-
     def test_auto_io(self):
         """ Test auto io"""
         sg = CompositeNode()
@@ -334,7 +308,6 @@ class TestClass:
         val1id = sg.add_node(self.string_node)
         val2id = sg.add_node(self.string_node)
         val3id = sg.add_node(self.string_node)
-
 
         sg.connect(val1id, 0, val3id, 0)
         sg.connect(val2id, 0, val3id, 0)
@@ -352,5 +325,3 @@ class TestClass:
         sg()
         res = sg.get_output(0)
         assert ''.join(eval(res)) == "toto"
-
-

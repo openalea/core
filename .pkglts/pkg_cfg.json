@@ -3,34 +3,34 @@
     "auto_install": true, 
     "install_front_end": "stdout", 
     "use_prompts": false, 
-    "version": 2
+    "version": 3
   }, 
   "base": {
     "authors": [
       [
-        "openalea",
+        "openalea", 
         "openalea@inria.fr"
-      ],
+      ], 
       [
-        "Christophe Pradal",
+        "Christophe Pradal", 
         "christophe dot pradal at cirad dot fr"
-      ],
+      ], 
       [
-        "Samuel Dufour-Kowalski",
+        "Samuel Dufour-Kowalski", 
         "dufourko at cirad dot fr"
-      ],
+      ], 
       [
-        "revesansparole",
+        "revesansparole", 
         "revesansparole@gmail.com"
       ]
     ], 
-    "namespace": "openalea",
+    "namespace": "openalea", 
     "pkgname": "core", 
     "url": null
   }, 
   "coverage": {}, 
   "doc": {
-    "description": "OpenAlea.Core is able to discover and manage packages and logical components, build and evaluate dataflows and Generate final applications",
+    "description": "OpenAlea.Core is able to discover and manage packages and logical components, build and evaluate dataflows and Generate final applications", 
     "keywords": [
       "openalea"
     ]
@@ -42,23 +42,28 @@
   }, 
   "license": {
     "name": "cecill-c", 
-    "organization": "CIRAD/INRIA",
+    "organization": "CIRAD/INRIA", 
     "project": "{{ base.pkgname }}", 
     "year": 2015
   }, 
   "pysetup": {
     "intended_versions": [
       "27"
-    ]
+    ], 
+    "require": [["git", "openalea/deploy"]]
+  }, 
+  "readthedocs": {
+    "project": "openalea-core"
   }, 
   "sphinx": {
     "autodoc_dvlpt": true, 
     "theme": "default"
   }, 
   "test": {}, 
+  "travis": {}, 
   "version": {
-    "major": 1,
-    "minor": 4,
+    "major": 1, 
+    "minor": 4, 
     "post": 0
   }
 }

@@ -19,13 +19,25 @@
 __license__ = "Cecill-C"
 __revision__ = " $Id$ "
 
+from nose.tools import with_setup
+import os
 
 from openalea.core.session import Session
 from openalea.core.pkgmanager import PackageManager
 from openalea.core.compositenode import CompositeNodeFactory, CompositeNode
 
-import os
-import openalea
+from .small_tools import ensure_created, rmdir
+
+
+tmp_dir = 'toto_session'
+
+
+def setup():
+    ensure_created(tmp_dir)
+
+
+def teardown():
+    rmdir(tmp_dir)
 
 
 def add_user_class(datapool):
@@ -35,6 +47,7 @@ def add_user_class(datapool):
     datapool['j'] = moduletest.test_data()
 
 
+@with_setup(setup, teardown)
 def test_save_datapool():
 
     asession = Session()
@@ -43,17 +56,15 @@ def test_save_datapool():
     datapool['i'] = [1, 2, 3]
 
     add_user_class(datapool)
-    asession.save('test.pic')
+    asession.save(os.path.join(tmp_dir, 'test.pic'))
 
     asession.datapool.clear()
-    asession.load('test.pic')
+    asession.load(os.path.join(tmp_dir, 'test.pic'))
 
     assert asession.datapool['i'] == [1, 2, 3]
-    try:
-        os.remove('test.pic')
-    except:
-        os.remove('test.pic.db')
 
+
+@with_setup(setup, teardown)
 def test_save_workspace():
     pm = PackageManager()
     pm.init()
@@ -76,14 +87,10 @@ def test_save_workspace():
     instance.actor(addid).set_input(0, 3)
     asession.add_workspace(instance)
 
-    asession.save('test.pic')
+    asession.save(os.path.join(tmp_dir, 'test.pic'))
 
     asession.workspaces = []
-    asession.load('test.pic')
-    try:
-        os.remove('test.pic')
-    except:
-        os.remove('test.pic.db')
+    asession.load(os.path.join(tmp_dir, 'test.pic'))
 
     i = asession.workspaces[0]
     assert type(i) == type(instance)

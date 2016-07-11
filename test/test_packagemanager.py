@@ -1,23 +1,6 @@
-# -*- python -*-
-#
-#       OpenAlea.SoftBus: OpenAlea Software Bus
-#
-#       Copyright 2006 INRIA - CIRAD - INRA
-#
-#       File author(s): Christophe Pradal <christophe.prada@cirad.fr>
-#                       Samuel Dufour-Kowalski <samuel.dufour@sophia.inria.fr>
-#
-#       Distributed under the Cecill-C License.
-#       See accompanying file LICENSE.txt or copy at
-#           http://www.cecill.info/licences/Licence_CeCILL-C_V1-en.html
-#
-#       OpenAlea WebSite : http://openalea.gforge.inria.fr
-#
-"""Test the Package Manager"""
 from openalea.core.pkgmanager import PackageManager
-import os
-import openalea
-from openalea.core.settings import Settings
+
+from .small_tools import test_dir
 
 
 # test has been removed
@@ -72,7 +55,7 @@ def test_category():
 
 def test_search():
     pkgman = PackageManager()
-    pkgman.load_directory("./")
+    pkgman.load_directory(test_dir())
 
     assert 'Test' in pkgman
 
@@ -86,7 +69,6 @@ def test_search():
     # res = pkgman.search_node("system.command")
     # print res
     # assert "command" in res[0].name
-
 
 # test has been removed
 # too dangerous to test writing on a singleton

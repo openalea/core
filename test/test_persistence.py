@@ -1,50 +1,29 @@
-# -*- python -*-
-#
-#       OpenAlea.SoftBus: OpenAlea Software Bus
-#
-#       Copyright 2006 INRIA - CIRAD - INRA
-#
-#       File author(s): Christophe Pradal <christophe.prada@cirad.fr>
-#                       Samuel Dufour-Kowalski <samuel.dufour@sophia.inria.fr>
-#
-#       Distributed under the Cecill-C License.
-#       See accompanying file LICENSE.txt or copy at
-#           http://www.cecill.info/licences/Licence_CeCILL-C_V1-en.html
-#
-#       OpenAlea WebSite : http://openalea.gforge.inria.fr
-#
-"""Test the subgraph module"""
-
-__license__ = "Cecill-C"
-__revision__ = " $Id$ "
-
+from nose.tools import with_setup
 
 from openalea.core.pkgmanager import PackageManager
 from openalea.core.compositenode import CompositeNodeFactory, CompositeNode
-from openalea.core.node import Factory, gen_port_list
-import os
-import shutil
+
+from .small_tools import ensure_created, rmdir
+
+tmp_dir = 'toto_persistence'
 
 
-def setup_module():
-    try:
-        path = os.path.join(os.path.curdir, "MyTestPackage")
-        shutil.rmtree(path)
-
-    except:
-        pass
+def setup():
+    ensure_created(tmp_dir)
 
 
+def teardown():
+    rmdir(tmp_dir)
+
+
+@with_setup(setup, teardown)
 def test_compositenodewriter():
-
-    setup_module()
-
     pm = PackageManager()
     pm.init()
 
     sg = CompositeNode(inputs=[dict(name="%d" % i) for i in xrange(3)],
                        outputs=[dict(name="%d" % i) for i in xrange(4)],
-                      )
+                       )
 
     # build the compositenode factory
     addid = sg.add_node(pm.get_node("pkg_test", "+"))
@@ -60,16 +39,15 @@ def test_compositenodewriter():
     sg.to_factory(sgfactory)
     # Package
     metainfo = {'version': '0.0.1',
-               'license': 'CECILL-C',
-               'authors': 'OpenAlea Consortium',
-               'institutes': 'INRIA/CIRAD',
-               'description': 'Base library.',
-               'url': 'http://openalea.gforge.inria.fr'}
+                'license': 'CECILL-C',
+                'authors': 'OpenAlea Consortium',
+                'institutes': 'INRIA/CIRAD',
+                'description': 'Base library.',
+                'url': 'http://openalea.gforge.inria.fr'}
 
-    package1 = pm.create_user_package("MyTestPackage", 
-                                      metainfo, os.path.curdir)
+    package1 = pm.create_user_package("MyTestPackage",
+                                      metainfo, tmp_dir)
     package1.add_factory(sgfactory)
-    print package1.keys()
     assert 'addition' in package1
     package1.write()
 
@@ -80,46 +58,41 @@ def test_compositenodewriter():
 
     # evaluation
     sg()
-    print sg.node(val3id).get_output(0)
     assert sg.node(val3id).get_output(0) == 5.
 
-    print "nb vertices", len(sg)
     assert len(sg) == 6
 
     pm.init()
     newsg = pm.get_node('MyTestPackage', 'addition')
-    print "nb vertices", len(newsg)
     assert len(newsg) == 6
 
 
+@with_setup(setup, teardown)
 def test_nodewriter():
     """test node writer"""
-    setup_module()
-
     pm = PackageManager()
     pm.clear()
     pm.init()
 
     # Package
     metainfo = {'version': '0.0.1',
-               'license': 'CECILL-C',
-               'authors': 'OpenAlea Consortium',
-               'institutes': 'INRIA/CIRAD',
-               'description': 'Base library.',
-               'url': 'http://openalea.gforge.inria.fr'}
+                'license': 'CECILL-C',
+                'authors': 'OpenAlea Consortium',
+                'institutes': 'INRIA/CIRAD',
+                'description': 'Base library.',
+                'url': 'http://openalea.gforge.inria.fr'}
 
-    package1 = pm.create_user_package("MyTestPackage", \
-        metainfo, os.path.curdir)
-    assert package1 != None
+    package1 = pm.create_user_package("MyTestPackage",
+                                      metainfo, tmp_dir)
+    assert package1 is not None
 
     nf = package1.create_user_node(name="mynode",
-                                      category='test',
-                                      description="descr",
-                                      inputs=(),
-                                      outputs=(),
-                                      )
+                                   category='test',
+                                   description="descr",
+                                   inputs=(),
+                                   outputs=(),
+                                   )
     package1.write()
     pm.init()
     newsg = pm.get_node('MyTestPackage', 'mynode')
     package1.remove_files()
-

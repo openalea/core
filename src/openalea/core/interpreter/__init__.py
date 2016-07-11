@@ -1,8 +1,3 @@
-
-from openalea.vpltk.check.ipython import has_ipython
-import sys
-
-
 def get_interpreter_class():
     """
     :return: the interpreter class to instantiate the shell
