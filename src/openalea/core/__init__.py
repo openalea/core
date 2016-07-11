@@ -1,7 +1,17 @@
-# {# pkglts, base
+"""
+See online documentation at
+http://openalea.gforge.inria.fr/doc/sphinx/core/html/contents.html
 
-from . import version
+"""
+__license__ = "Cecill-C"
+__revision__ = "$Id$"
 
-__version__ = version.__version__
+from openalea.core.external import *
+from script_library import ScriptLibrary
 
-# #}
+
+def global_module(module):
+    """ Declare a module accessible everywhere. """
+
+    import __builtin__
+    __builtin__.__dict__[module.__name__] = module
