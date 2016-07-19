@@ -824,13 +824,13 @@ class CompositeNode(Node, DataFlow):
             sgfactory.elt_ad_hoc[vid] = copy.deepcopy(node.get_ad_hoc_dict())
 
             # Copy value
-            if(not node.get_nb_input()):
-                sgfactory.elt_value[vid] = []
-            else:
-                sgfactory.elt_value[vid] = \
-                    [(port, repr(node.get_input(port))) for port
-                        in xrange(len(node.inputs))
-                        if node.input_states[port] is not "connected"]
+            sgfactory.elt_value[vid] = []
+            for port in xrange(node.get_nb_input()):
+                if node.input_states[port] is not "connected":
+                    val = node.get_input(port)
+                    if "pyqt" in repr(val).lower():
+                        val = str(val)
+                    sgfactory.elt_value[vid].append((port, repr(val)))
 
         self.graph_modified = False
 
