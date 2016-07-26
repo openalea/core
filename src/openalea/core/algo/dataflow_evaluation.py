@@ -22,124 +22,133 @@ __revision__ = " $Id$ "
 import sys
 from time import clock
 import traceback as tb
-from openalea.core import ScriptLibrary
+from openalea.provenance.simple_dict import Provenance as RVProvenance
 
+from openalea.core import ScriptLibrary
 from openalea.core.dataflow import SubDataflow
 from openalea.core.interface import IFunction
 
-
-PROVENANCE = False
-
-# Implement provenance in OpenAlea
-db_conn = None
-
-import sqlite3
-from openalea.core.path import path
-from openalea.core import settings
-
-def db_create(cursor):
-    cur = cursor
-    #-prospective provenance-#
-    #User table creation
-    cur.execute("CREATE TABLE IF NOT EXISTS User (userid INTEGER,createtime DATETIME,name varchar (25), firstname varchar (25), email varchar (25), password varchar (25),PRIMARY KEY(userid))")
-
-    # CompositeNode table creation
-    cur.execute("CREATE TABLE IF NOT EXISTS CompositeNode (CompositeNodeid INTEGER, creatime DATETIME, name varchar (25), description varchar (25),userid INTEGER,PRIMARY KEY(CompositeNodeid),FOREIGN KEY(userid) references User)")
-    #Cr?ation de la table Node
-    cur.execute("CREATE TABLE IF NOT EXISTS Node (Nodeid INTEGER, createtime DATETIME, name varchar (25), NodeFactory varchar (25),CompositeNodeid INTEGER,PRIMARY KEY(Nodeid),FOREIGN KEY(CompositeNodeid) references CompsiteNode)")
-    #Cr?ation de la table Input
-    cur.execute("CREATE TABLE IF NOT EXISTS Input (Inputid INTEGER, createtime DATETIME, name varchar (25), typedata varchar (25), InputPort INTEGER,PRIMARY KEY (Inputid))")
-    #Cr?ation de la table Output
-    cur.execute("CREATE TABLE IF NOT EXISTS Output (Outputid INTEGER, createtime DATETIME, name varchar (25), typedata varchar (25), OutputPort INTEGER,PRIMARY KEY (Outputid))")
-    #Cr?ation de la table elt_connection
-    cur.execute("CREATE TABLE IF NOT EXISTS elt_connection (elt_connectionid INTEGER, createtime DATETIME,srcNodeid INTEGER, srcNodeOutputPortid INTEGER, targetNodeid INTEGER, targetNodeInputPortid INTEGER ,PRIMARY KEY (elt_connectionid))")
-
-    #- retrospective provenance -#
-    #- CompositeNodeExec table creation
-    cur.execute("CREATE TABLE IF NOT EXISTS CompositeNodeExec (CompositeNodeExecid INTEGER, createtime DATETIME, endtime DATETIME,userid INTEGER,CompositeNodeid INTEGER,PRIMARY KEY(CompositeNodeExecid),FOREIGN KEY(CompositeNodeid) references CompositeNode,FOREIGN KEY(userid) references User)")
-    #- NodeExec 
-    cur.execute("CREATE TABLE IF NOT EXISTS NodeExec (NodeExecid INTEGER, createtime DATETIME, endtime DATETIME,Nodeid INTEGER,CompositeNodeExecid INTEGER,dataid INTEGER,PRIMARY KEY(NodeExecid),FOREIGN KEY(Nodeid) references Node, FOREIGN KEY (CompositeNodeExecid) references CompositeNodeExec, FOREIGN KEY (dataid) references Data)")
-    #- History
-    cur.execute("CREATE TABLE IF NOT EXISTS Histoire (Histoireid INTEGER, createtime DATETIME, name varchar (25), description varchar (25),userid INTEGER,CompositeNodeExecid INTEGER,PRIMARY KEY (Histoireid), FOREIGN KEY(Userid) references User, FOREIGN KEY(CompositeNodeExecid) references CompositeNodeExec)")
-    #- Data
-    cur.execute("CREATE TABLE IF NOT EXISTS Data (dataid INTEGER, createtime DATETIME,NodeExecid INTEGER, PRIMARY KEY(dataid),FOREIGN KEY(NodeExecid) references NodeExec)")
-    #- Tag
-    cur.execute("CREATE TABLE IF NOT EXISTS Tag (CompositeNodeExecid INTEGER, createtime DATETIME, name varchar(25),userid INTEGER,PRIMARY KEY(CompositeNodeExecid),FOREIGN KEY(userid) references User)")
-    return cur
-
-def get_database_name():
-    db_fn = path(settings.get_openalea_home_dir())/'provenance.sq3'
-    return db_fn
-
-def db_connexion():
-    """ Return a curso on the database.
-
-    If the database does not exists, create it.
-    """
-    global db_conn
-    if db_conn is None:
-        db_fn = get_database_name()
-        if not db_fn.exists():
-            db_conn=sqlite3.connect(db_fn)
-            cur = db_conn.cursor()
-            cur = db_create(cur)
-            return cur
-    else:
-        cur = db_conn.cursor()
-        return cur
-
-class Provenance(object):
-    def __init__(self, workflow):
-        self.clear()
-        self.workflow = workflow
-
-    def edges(self):
-        cn = self.workflow
-        edges= list(cn.edges())
-        sources=map(cn.source,edges)
-        targets = map(cn.target,edges)
-        source_ports=[cn.local_id(cn.source_port(eid)) for eid in edges]
-        target_ports=[cn.local_id(cn.target_port(eid)) for eid in edges]
-        _edges = dict(zip(edges,zip(sources,source_ports,targets, target_ports)))
-        return _edges
-
-    def clear(self):
-        self.nodes = []
-
-    def start_time(self):
-        pass
-    def end_time(self):
-        pass
-    def workflow_exec(self, *args):
-        pass
-    def node_exec(self, vid, node, start_time, end_time, *args):
-        pass
-    def write(self):
-        """ Write the provenance in db """
-
-class PrintProvenance(Provenance):
-    def workflow_exec(self, *args):
-        print 'Workflow execution ', self.workflow.factory.name
-    def node_exec(self, vid, node, start_time, end_time, *args):
-        provenance(vid, node, start_time, end_time)
+# PROVENANCE = False
 
 
-def provenance(vid, node, start_time, end_time):
-    #from service import db
-    #conn = db.connect()
+# # Implement provenance in OpenAlea
+# db_conn = None
+#
+# import sqlite3
+# from openalea.core.path import path
+# from openalea.core import settings
+#
+# def db_create(cursor):
+#     cur = cursor
+#     #-prospective provenance-#
+#     #User table creation
+#     cur.execute("CREATE TABLE IF NOT EXISTS User (userid INTEGER,createtime DATETIME,name varchar (25), firstname varchar (25), email varchar (25), password varchar (25),PRIMARY KEY(userid))")
+#
+#     # CompositeNode table creation
+#     cur.execute("CREATE TABLE IF NOT EXISTS CompositeNode (CompositeNodeid INTEGER, creatime DATETIME, name varchar (25), description varchar (25),userid INTEGER,PRIMARY KEY(CompositeNodeid),FOREIGN KEY(userid) references User)")
+#     #Cr?ation de la table Node
+#     cur.execute("CREATE TABLE IF NOT EXISTS Node (Nodeid INTEGER, createtime DATETIME, name varchar (25), NodeFactory varchar (25),CompositeNodeid INTEGER,PRIMARY KEY(Nodeid),FOREIGN KEY(CompositeNodeid) references CompsiteNode)")
+#     #Cr?ation de la table Input
+#     cur.execute("CREATE TABLE IF NOT EXISTS Input (Inputid INTEGER, createtime DATETIME, name varchar (25), typedata varchar (25), InputPort INTEGER,PRIMARY KEY (Inputid))")
+#     #Cr?ation de la table Output
+#     cur.execute("CREATE TABLE IF NOT EXISTS Output (Outputid INTEGER, createtime DATETIME, name varchar (25), typedata varchar (25), OutputPort INTEGER,PRIMARY KEY (Outputid))")
+#     #Cr?ation de la table elt_connection
+#     cur.execute("CREATE TABLE IF NOT EXISTS elt_connection (elt_connectionid INTEGER, createtime DATETIME,srcNodeid INTEGER, srcNodeOutputPortid INTEGER, targetNodeid INTEGER, targetNodeInputPortid INTEGER ,PRIMARY KEY (elt_connectionid))")
+#
+#     #- retrospective provenance -#
+#     #- CompositeNodeExec table creation
+#     cur.execute("CREATE TABLE IF NOT EXISTS CompositeNodeExec (CompositeNodeExecid INTEGER, createtime DATETIME, endtime DATETIME,userid INTEGER,CompositeNodeid INTEGER,PRIMARY KEY(CompositeNodeExecid),FOREIGN KEY(CompositeNodeid) references CompositeNode,FOREIGN KEY(userid) references User)")
+#     #- NodeExec
+#     cur.execute("CREATE TABLE IF NOT EXISTS NodeExec (NodeExecid INTEGER, createtime DATETIME, endtime DATETIME,Nodeid INTEGER,CompositeNodeExecid INTEGER,dataid INTEGER,PRIMARY KEY(NodeExecid),FOREIGN KEY(Nodeid) references Node, FOREIGN KEY (CompositeNodeExecid) references CompositeNodeExec, FOREIGN KEY (dataid) references Data)")
+#     #- History
+#     cur.execute("CREATE TABLE IF NOT EXISTS Histoire (Histoireid INTEGER, createtime DATETIME, name varchar (25), description varchar (25),userid INTEGER,CompositeNodeExecid INTEGER,PRIMARY KEY (Histoireid), FOREIGN KEY(Userid) references User, FOREIGN KEY(CompositeNodeExecid) references CompositeNodeExec)")
+#     #- Data
+#     cur.execute("CREATE TABLE IF NOT EXISTS Data (dataid INTEGER, createtime DATETIME,NodeExecid INTEGER, PRIMARY KEY(dataid),FOREIGN KEY(NodeExecid) references NodeExec)")
+#     #- Tag
+#     cur.execute("CREATE TABLE IF NOT EXISTS Tag (CompositeNodeExecid INTEGER, createtime DATETIME, name varchar(25),userid INTEGER,PRIMARY KEY(CompositeNodeExecid),FOREIGN KEY(userid) references User)")
+#     return cur
+#
+# def get_database_name():
+#     db_fn = path(settings.get_openalea_home_dir())/'provenance.sq3'
+#     return db_fn
+#
+# def db_connexion():
+#     """ Return a curso on the database.
+#
+#     If the database does not exists, create it.
+#     """
+#     global db_conn
+#     if db_conn is None:
+#         db_fn = get_database_name()
+#         if not db_fn.exists():
+#             db_conn=sqlite3.connect(db_fn)
+#             cur = db_conn.cursor()
+#             cur = db_create(cur)
+#             return cur
+#     else:
+#         cur = db_conn.cursor()
+#         return cur
+
+# class Provenance(object):
+#     def __init__(self, workflow):
+#         self.clear()
+#         self.workflow = workflow
+#
+#     def edges(self):
+#         cn = self.workflow
+#         edges = list(cn.edges())
+#         sources = map(cn.source, edges)
+#         targets = map(cn.target, edges)
+#         source_ports = [cn.local_id(cn.source_port(eid)) for eid in edges]
+#         target_ports = [cn.local_id(cn.target_port(eid)) for eid in edges]
+#         _edges = dict(
+#             zip(edges, zip(sources, source_ports, targets, target_ports)))
+#         return _edges
+#
+#     def clear(self):
+#         self.nodes = []
+#
+#     def start_time(self):
+#         pass
+#
+#     def end_time(self):
+#         pass
+#
+#     def workflow_exec(self, *args):
+#         pass
+#
+#     def node_exec(self, vid, node, start_time, end_time, *args):
+#         pass
+#
+#     def write(self):
+#         """ Write the provenance in db """
 
 
-    if PROVENANCE:
-        cur = db_connexion()
+# class PrintProvenance(Provenance):
+#     def workflow_exec(self, *args):
+#         print 'Workflow execution ', self.workflow.factory.name
+#
+#     def node_exec(self, vid, node, start_time, end_time, *args):
+#         provenance(vid, node, start_time, end_time)
+#
+#
+# def provenance(vid, node, start_time, end_time):
+#     # from service import db
+#     # conn = db.connect()
+#
+#
+#     if PROVENANCE:
+#         cur = db_connexion()
+#
+#         pname = node.factory.package.name
+#         name = node.factory.name
+#
+#         print "Provenance Process:"
+#         print "instance ID ", vid, "Package Name: ", pname, "Name: ", name
+#         print "start time :", start_time, "end_time: ", end_time, "duration : ", end_time - start_time
+#         print 'Inputs : ', node.inputs
+#         print 'outputs : ', node.outputs
 
-        pname = node.factory.package.name
-        name = node.factory.name
-
-        print "Provenance Process:"
-        print "instance ID ", vid, "Package Name: ",pname, "Name: ", name
-        print "start time :", start_time, "end_time: ", end_time, "duration : ", end_time-start_time 
-        print 'Inputs : ', node.inputs
-        print 'outputs : ', node.outputs
 
 # print the evaluation time
 # This variable has to be retrieve by the settings
@@ -147,8 +156,8 @@ quantify = False
 
 __evaluators__ = []
 
-class EvaluationException(Exception):
 
+class EvaluationException(Exception):
     def __init__(self, vid, node, exception, exc_info):
         Exception.__init__(self)
         self.vid = vid
@@ -180,8 +189,8 @@ def cmp_posx(x, y):
     """todo"""
     (xpid, xvid, xactor) = x
     (ypid, yvid, yactor) = y
-    #px = xactor.internal_data.get('posx', 0)
-    #py = yactor.internal_data.get('posx', 0)
+    # px = xactor.internal_data.get('posx', 0)
+    # py = yactor.internal_data.get('posx', 0)
     px = xactor.get_ad_hoc_dict().get_metadata('position')[0]
     py = yactor.get_ad_hoc_dict().get_metadata('position')[0]
 
@@ -196,15 +205,20 @@ def cmp_posx(x, y):
 
 """ Abstract evaluation algorithm """
 
-class AbstractEvaluation(object):
 
-    def __init__(self, dataflow):
+class AbstractEvaluation(object):
+    def __init__(self, dataflow, record_provenance=False):
         """
         :param dataflow: to be done
         """
         self._dataflow = dataflow
-        if PROVENANCE:
-            self.provenance = PrintProvenance(dataflow)
+        # if PROVENANCE:
+        #     self.provenance = PrintProvenance(dataflow)
+
+        if record_provenance:
+            self._prov = RVProvenance()
+        else:
+            self._prov = None
 
     def eval(self, *args):
         """todo"""
@@ -223,14 +237,25 @@ class AbstractEvaluation(object):
         node = self._dataflow.actor(vid)
 
         try:
+            # prov before
+            # print "prov", node.get_caption()
+
+            if self._prov is not None:
+                self._prov.before_eval(self._dataflow, vid)
+
             t0 = clock()
             ret = node.eval()
             t1 = clock()
+            # prov before
+            # print "prov", node.get_caption()
 
-            if PROVENANCE:
-                self.provenance.node_exec(vid, node, t0,t1)
-                #provenance(vid, node, t0,t1)
-            
+            if self._prov is not None:
+                self._prov.before_eval(self._dataflow, vid)
+
+            # if PROVENANCE:
+            #     self.provenance.node_exec(vid, node, t0, t1)
+            #     # provenance(vid, node, t0,t1)
+
             # When an exception is raised, a flag is set.
             # So we remove it when evaluation is ok.
             node.raise_exception = False
@@ -252,8 +277,7 @@ class AbstractEvaluation(object):
             node.raise_exception = True
             node.notify_listeners(('data_modified', None, None))
             raise EvaluationException(vid, node, e, \
-                tb.format_tb(sys.exc_info()[2]))
-
+                                      tb.format_tb(sys.exc_info()[2]))
 
     def get_parent_nodes(self, pid):
         """
@@ -266,7 +290,7 @@ class AbstractEvaluation(object):
 
         # For each connected node
         npids = [(npid, df.vertex(npid), df.actor(df.vertex(npid))) \
-                     for npid in df.connected_ports(pid)]
+                 for npid in df.connected_ports(pid)]
         npids.sort(cmp=cmp_posx)
 
         return npids
@@ -274,13 +298,14 @@ class AbstractEvaluation(object):
     def set_provenance(self, provenance):
         self.provenance = provenance
 
+
 class BrutEvaluation(AbstractEvaluation):
     """ Basic evaluation algorithm """
     __evaluators__.append("BrutEvaluation")
 
-    def __init__(self, dataflow):
+    def __init__(self, dataflow, record_provenance=False):
 
-        AbstractEvaluation.__init__(self, dataflow)
+        AbstractEvaluation.__init__(self, dataflow, record_provenance)
         # a property to specify if the node has already been evaluated
         self._evaluated = set()
 
@@ -294,7 +319,8 @@ class BrutEvaluation(AbstractEvaluation):
             if actor.block:
                 status = True
                 n = actor.get_nb_output()
-                outputs = [i for i in range(n) if actor.get_output(i) is not None ]
+                outputs = [i for i in range(n) if
+                           actor.get_output(i) is not None]
                 if not outputs:
                     status = False
                 return status
@@ -341,12 +367,12 @@ class BrutEvaluation(AbstractEvaluation):
         self._evaluated.clear()
 
         # Eval from the leaf
-        for vid in (vid for vid in df.vertices() if df.nb_out_edges(vid)==0):
+        for vid in (vid for vid in df.vertices() if df.nb_out_edges(vid) == 0):
             self.eval_vertex(vid)
 
         t1 = clock()
         if quantify:
-            print "Evaluation time: %s"%(t1-t0)
+            print "Evaluation time: %s" % (t1 - t0)
 
 
 class PriorityEvaluation(BrutEvaluation):
@@ -357,7 +383,8 @@ class PriorityEvaluation(BrutEvaluation):
         """todo"""
         t0 = clock()
 
-        is_subdataflow = False if not kwds else kwds.get('is_subdataflow', False)
+        is_subdataflow = False if not kwds else kwds.get('is_subdataflow',
+                                                         False)
         df = self._dataflow
         # Unvalidate all the nodes
         if is_subdataflow:
@@ -370,7 +397,7 @@ class PriorityEvaluation(BrutEvaluation):
 
         # Select the leaves (list of (vid, actor))
         leaves = [(vid, df.actor(vid))
-              for vid in df.vertices() if df.nb_out_edges(vid)==0]
+                  for vid in df.vertices() if df.nb_out_edges(vid) == 0]
 
         leaves.sort(cmp_priority)
 
@@ -380,19 +407,19 @@ class PriorityEvaluation(BrutEvaluation):
 
         t1 = clock()
         if quantify:
-            print "Evaluation time: %s"%(t1-t0)
+            print "Evaluation time: %s" % (t1 - t0)
 
 
 class GeneratorEvaluation(AbstractEvaluation):
     """ Evaluation algorithm with generator / priority and selection"""
     __evaluators__.append("GeneratorEvaluation")
 
-    def __init__(self, dataflow):
+    def __init__(self, dataflow, record_provenance=False):
 
-        AbstractEvaluation.__init__(self, dataflow)
+        AbstractEvaluation.__init__(self, dataflow, record_provenance)
         # a property to specify if the node has already been evaluated
         self._evaluated = set()
-        self.reeval = False # Flag to force reevaluation (for generator)
+        self.reeval = False  # Flag to force reevaluation (for generator)
 
     def is_stopped(self, vid, actor):
         """ Return True if evaluation must be stop at this vertex """
@@ -454,7 +481,7 @@ class GeneratorEvaluation(AbstractEvaluation):
         else:
             # Select the leafs (list of (vid, actor))
             leafs = [(vid, df.actor(vid))
-                for vid in df.vertices() if df.nb_out_edges(vid)==0]
+                     for vid in df.vertices() if df.nb_out_edges(vid) == 0]
 
         leafs.sort(cmp_priority)
 
@@ -462,25 +489,24 @@ class GeneratorEvaluation(AbstractEvaluation):
         for vid, actor in leafs:
             if not self.is_stopped(vid, actor):
                 self.reeval = True
-                while(self.reeval):
+                while (self.reeval):
                     self.clear()
                     self.eval_vertex(vid)
 
         t1 = clock()
         if quantify:
-            print "Evaluation time: %s"%(t1-t0)
+            print "Evaluation time: %s" % (t1 - t0)
         return False
-
 
 
 class LambdaEvaluation(PriorityEvaluation):
     """ Evaluation algorithm with support of lambda / priority and selection"""
     __evaluators__.append("LambdaEvaluation")
 
-    def __init__(self, dataflow):
-        PriorityEvaluation.__init__(self, dataflow)
+    def __init__(self, dataflow, record_provenance=False):
+        PriorityEvaluation.__init__(self, dataflow, record_provenance)
 
-        self.lambda_value = {} # lambda resolution dictionary
+        self.lambda_value = {}  # lambda resolution dictionary
         self._resolution_node = set()
 
     def eval_vertex(self, vid, context, lambda_value, *args):
@@ -528,7 +554,7 @@ class LambdaEvaluation(PriorityEvaluation):
                 transmit_cxt = context
                 transmit_lambda = lambda_value
 
-            cpt = 0 # parent counter
+            cpt = 0  # parent counter
 
             # For each connected node
             for npid, nvid, nactor in self.get_parent_nodes(pid):
@@ -548,7 +574,7 @@ class LambdaEvaluation(PriorityEvaluation):
                 #      replace the lambda with value.
 
                 if (isinstance(outval, SubDataflow)
-                   and interface is not IFunction):
+                    and interface is not IFunction):
 
                     if (not context and not lambda_value):
                         # we are not in resolution mode
@@ -566,7 +592,8 @@ class LambdaEvaluation(PriorityEvaluation):
                             try:
                                 lambda_value[outval] = context.pop()
                             except Exception:
-                                raise Exception("The number of lambda variables is insuffisant")
+                                raise Exception(
+                                    "The number of lambda variables is insuffisant")
 
                         # We replace the value with a context value
                         outval = lambda_value[outval]
@@ -597,9 +624,14 @@ class LambdaEvaluation(PriorityEvaluation):
         :param context: list a value to assign to lambda variables
         """
         t0 = clock()
-        if PROVENANCE and (not is_subdataflow):
-            self.provenance.workflow_exec()
-            self.provenance.start_time()
+        if self._prov is not None:
+            self._prov.workflow = id(self._dataflow)
+            self._prov.init(self._dataflow)
+            self._prov.time_init = t0
+
+        # if PROVENANCE and (not is_subdataflow):
+        #     self.provenance.workflow_exec()
+        #     self.provenance.start_time()
 
         self.lambda_value.clear()
 
@@ -608,22 +640,28 @@ class LambdaEvaluation(PriorityEvaluation):
             # thus, we have to reverse the arguments to evaluate the function (FIFO).
             context.reverse()
 
-        PriorityEvaluation.eval(self, vtx_id, context, self.lambda_value, is_subdataflow=is_subdataflow)
-        self.lambda_value.clear() # do not keep context in memory
-        
-        if PROVENANCE:
-            self.provenance.end_time()
+        PriorityEvaluation.eval(self, vtx_id, context, self.lambda_value,
+                                is_subdataflow=is_subdataflow)
+        self.lambda_value.clear()  # do not keep context in memory
+
+        # if PROVENANCE:
+        #     self.provenance.end_time()
 
         t1 = clock()
+        if self._prov is not None:
+            self._prov.time_end = t1
+
         if quantify:
-            print "Evaluation time: %s"%(t1-t0)
+            print "Evaluation time: %s" % (t1 - t0)
 
         if not is_subdataflow:
             self._resolution_node.clear()
 
 
 DefaultEvaluation = LambdaEvaluation
-#DefaultEvaluation = GeneratorEvaluation
+
+
+# DefaultEvaluation = GeneratorEvaluation
 
 
 # from collections import deque
@@ -896,10 +934,11 @@ class ToScriptEvaluation(AbstractEvaluation):
 
         # Eval from the leaf
         script = ""
-        for vid in (vid for vid in df.vertices() if df.nb_out_edges(vid)==0):
+        for vid in (vid for vid in df.vertices() if df.nb_out_edges(vid) == 0):
             script += self.eval_vertex(vid)
 
         return script
+
 
 ############################################################################
 # Evaluation with scheduling
@@ -915,7 +954,7 @@ class DiscreteTimeEvaluation(AbstractEvaluation):
         AbstractEvaluation.__init__(self, dataflow)
         # a property to specify if the node has already been evaluated
         self._evaluated = set()
-        self.reeval = False # Flag to force reevaluation (for generator)
+        self.reeval = False  # Flag to force reevaluation (for generator)
 
         # CPL
         # At each evaluation of the dataflow, increase the current cycle of
@@ -932,7 +971,7 @@ class DiscreteTimeEvaluation(AbstractEvaluation):
         """ Return True if evaluation must be stop at this vertex """
         stopped = False
         try:
-            if hasattr(actor,'block'):
+            if hasattr(actor, 'block'):
                 stopped = actor.block
             stopped = stopped or vid in self._evaluated
         except:
@@ -956,7 +995,7 @@ class DiscreteTimeEvaluation(AbstractEvaluation):
     def eval_vertex(self, vid):
         """ Evaluate the vertex vid """
 
-        #print "Step ", self._current_cycle
+        # print "Step ", self._current_cycle
 
         df = self._dataflow
         actor = df.actor(vid)
@@ -998,7 +1037,6 @@ class DiscreteTimeEvaluation(AbstractEvaluation):
         if delay == 0:
             delay = self.eval_vertex_code(vid)
 
-
         # Reevaluation flag
         # TODO: Add the node to the scheduler rather to execute
         if (delay):
@@ -1023,7 +1061,7 @@ class DiscreteTimeEvaluation(AbstractEvaluation):
         else:
             # Select the leafs (list of (vid, actor))
             leafs = [(vid, df.actor(vid))
-                for vid in df.vertices() if df.nb_out_edges(vid)==0]
+                     for vid in df.vertices() if df.nb_out_edges(vid) == 0]
 
         leafs.sort(cmp_priority)
 
@@ -1032,7 +1070,7 @@ class DiscreteTimeEvaluation(AbstractEvaluation):
             if not self.is_stopped(vid, actor):
                 self.reeval = True
                 if not step:
-                    while(self.reeval and not self._stop):
+                    while (self.reeval and not self._stop):
                         self.clear()
                         self.eval_vertex(vid)
                         self.next_step()
@@ -1046,7 +1084,7 @@ class DiscreteTimeEvaluation(AbstractEvaluation):
             for vid in self._nodes_to_reset:
                 df.actor(vid).reset()
 
-        #print 'Run %d times the dataflow'%(self._current_cycle,)
+        # print 'Run %d times the dataflow'%(self._current_cycle,)
 
         # Reset the state
         if not step:
@@ -1055,7 +1093,7 @@ class DiscreteTimeEvaluation(AbstractEvaluation):
 
         t1 = clock()
         if quantify:
-            print "Evaluation time: %s"%(t1-t0)
+            print "Evaluation time: %s" % (t1 - t0)
 
         return False
 
@@ -1083,16 +1121,15 @@ class SciFlowareEvaluation(AbstractEvaluation):
         if 'SciFloware' not in factory.package.name:
             return False
         elif factory.name in algebra:
-            return True 
+            return True
         else:
             return False
-    
+
     def scifloware_actors(self):
         """ Compute the scifloware actors.
 
         Only those actors will be evaluated.
         """
-
 
         df = self._dataflow
         self._scifloware_actors.clear()
@@ -1100,7 +1137,6 @@ class SciFlowareEvaluation(AbstractEvaluation):
             actor = df.actor(vid)
             if self.is_operator(actor):
                 self._scifloware_actors.add(vid)
-
 
     def eval_vertex(self, vid):
         """ Evaluate the vertex vid 
@@ -1117,7 +1153,7 @@ class SciFlowareEvaluation(AbstractEvaluation):
 
         """
 
-        #print "Step ", self._current_cycle
+        # print "Step ", self._current_cycle
 
         df = self._dataflow
         actor = df.actor(vid)
@@ -1125,7 +1161,7 @@ class SciFlowareEvaluation(AbstractEvaluation):
         is_op = vid in self._scifloware_actors
         self._evaluated.add(vid)
 
-        #assert self.is_operator(actor)
+        # assert self.is_operator(actor)
 
         # For each inputs
         # Compute the nodes
@@ -1142,17 +1178,18 @@ class SciFlowareEvaluation(AbstractEvaluation):
                 out_ports = list(df.connected_ports(pid))
                 nb_out = len(out_ports)
                 if nb_out > 1:
-                    raise Exception('Too many nodes connected to the SciFloware operator.')
+                    raise Exception(
+                        'Too many nodes connected to the SciFloware operator.')
                 elif nb_out == 1:
                     out_actor = df.actor(df.vertex(out_ports[0]))
-                    dataflow_name = out_actor.factory.package.name+':'+out_actor.factory.name
+                    dataflow_name = out_actor.factory.package.name + ':' + out_actor.factory.name
                     actor.set_input(df.local_id(pid), dataflow_name)
             else:
                 cpt = 0
                 # For each connected node
                 for npid, nvid, nactor in self.get_parent_nodes(pid):
                     # Do no reevaluate the same node
-                    
+
 
                     if not self.is_stopped(nvid, nactor):
                         self.eval_vertex(nvid)
@@ -1168,7 +1205,6 @@ class SciFlowareEvaluation(AbstractEvaluation):
 
         self.eval_vertex_code(vid)
 
-
     def eval(self, vtx_id=None, **kwds):
         t0 = clock()
 
@@ -1180,7 +1216,7 @@ class SciFlowareEvaluation(AbstractEvaluation):
         else:
             # Select the leafs (list of (vid, actor))
             leafs = [(vid, df.actor(vid))
-                for vid in df.vertices() if df.nb_out_edges(vid)==0]
+                     for vid in df.vertices() if df.nb_out_edges(vid) == 0]
 
         leafs.sort(cmp_priority)
 
@@ -1190,6 +1226,6 @@ class SciFlowareEvaluation(AbstractEvaluation):
 
         t1 = clock()
         if quantify:
-            print "Evaluation time: %s"%(t1-t0)
+            print "Evaluation time: %s" % (t1 - t0)
 
         return False
