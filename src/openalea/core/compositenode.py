@@ -1166,7 +1166,8 @@ class PyCNFactoryWriter(object):
 
     sgfactory_template = """
 
-$NAME = CompositeNodeFactory(name=$PNAME,
+$NAME = CompositeNodeFactory(uid=$UID,
+                             name=$PNAME,
                              description=$DESCRIPTION,
                              category=$CATEGORY,
                              doc=$DOC,
@@ -1198,7 +1199,8 @@ $NAME = CompositeNodeFactory(name=$PNAME,
 
         name = f.get_python_name()
         name = name.replace('.', '_')
-        result = fstr.safe_substitute(NAME=name,
+        result = fstr.safe_substitute(UID=self.pprint_repr(f.uid),
+                                      NAME=name,
                                       PNAME=self.pprint_repr(f.name),
                                       DESCRIPTION=self.pprint_repr(
                                           f.description),
