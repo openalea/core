@@ -1087,9 +1087,8 @@ class NodeFactory(AbstractFactory):
     def get_python_name(self):
         """ Return a python valid name """
 
-        module_name = self.nodemodule_name
-        module_name = module_name.replace('.', '_')
-        return "%s_%s" % (self.nodemodule_name, self.nodeclass_name)
+        module_name = self.nodemodule_name.replace('.', '_')
+        return "%s_%s" % (module_name, self.nodeclass_name)
 
     def __getstate__(self):
         """ Pickle function """
@@ -1373,7 +1372,8 @@ class PyNodeFactoryWriter(object):
 
     nodefactory_template = """
 
-$NAME = Factory(name=$PNAME,
+$NAME = Factory(uid=$UID,
+                name=$PNAME,
                 authors=$AUTHORS,
                 description=$DESCRIPTION,
                 category=$CATEGORY,
@@ -1397,7 +1397,8 @@ $NAME = Factory(name=$PNAME,
 
         name = f.get_python_name()
         name = name.replace('.', '_')
-        result = fstr.safe_substitute(NAME=name,
+        result = fstr.safe_substitute(UID=repr(f.uid),
+                                      NAME=name,
                                       AUTHORS=repr(f.get_authors()),
                                       PNAME=repr(f.name),
                                       DESCRIPTION=repr(f.description),
