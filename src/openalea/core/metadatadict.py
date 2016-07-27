@@ -84,6 +84,18 @@ class MetaDataDict(observer.Observed):
     def __len__(self):
         return len(self._metaTypes)
 
+    def get(self, key, default=None):
+        """Subclass of dict.get method
+
+        Args:
+            key (any):
+            default (any):
+
+        Returns:
+            (any)
+        """
+        return self._metaValues.get(key, default)
+
     def add_metadata(self, key, valType, notify=True):
         """Creates a new entry in the meta data registry.
         The data to set will be of the given 'valType' type."""
