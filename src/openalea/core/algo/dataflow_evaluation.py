@@ -625,7 +625,6 @@ class LambdaEvaluation(PriorityEvaluation):
         """
         t0 = clock()
         if self._prov is not None:
-            self._prov.workflow = id(self._dataflow)
             self._prov.init(self._dataflow)
             self._prov.time_init = t0
 
