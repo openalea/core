@@ -250,7 +250,7 @@ class AbstractEvaluation(object):
             # print "prov", node.get_caption()
 
             if self._prov is not None:
-                self._prov.before_eval(self._dataflow, vid)
+                self._prov.after_eval(self._dataflow, vid)
 
             # if PROVENANCE:
             #     self.provenance.node_exec(vid, node, t0, t1)
