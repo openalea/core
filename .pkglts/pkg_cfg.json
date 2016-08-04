@@ -8,10 +8,6 @@
   "base": {
     "authors": [
       [
-        "openalea", 
-        "openalea@inria.fr"
-      ], 
-      [
         "Christophe Pradal", 
         "christophe dot pradal at cirad dot fr"
       ], 
@@ -36,7 +32,7 @@
     ]
   }, 
   "github": {
-    "owner": "{{ base.authors[0][0] }}", 
+    "owner": "openalea", 
     "project": "{{ base.pkgname }}", 
     "url": "https://github.com/{{ github.owner }}/{{ github.project }}"
   }, 
@@ -50,7 +46,7 @@
     "intended_versions": [
       "27"
     ], 
-    "require": [["git", "openalea/deploy"]]
+    "require": [["git", "openalea/deploy"], ["git", "openalea/provenance"]]
   }, 
   "readthedocs": {
     "project": "openalea-core"

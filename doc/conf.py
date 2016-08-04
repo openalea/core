@@ -247,7 +247,7 @@ latex_elements = {
 latex_documents = [
     ('index', 'core.tex',
      u'core Documentation',
-     u'openalea', 'manual'),
+     u'Christophe Pradal', 'manual'),
 ]
 
 # The name of an image file (relative to this directory) to place at
@@ -278,7 +278,7 @@ latex_documents = [
 man_pages = [
     ('index', 'core',
      u'core Documentation',
-     [u'openalea'], 1)
+     [u'Christophe Pradal'], 1)
 ]
 
 # If true, show URL addresses after external links.
@@ -293,7 +293,7 @@ man_pages = [
 texinfo_documents = [
     ('index', 'core',
      u'core Documentation',
-     u'openalea',
+     u'Christophe Pradal',
      'core',
      'OpenAlea.Core is able to discover and manage packages and logical components, build and evaluate dataflows and Generate final applications',
      'Miscellaneous'),

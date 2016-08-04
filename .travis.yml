@@ -37,6 +37,7 @@ install:
 
 
   - pip install git+https://github.com/openalea/deploy
+  - pip install git+https://github.com/openalea/provenance
   - conda install coverage
   - conda install mock
   - conda install nose
