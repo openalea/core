@@ -1,3 +1,8 @@
+.. _changelog:
+
+History
+=======
+
 OpenAlea.Core 0.7.0
 -------------------
 
@@ -19,7 +24,7 @@ OpenAlea.Core 0.7.0
 - Fix the tests
 - Fix minor bugs
 - Add module categories.py to manage the category labels
-- Fix pkgmanager: it was unable to load some nodes due to 
+- Fix pkgmanager: it was unable to load some nodes due to
 	conflict between protected nodes and packages
 - Add Delay Node
 - Moved system nodes into stdlib.flow control
@@ -31,7 +36,7 @@ OpenAlea.Core 0.7.0
 Package management
 ^^^^^^^^^^^^^^^^^^
 
-- New Package directory layout (__wralea__) 
+- New Package directory layout (__wralea__)
 - Better package management (copy, move, delete, add file etc...)
 - Improved reload
 - Support for Data file in packages with DataFactory and DataNode
@@ -48,7 +53,7 @@ Composite node
 - Add a description for ports
 - Group nodes feature improved
 - Better reload functions (package and package manager)
-	   
+
 Evaluation
 ^^^^^^^^^^
 
@@ -78,8 +83,8 @@ Others
 
 - "Save as CompositeNode" save values
 - Add copy/Paste support
-- Save Session command improved         
-- Export Application	
+- Save Session command improved
+- Export Application
 - New evaluation algorithms with priority, and loop capabilities
 - Add  system nodes like iter, dataflow access..
 - A lot of bug fix
@@ -89,7 +94,7 @@ Others
 06/07/07 alpha release 0.2.1a
 -----------------------------
 
-- Dataflow evaluation algorithm is set in user preference	   
+- Dataflow evaluation algorithm is set in user preference
 - Add a selective algorithm
 - Add priority node property
 - Add multiple input entry (for list creation)

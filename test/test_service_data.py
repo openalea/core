@@ -1,11 +1,13 @@
-
 import unittest
+
 from openalea.core.path import tempdir, path
 from openalea.core.service.data import DataFactory, MimeType
 
+from .small_tools import test_dir
+
 
 def get_data(filename):
-    return path(__file__).parent.abspath() / 'data' / filename
+    return path(test_dir()).abspath() / 'data' / filename
 
 
 class TestProject(unittest.TestCase):
@@ -68,17 +70,17 @@ class TestProject(unittest.TestCase):
     def test_DataClass(self):
         from openalea.core.data import Data, PythonFile
 
-        d = DataFactory(path='test.dat')
+        d = DataFactory(path=self.tmpdir / 'test.dat')
         self.assertIsInstance(d, Data)
 
-        d = DataFactory(path='test.py')
+        d = DataFactory(path=self.tmpdir / 'test.py')
         self.assertIsInstance(d, PythonFile)
 
-        d = DataFactory(path='test.py', dtype='data')
+        d = DataFactory(path=self.tmpdir / 'test.py', dtype='data')
         self.assertIsInstance(d, Data)
 
         with self.assertRaises(ValueError) as cm:
-            DataFactory('model.py', mimetype='image/tiff', dtype='Python')
+            DataFactory(self.tmpdir / 'model.py', mimetype='image/tiff', dtype='Python')
         msg = "dtype 'Python' (text/x-python) and mimetype 'image/tiff' are not compatible"
         self.assertEqual(cm.exception.message, msg)
 

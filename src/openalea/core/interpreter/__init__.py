@@ -1,7 +1,6 @@
+""" OpenAlea.Core.
 
-import sys
-
-
+"""
 def get_interpreter_class():
     """
     :return: the interpreter class to instantiate the shell

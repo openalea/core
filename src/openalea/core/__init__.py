@@ -1,10 +1,10 @@
-"""
-See online documentation at
-http://openalea.gforge.inria.fr/doc/sphinx/core/html/contents.html
+# {# pkglts, base
 
-"""
-__license__ = "Cecill-C"
-__revision__ = "$Id$"
+from . import version
+
+__version__ = version.__version__
+
+# #}
 
 from openalea.core.external import *
 from script_library import ScriptLibrary

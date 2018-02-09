@@ -1,57 +1,68 @@
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-"""setup file for core package"""
-__revision__ = "$Id$"
+# {# pkglts, pysetup.kwds
+# format setup arguments
 
-import os
 from setuptools import setup, find_packages
-pj = os.path.join
 
 
-# to get the version
-# execfile("src/core/version.py")
-
-from openalea.deploy.metainfo import read_metainfo
-metadata = read_metainfo('metainfo.ini', verbose=True)
-for key, value in metadata.iteritems():
-    exec("%s = '%s'" % (key, value))
+short_descr = "OpenAlea.Core is able to discover and manage packages and logical components, build and evaluate dataflows and Generate final applications"
+readme = open('README.rst').read()
+history = open('HISTORY.rst').read()
 
 
-setup(
-    name=name,
-    version=version,
-    description=description,
-    long_description=long_description,
-    author=authors,
-    author_email=authors_email,
-    url=url,
-    license=license,
+# find version number in src/openalea/core/version.py
+version = {}
+with open("src/openalea/core/version.py") as fp:
+    exec(fp.read(), version)
 
-    namespace_packages=['openalea'],
-    create_namespaces=True,
+# find packages
+pkgs = find_packages('src')
+
+
+
+setup_kwds = dict(
+    name='openalea.core',
+    version=version["__version__"],
+    description=short_descr,
+    long_description=readme + '\n\n' + history,
+    author="Christophe Pradal",
+    author_email="christophe dot pradal at cirad dot fr",
+    url='https://github.com/openalea/core',
+    license='cecill-c',
     zip_safe=False,
-    include_package_data=True,
 
-    packages=find_packages('src'),
+    packages=pkgs,
+    namespace_packages=['openalea'],
     package_dir={'': 'src'},
-
-    # Dependencies
-    setup_requires=['openalea.deploy'],
-    install_requires=[],
-    dependency_links=['http://openalea.gforge.inria.fr/pi'],
-
-    share_dirs={'share': 'share'},
-
-    # entry_points
-    entry_points={
-        "wralea": ["openalea.flow control = openalea.core.system", ],
-        "console_scripts": ["alea = openalea.core.alea:main"],
-
-        'openalea.core': [
-            'openalea.core/openalea = openalea.core.plugin.builtin',
+    setup_requires=[
+        "pytest-runner",
         ],
-    },
+    install_requires=[
+        ],
+    tests_require=[
+        "coverage",
+        "pytest",
+        "pytest-cov",
+        "pytest-mock",
+        "sphinx",
+        ],
+    entry_points={},
+    keywords='openalea',
+    )
+# #}
+# change setup_kwds below before the next pkglts tag
 
+setup_kwds['setup_requires'] = ['openalea.deploy']
+setup_kwds['share_dirs'] = {'share': 'share'}
+setup_kwds['entry_points']["wralea"] = ["openalea.flow control = openalea.core.system", ]
+setup_kwds['entry_points']["console_scripts"] = ["alea = openalea.core.alea:main"]
+setup_kwds['entry_points']['openalea.core'] = [
+            'openalea.core/openalea = openalea.core.plugin.builtin',
+        ]
 
-
-)
+# do not change things below
+# {# pkglts, pysetup.call
+setup(**setup_kwds)
+# #}
