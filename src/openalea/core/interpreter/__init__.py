@@ -1,7 +1,11 @@
+""" OpenAlea.Core.
+
+"""
 def get_interpreter_class():
     """
     :return: the interpreter class to instantiate the shell
     """
+    Interpreter = None
     try:
         from openalea.core.interpreter.ipython import Interpreter
     except ImportError:
@@ -11,11 +15,12 @@ def get_interpreter_class():
         adapt_interpreter(Interpreter)
     return Interpreter
 
-from openalea.core.util import warn_deprecated
 
 
 def get_interpreter():
+    from openalea.core.util import warn_deprecated
     warn_deprecated(__name__ + ".get_interpreter", __name__ + 'interpreter', (2014, 10, 8))
+
     from openalea.oalab.session.session import Session
     if Session.instantiated:
         return Session().interpreter
@@ -27,16 +32,19 @@ def get_interpreter():
         except(ImportError, NameError):
             pass
         if not interpreter_:
-            interpreter_ = get_interpreter_class()()
+            interpreter_klass = get_interpreter_class()
+            if interpreter_klass:
+                interpreter_ = interpreter_klass()
         if interpreter_:
             return interpreter_
 
 
 def _interpreter_class():
+    Interpreter = None
     try:
         from openalea.core.interpreter.ipython import Interpreter
     except ImportError:
-        from code import InteractiveInterpreter
+        from code import InteractiveInterpreter as Interpreter
 
     return Interpreter
 
@@ -67,7 +75,11 @@ def adapt_interpreter(ip):
     def runcode(self, source=None):
         return self.run_code(source)
 
-    ip.locals = ip.user_ns
+    if not hasattr(ip, 'locals'):
+        ip.locals = ip.user_ns
+    if not hasattr(ip, 'user_ns'):
+        ip.user_ns = ip.locals
+
     ip.runcode = runcode
     ip.runsource = runsource
     ip.loadcode = loadcode

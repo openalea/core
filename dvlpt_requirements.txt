@@ -1,7 +1,8 @@
 # {# pkglts, pysetup
-coverage
-mock
-nose
-sphinx
+coverage  # pip install coverage
+pytest  # pip install pytest
+pytest-cov  # pip install pytest-cov
+pytest-mock  # pip install pytest-mock
+sphinx  # pip install sphinx
 
 # #}

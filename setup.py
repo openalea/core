@@ -9,7 +9,7 @@ from setuptools import setup, find_packages
 
 short_descr = "OpenAlea.Core is able to discover and manage packages and logical components, build and evaluate dataflows and Generate final applications"
 readme = open('README.rst').read()
-history = open('HISTORY.rst').read().replace('.. :changelog:', '')
+history = open('HISTORY.rst').read()
 
 
 # find version number in src/openalea/core/version.py
@@ -17,32 +17,40 @@ version = {}
 with open("src/openalea/core/version.py") as fp:
     exec(fp.read(), version)
 
+# find packages
+pkgs = find_packages('src')
+
+
 
 setup_kwds = dict(
     name='openalea.core',
     version=version["__version__"],
     description=short_descr,
     long_description=readme + '\n\n' + history,
-    author="openalea, Christophe Pradal, Samuel Dufour-Kowalski, revesansparole, ",
-    author_email="openalea@inria.fr, christophe dot pradal at cirad dot fr, dufourko at cirad dot fr, revesansparole@gmail.com, ",
+    author="Christophe Pradal",
+    author_email="christophe dot pradal at cirad dot fr",
     url='https://github.com/openalea/core',
     license='cecill-c',
     zip_safe=False,
 
-    packages=find_packages('src'),
+    packages=pkgs,
+    namespace_packages=['openalea'],
     package_dir={'': 'src'},
+    setup_requires=[
+        "pytest-runner",
+        ],
     install_requires=[
         ],
     tests_require=[
         "coverage",
-        "mock",
-        "nose",
+        "pytest",
+        "pytest-cov",
+        "pytest-mock",
         "sphinx",
         ],
     entry_points={},
     keywords='openalea',
-    test_suite='nose.collector',
-)
+    )
 # #}
 # change setup_kwds below before the next pkglts tag
 
