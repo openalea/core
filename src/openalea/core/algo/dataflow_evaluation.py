@@ -305,7 +305,7 @@ class BrutEvaluation(AbstractEvaluation):
 
     def __init__(self, dataflow, record_provenance=False):
 
-        AbstractEvaluation.__init__(self, dataflow, record_provenance)
+        AbstractEvaluation.__init__(self, dataflow, record_provenance, *args)
         # a property to specify if the node has already been evaluated
         self._evaluated = set()
 
