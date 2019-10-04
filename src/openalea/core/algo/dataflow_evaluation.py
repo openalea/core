@@ -303,7 +303,7 @@ class BrutEvaluation(AbstractEvaluation):
     """ Basic evaluation algorithm """
     __evaluators__.append("BrutEvaluation")
 
-    def __init__(self, dataflow, record_provenance=False, *args):
+    def __init__(self, dataflow, record_provenance=False, *args, **kwargs):
 
         AbstractEvaluation.__init__(self, dataflow, record_provenance)
         # a property to specify if the node has already been evaluated
@@ -328,7 +328,7 @@ class BrutEvaluation(AbstractEvaluation):
             pass
         return False
 
-    def eval_vertex(self, vid, *args):
+    def eval_vertex(self, vid, *args, **kwargs):
         """ Evaluate the vertex vid """
 
         df = self._dataflow
@@ -358,7 +358,7 @@ class BrutEvaluation(AbstractEvaluation):
         # Eval the node
         self.eval_vertex_code(vid)
 
-    def eval(self, *args):
+    def eval(self, *args, **kwargs):
         """ Evaluate the whole dataflow starting from leaves"""
         t0 = clock()
         df = self._dataflow
