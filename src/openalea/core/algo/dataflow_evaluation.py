@@ -252,6 +252,13 @@ class AbstractEvaluation(object):
             if self._prov is not None:
                 self._prov.after_eval(self._dataflow, vid)
 
+            if self._prov is not None:
+                # print self._prov.time_init
+                # print self._prov.time_end
+
+                print self._prov.as_wlformat()
+                # provenance(vid, node, t0,t1)
+
             # if PROVENANCE:
             #     self.provenance.node_exec(vid, node, t0, t1)
             #     # provenance(vid, node, t0,t1)
@@ -360,8 +367,14 @@ class BrutEvaluation(AbstractEvaluation):
 
     def eval(self, *args, **kwargs):
         """ Evaluate the whole dataflow starting from leaves"""
+
         t0 = clock()
         df = self._dataflow
+
+        if self._prov is not None:
+            self._prov.init(df)
+            self._prov.time_init = t0
+
 
         # Unvalidate all the nodes
         self._evaluated.clear()
@@ -371,6 +384,10 @@ class BrutEvaluation(AbstractEvaluation):
             self.eval_vertex(vid)
 
         t1 = clock()
+
+        if self._prov is not None:
+            self._prov.time_end = t1
+
         if quantify:
             print "Evaluation time: %s" % (t1 - t0)
 

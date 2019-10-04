@@ -552,22 +552,22 @@ class CompositeNode(Node, DataFlow):
 
         Return True if the node need a reevaluation (like generator)
         """
-        self.__call__()
+        self.__call__(*args, **kwds)
 
         self.modified = False
         self.notify_listeners(("status_modified", self.modified))
 
         return False
 
-    def __call__(self, inputs=()):
+    def __call__(self, inputs=(), *args, **kwds):
         """
         Evaluate the graph
         """
 
         if (self.id_out and self.get_nb_output() > 0):
-            self.eval_as_expression(self.id_out)
+            self.eval_as_expression(self.id_out, *args, **kwds)
         else:
-            self.eval_as_expression(None)
+            self.eval_as_expression(None, *args, **kwds)
 
         return ()
 
