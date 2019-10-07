@@ -88,6 +88,10 @@ class CompositeNodeFactory(AbstractFactory):
         self.doc = kargs.get('doc', "")
         self.__doc__ = self.doc
 
+        # Unique ID for the factory - TODO: for now, only built from name
+        self.uid = str(self.name)
+
+
     def is_composite_node(self):
         return True
 
