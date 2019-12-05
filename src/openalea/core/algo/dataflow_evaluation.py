@@ -28,131 +28,20 @@ from openalea.core import ScriptLibrary
 from openalea.core.dataflow import SubDataflow
 from openalea.core.interface import IFunction
 
-# PROVENANCE = False
+# test for distributed executions
+from openalea.core.metadata.provenance_data import Prov
+from openalea.core.metadata.cache_index import Cache_index
+from openalea.core.metadata.cloud_sites import Site, MultiSiteCloud, link_two_sites
+
+from openalea.core.metadata.costs import minimum_cost_site
+from openalea.core.metadata.scheduling_plan import SchedulingPlan
+from openalea.core.metadata.data_size import total_size
 
 
-# # Implement provenance in OpenAlea
-# db_conn = None
-#
-# import sqlite3
-# from openalea.core.path import path
-# from openalea.core import settings
-#
-# def db_create(cursor):
-#     cur = cursor
-#     #-prospective provenance-#
-#     #User table creation
-#     cur.execute("CREATE TABLE IF NOT EXISTS User (userid INTEGER,createtime DATETIME,name varchar (25), firstname varchar (25), email varchar (25), password varchar (25),PRIMARY KEY(userid))")
-#
-#     # CompositeNode table creation
-#     cur.execute("CREATE TABLE IF NOT EXISTS CompositeNode (CompositeNodeid INTEGER, creatime DATETIME, name varchar (25), description varchar (25),userid INTEGER,PRIMARY KEY(CompositeNodeid),FOREIGN KEY(userid) references User)")
-#     #Cr?ation de la table Node
-#     cur.execute("CREATE TABLE IF NOT EXISTS Node (Nodeid INTEGER, createtime DATETIME, name varchar (25), NodeFactory varchar (25),CompositeNodeid INTEGER,PRIMARY KEY(Nodeid),FOREIGN KEY(CompositeNodeid) references CompsiteNode)")
-#     #Cr?ation de la table Input
-#     cur.execute("CREATE TABLE IF NOT EXISTS Input (Inputid INTEGER, createtime DATETIME, name varchar (25), typedata varchar (25), InputPort INTEGER,PRIMARY KEY (Inputid))")
-#     #Cr?ation de la table Output
-#     cur.execute("CREATE TABLE IF NOT EXISTS Output (Outputid INTEGER, createtime DATETIME, name varchar (25), typedata varchar (25), OutputPort INTEGER,PRIMARY KEY (Outputid))")
-#     #Cr?ation de la table elt_connection
-#     cur.execute("CREATE TABLE IF NOT EXISTS elt_connection (elt_connectionid INTEGER, createtime DATETIME,srcNodeid INTEGER, srcNodeOutputPortid INTEGER, targetNodeid INTEGER, targetNodeInputPortid INTEGER ,PRIMARY KEY (elt_connectionid))")
-#
-#     #- retrospective provenance -#
-#     #- CompositeNodeExec table creation
-#     cur.execute("CREATE TABLE IF NOT EXISTS CompositeNodeExec (CompositeNodeExecid INTEGER, createtime DATETIME, endtime DATETIME,userid INTEGER,CompositeNodeid INTEGER,PRIMARY KEY(CompositeNodeExecid),FOREIGN KEY(CompositeNodeid) references CompositeNode,FOREIGN KEY(userid) references User)")
-#     #- NodeExec
-#     cur.execute("CREATE TABLE IF NOT EXISTS NodeExec (NodeExecid INTEGER, createtime DATETIME, endtime DATETIME,Nodeid INTEGER,CompositeNodeExecid INTEGER,dataid INTEGER,PRIMARY KEY(NodeExecid),FOREIGN KEY(Nodeid) references Node, FOREIGN KEY (CompositeNodeExecid) references CompositeNodeExec, FOREIGN KEY (dataid) references Data)")
-#     #- History
-#     cur.execute("CREATE TABLE IF NOT EXISTS Histoire (Histoireid INTEGER, createtime DATETIME, name varchar (25), description varchar (25),userid INTEGER,CompositeNodeExecid INTEGER,PRIMARY KEY (Histoireid), FOREIGN KEY(Userid) references User, FOREIGN KEY(CompositeNodeExecid) references CompositeNodeExec)")
-#     #- Data
-#     cur.execute("CREATE TABLE IF NOT EXISTS Data (dataid INTEGER, createtime DATETIME,NodeExecid INTEGER, PRIMARY KEY(dataid),FOREIGN KEY(NodeExecid) references NodeExec)")
-#     #- Tag
-#     cur.execute("CREATE TABLE IF NOT EXISTS Tag (CompositeNodeExecid INTEGER, createtime DATETIME, name varchar(25),userid INTEGER,PRIMARY KEY(CompositeNodeExecid),FOREIGN KEY(userid) references User)")
-#     return cur
-#
-# def get_database_name():
-#     db_fn = path(settings.get_openalea_home_dir())/'provenance.sq3'
-#     return db_fn
-#
-# def db_connexion():
-#     """ Return a curso on the database.
-#
-#     If the database does not exists, create it.
-#     """
-#     global db_conn
-#     if db_conn is None:
-#         db_fn = get_database_name()
-#         if not db_fn.exists():
-#             db_conn=sqlite3.connect(db_fn)
-#             cur = db_conn.cursor()
-#             cur = db_create(cur)
-#             return cur
-#     else:
-#         cur = db_conn.cursor()
-#         return cur
-
-# class Provenance(object):
-#     def __init__(self, workflow):
-#         self.clear()
-#         self.workflow = workflow
-#
-#     def edges(self):
-#         cn = self.workflow
-#         edges = list(cn.edges())
-#         sources = map(cn.source, edges)
-#         targets = map(cn.target, edges)
-#         source_ports = [cn.local_id(cn.source_port(eid)) for eid in edges]
-#         target_ports = [cn.local_id(cn.target_port(eid)) for eid in edges]
-#         _edges = dict(
-#             zip(edges, zip(sources, source_ports, targets, target_ports)))
-#         return _edges
-#
-#     def clear(self):
-#         self.nodes = []
-#
-#     def start_time(self):
-#         pass
-#
-#     def end_time(self):
-#         pass
-#
-#     def workflow_exec(self, *args):
-#         pass
-#
-#     def node_exec(self, vid, node, start_time, end_time, *args):
-#         pass
-#
-#     def write(self):
-#         """ Write the provenance in db """
-
-
-# class PrintProvenance(Provenance):
-#     def workflow_exec(self, *args):
-#         print 'Workflow execution ', self.workflow.factory.name
-#
-#     def node_exec(self, vid, node, start_time, end_time, *args):
-#         provenance(vid, node, start_time, end_time)
-#
-#
-# def provenance(vid, node, start_time, end_time):
-#     # from service import db
-#     # conn = db.connect()
-#
-#
-#     if PROVENANCE:
-#         cur = db_connexion()
-#
-#         pname = node.factory.package.name
-#         name = node.factory.name
-#
-#         print "Provenance Process:"
-#         print "instance ID ", vid, "Package Name: ", pname, "Name: ", name
-#         print "start time :", start_time, "end_time: ", end_time, "duration : ", end_time - start_time
-#         print 'Inputs : ', node.inputs
-#         print 'outputs : ', node.outputs
-
-
-# print the evaluation time
 # This variable has to be retrieve by the settings
 quantify = False
+# get the prov when evaluating
+provenance = False
 
 __evaluators__ = []
 
@@ -1245,3 +1134,129 @@ class SciFlowareEvaluation(AbstractEvaluation):
             print "Evaluation time: %s" % (t1 - t0)
 
         return False
+
+############################################################
+class TestEval(AbstractEvaluation):
+    """ Basic evaluation algorithm """
+    __evaluators__.append("TestEval")
+
+    def __init__(self, dataflow):
+
+        AbstractEvaluation.__init__(self, dataflow)
+        # a property to specify if the node has already been evaluated
+        self._evaluated = set()
+
+        # GENERATE FAKE INFO
+        # provenance
+        p = Prov()
+        p.generate_fake()
+        self.p = p
+        # cache
+        c = Cache_index()
+        c.generate_fake()
+        self.c = c
+        # site cloud
+        m = MultiSiteCloud()
+        m.generate_fake()
+        self.m = m
+        # set input data on site s1:
+        m.list_sites["s1"].add_input_data("2")
+        # scheduling plan
+        self.SP = SchedulingPlan()
+
+
+    def is_stopped(self, vid, actor):
+        """ Return True if evaluation must be stop at this vertex """
+
+        if vid in self._evaluated:
+            return True
+
+        try:
+            if actor.block:
+                status = True
+                n = actor.get_nb_output()
+                outputs = [i for i in range(n) if actor.get_output(i) is not None ]
+                if not outputs:
+                    status = False
+                return status
+        except:
+            pass
+        return False
+
+    def eval_vertex(self, vid, *args):
+        """ Evaluate the vertex vid """
+        print "start the evaluation of node : " + str(vid)
+        df = self._dataflow
+        actor = df.actor(vid)
+
+        self._evaluated.add(vid)
+
+        # For each inputs
+        for pid in df.in_ports(vid):
+            inputs = []
+
+            cpt = 0
+            # For each connected node
+            for npid, nvid, nactor in self.get_parent_nodes(pid):
+                if not self.is_stopped(nvid, nactor):
+                    self.eval_vertex(nvid)
+
+                inputs.append(nactor.get_output(df.local_id(npid)))
+                cpt += 1
+
+            # set input as a list or a simple value
+            if (cpt == 1):
+                inputs = inputs[0]
+            if (cpt > 0):
+                actor.set_input(df.local_id(pid), inputs)
+
+        # Eval the node
+        print "start the execution of node : " + str(vid)
+        t0 = clock()
+
+        best_site, cost = minimum_cost_site(vid=vid, provenance=self.p, multisites=self.m)
+        self.SP.add_to_plan(vid, best_site)
+        self.SP.add_to_cost(cost)
+
+
+        self.eval_vertex_code(vid)
+
+        t1 = clock()
+        if provenance:
+            # print id task
+            print vid
+            # print actor.inputs
+
+            # data info
+            # if inputs:
+            #     for i in inputs:
+            print "size", total_size(actor.inputs)
+            # for o in range(actor.get_nb_output()):
+            #     print "out", actor.get_output(o)
+            print "size out", total_size(actor.outputs)
+
+            # execution info
+            print "Execution time: %s" % (t1 - t0)
+
+            # vm info
+
+
+    def eval(self, *args, **kwgs):
+        """ Evaluate the whole dataflow starting from leaves"""
+        t0 = clock()
+        df = self._dataflow
+
+        # Unvalidate all the nodes
+        self._evaluated.clear()
+
+        # Eval from the leaf
+        for vid in (vid for vid in df.vertices() if df.nb_out_edges(vid)==0):
+
+            self.eval_vertex(vid)
+
+        print "end evaluation - Scheduling plan : ", str(self.SP.plan)
+        print "total cost : ", str(self.SP.cost)
+        t1 = clock()
+        if quantify:
+            print "Evaluation time: %s"%(t1-t0)
+            
