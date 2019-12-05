@@ -28,6 +28,7 @@ lib64/
 
 # editors
 .idea/
+.vscode/
 
 # Vim files
 *.swp
