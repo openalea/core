@@ -28,14 +28,18 @@ from openalea.core import ScriptLibrary
 from openalea.core.dataflow import SubDataflow
 from openalea.core.interface import IFunction
 
-# test for distributed executions
-from openalea.core.metadata.provenance_data import Prov
-from openalea.core.metadata.cache_index import Cache_index
-from openalea.core.metadata.cloud_sites import Site, MultiSiteCloud, link_two_sites
+import os
+import time
+import json
 
-from openalea.core.metadata.costs import minimum_cost_site
-from openalea.core.metadata.scheduling_plan import SchedulingPlan
-from openalea.core.metadata.data_size import total_size
+# test for distributed executions
+# from openalea.core.metadata.provenance_data import Prov
+# from openalea.core.metadata.cache_index import Cache_index
+# from openalea.core.metadata.cloud_sites import Site, MultiSiteCloud, link_two_sites
+
+# from openalea.core.metadata.costs import minimum_cost_site
+# from openalea.core.metadata.scheduling_plan import SchedulingPlan
+# from openalea.core.metadata.data_size import total_size
 
 
 # This variable has to be retrieve by the settings
@@ -101,8 +105,6 @@ class AbstractEvaluation(object):
         :param dataflow: to be done
         """
         self._dataflow = dataflow
-        # if PROVENANCE:
-        #     self.provenance = PrintProvenance(dataflow)
 
         if record_provenance:
             self._prov = RVProvenance()
@@ -126,8 +128,6 @@ class AbstractEvaluation(object):
         node = self._dataflow.actor(vid)
 
         try:
-            # prov before
-            # print "prov", node.get_caption()
 
             if self._prov is not None:
                 self._prov.before_eval(self._dataflow, vid)
@@ -135,22 +135,11 @@ class AbstractEvaluation(object):
             t0 = clock()
             ret = node.eval()
             t1 = clock()
-            # prov before
-            # print "prov", node.get_caption()
 
             if self._prov is not None:
                 self._prov.after_eval(self._dataflow, vid)
+                # print self._prov.as_wlformat()
 
-            if self._prov is not None:
-                # print self._prov.time_init
-                # print self._prov.time_end
-
-                print self._prov.as_wlformat()
-                # provenance(vid, node, t0,t1)
-
-            # if PROVENANCE:
-            #     self.provenance.node_exec(vid, node, t0, t1)
-            #     # provenance(vid, node, t0,t1)
 
             # When an exception is raised, a flag is set.
             # So we remove it when evaluation is ok.
@@ -257,7 +246,7 @@ class BrutEvaluation(AbstractEvaluation):
     def eval(self, *args, **kwargs):
         """ Evaluate the whole dataflow starting from leaves"""
 
-        t0 = clock()
+        t0 = time.time()
         df = self._dataflow
 
         if self._prov is not None:
@@ -272,10 +261,19 @@ class BrutEvaluation(AbstractEvaluation):
         for vid in (vid for vid in df.vertices() if df.nb_out_edges(vid) == 0):
             self.eval_vertex(vid)
 
-        t1 = clock()
+        t1 = time.time()
 
         if self._prov is not None:
             self._prov.time_end = t1
+            # Save the provenance in a file
+            wf_id = str(df.factory.uid) + ".json"
+            home = os.path.expanduser("~")
+            provenance_path = os.path.join(home, ".openalea/provenance", wf_id)
+            if not os.path.exists(os.path.dirname(provenance_path)):
+                os.makedirs(provenance_path)
+            provenance = self._prov.as_wlformat()
+            with open(provenance_path, "a+") as f:
+                json.dump(provenance, f, indent=4)
 
         if quantify:
             print "Evaluation time: %s" % (t1 - t0)
@@ -1135,35 +1133,17 @@ class SciFlowareEvaluation(AbstractEvaluation):
 
         return False
 
+
 ############################################################
 class TestEval(AbstractEvaluation):
-    """ Basic evaluation algorithm """
+    """ Basic evaluation algorithm + provenance """
     __evaluators__.append("TestEval")
 
-    def __init__(self, dataflow):
+    def __init__(self, dataflow, record_provenance=False, *args, **kwargs):
 
-        AbstractEvaluation.__init__(self, dataflow)
+        AbstractEvaluation.__init__(self, dataflow, record_provenance)
         # a property to specify if the node has already been evaluated
         self._evaluated = set()
-
-        # GENERATE FAKE INFO
-        # provenance
-        p = Prov()
-        p.generate_fake()
-        self.p = p
-        # cache
-        c = Cache_index()
-        c.generate_fake()
-        self.c = c
-        # site cloud
-        m = MultiSiteCloud()
-        m.generate_fake()
-        self.m = m
-        # set input data on site s1:
-        m.list_sites["s1"].add_input_data("2")
-        # scheduling plan
-        self.SP = SchedulingPlan()
-
 
     def is_stopped(self, vid, actor):
         """ Return True if evaluation must be stop at this vertex """
@@ -1175,7 +1155,8 @@ class TestEval(AbstractEvaluation):
             if actor.block:
                 status = True
                 n = actor.get_nb_output()
-                outputs = [i for i in range(n) if actor.get_output(i) is not None ]
+                outputs = [i for i in range(n) if
+                           actor.get_output(i) is not None]
                 if not outputs:
                     status = False
                 return status
@@ -1183,9 +1164,9 @@ class TestEval(AbstractEvaluation):
             pass
         return False
 
-    def eval_vertex(self, vid, *args):
+    def eval_vertex(self, vid, *args, **kwargs):
         """ Evaluate the vertex vid """
-        print "start the evaluation of node : " + str(vid)
+
         df = self._dataflow
         actor = df.actor(vid)
 
@@ -1211,52 +1192,30 @@ class TestEval(AbstractEvaluation):
                 actor.set_input(df.local_id(pid), inputs)
 
         # Eval the node
-        print "start the execution of node : " + str(vid)
-        t0 = clock()
-
-        best_site, cost = minimum_cost_site(vid=vid, provenance=self.p, multisites=self.m)
-        self.SP.add_to_plan(vid, best_site)
-        self.SP.add_to_cost(cost)
-
-
         self.eval_vertex_code(vid)
 
-        t1 = clock()
-        if provenance:
-            # print id task
-            print vid
-            # print actor.inputs
-
-            # data info
-            # if inputs:
-            #     for i in inputs:
-            print "size", total_size(actor.inputs)
-            # for o in range(actor.get_nb_output()):
-            #     print "out", actor.get_output(o)
-            print "size out", total_size(actor.outputs)
-
-            # execution info
-            print "Execution time: %s" % (t1 - t0)
-
-            # vm info
-
-
-    def eval(self, *args, **kwgs):
+    def eval(self, *args, **kwargs):
         """ Evaluate the whole dataflow starting from leaves"""
+
         t0 = clock()
         df = self._dataflow
+
+        if self._prov is not None:
+            self._prov.init(df)
+            self._prov.time_init = t0
+
 
         # Unvalidate all the nodes
         self._evaluated.clear()
 
         # Eval from the leaf
-        for vid in (vid for vid in df.vertices() if df.nb_out_edges(vid)==0):
-
+        for vid in (vid for vid in df.vertices() if df.nb_out_edges(vid) == 0):
             self.eval_vertex(vid)
 
-        print "end evaluation - Scheduling plan : ", str(self.SP.plan)
-        print "total cost : ", str(self.SP.cost)
         t1 = clock()
+
+        if self._prov is not None:
+            self._prov.time_end = t1
+
         if quantify:
-            print "Evaluation time: %s"%(t1-t0)
-            
+            print "Evaluation time: %s" % (t1 - t0)
