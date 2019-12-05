@@ -1135,9 +1135,9 @@ class SciFlowareEvaluation(AbstractEvaluation):
 
 
 ############################################################
-class TestEval(AbstractEvaluation):
-    """ Basic evaluation algorithm + provenance """
-    __evaluators__.append("TestEval")
+class TestEvaluation(AbstractEvaluation):
+    """ Basic evaluation algorithm with provenance capture in file """
+    __evaluators__.append("TestEvaluation")
 
     def __init__(self, dataflow, record_provenance=False, *args, **kwargs):
 
@@ -1197,7 +1197,7 @@ class TestEval(AbstractEvaluation):
     def eval(self, *args, **kwargs):
         """ Evaluate the whole dataflow starting from leaves"""
 
-        t0 = clock()
+        t0 = time.time()
         df = self._dataflow
 
         if self._prov is not None:
@@ -1212,10 +1212,19 @@ class TestEval(AbstractEvaluation):
         for vid in (vid for vid in df.vertices() if df.nb_out_edges(vid) == 0):
             self.eval_vertex(vid)
 
-        t1 = clock()
+        t1 = time.time()
 
         if self._prov is not None:
             self._prov.time_end = t1
+            # Save the provenance in a file
+            wf_id = str(df.factory.uid) + ".json"
+            home = os.path.expanduser("~")
+            provenance_path = os.path.join(home, ".openalea/provenance", wf_id)
+            if not os.path.exists(os.path.dirname(provenance_path)):
+                os.makedirs(provenance_path)
+            provenance = self._prov.as_wlformat()
+            with open(provenance_path, "a+") as f:
+                json.dump(provenance, f, indent=4)
 
         if quantify:
             print "Evaluation time: %s" % (t1 - t0)
