@@ -1,0 +1,6 @@
+{
+    "python.pythonPath": "/home/gaetan/miniconda2/envs/visualea/bin/python",
+    "python.linting.pylintEnabled": false,
+    "python.linting.banditEnabled": true,
+    "python.linting.enabled": true
+}
