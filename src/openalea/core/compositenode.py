@@ -499,7 +499,7 @@ class CompositeNode(Node, DataFlow):
 
         return self.node(self.id_out).set_output(index_key, val)
 
-    def get_eval_algo(self, record_provenance=False):
+    def get_eval_algo(self, record_provenance=False, fragment_infos=None):
         """ Return the evaluation algo instance """
         try:
             algo_str = self.eval_algo
@@ -511,7 +511,7 @@ class CompositeNode(Node, DataFlow):
             baseimp = "algo.dataflow_evaluation"
             module = __import__(baseimp, globals(), locals(), [algo_str])
             classobj = module.__dict__[algo_str]
-            return classobj(self, record_provenance=record_provenance)
+            return classobj(self, record_provenance=record_provenance, fragment_infos=fragment_infos)
 
         except Exception, e:
             from  openalea.core.algo.dataflow_evaluation import \
@@ -521,7 +521,7 @@ class CompositeNode(Node, DataFlow):
         return self.eval_algo
 
     def eval_as_expression(self, vtx_id=None, step=False,
-                           record_provenance=False):
+                           record_provenance=False, fragment_infos=None):
         """
         Evaluate a vtx_id
 
@@ -533,7 +533,7 @@ class CompositeNode(Node, DataFlow):
             return
         if vtx_id is not None:
             self.node(vtx_id).modified = True
-        algo = self.get_eval_algo(record_provenance)
+        algo = self.get_eval_algo(record_provenance, fragment_infos)
 
         try:
             self.evaluating = True

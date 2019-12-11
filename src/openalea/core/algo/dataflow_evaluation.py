@@ -32,6 +32,8 @@ import os
 import time
 import json
 
+from openalea.core.data_manager import load_data, check_data_to_load, write_outputs
+
 # test for distributed executions
 # from openalea.core.metadata.provenance_data import Prov
 # from openalea.core.metadata.cache_index import Cache_index
@@ -1207,12 +1209,229 @@ class TestEvaluation(AbstractEvaluation):
 
         # Unvalidate all the nodes
         self._evaluated.clear()
-
+        
         # Eval from the leaf
         for vid in (vid for vid in df.vertices() if df.nb_out_edges(vid) == 0):
             self.eval_vertex(vid)
 
         t1 = time.time()
+
+        if self._prov is not None:
+            self._prov.time_end = t1
+            # Save the provenance in a file
+            wf_id = str(df.factory.uid) + ".json"
+            home = os.path.expanduser("~")
+            provenance_path = os.path.join(home, ".openalea/provenance", wf_id)
+            if not os.path.exists(os.path.dirname(provenance_path)):
+                os.makedirs(provenance_path)
+            provenance = self._prov.as_wlformat()
+            with open(provenance_path, "a+") as f:
+                json.dump(provenance, f, indent=4)
+
+        if quantify:
+            print "Evaluation time: %s" % (t1 - t0)
+
+
+# class ZMQEvaluation(AbstractEvaluation):
+#     """ Evaluation with ZMQ """
+#     __evaluators__.append("ZMQEvaluation")
+
+#     def __init__(self, dataflow, record_provenance=False, *args, **kwargs):
+
+#         AbstractEvaluation.__init__(self, dataflow, record_provenance)
+#         # a property to specify if the node has already been evaluated
+#         self._evaluated = set()
+
+#     def is_stopped(self, vid, actor):
+#         """ Return True if evaluation must be stop at this vertex """
+
+#         if vid in self._evaluated:
+#             return True
+
+#         try:
+#             if actor.block:
+#                 status = True
+#                 n = actor.get_nb_output()
+#                 outputs = [i for i in range(n) if
+#                            actor.get_output(i) is not None]
+#                 if not outputs:
+#                     status = False
+#                 return status
+#         except:
+#             pass
+#         return False
+
+#     def eval_vertex(self, vid, *args, **kwargs):
+#         """ Evaluate the vertex vid """
+
+#         df = self._dataflow
+#         actor = df.actor(vid)
+
+#         self._evaluated.add(vid)
+
+#         # For each inputs
+#         for pid in df.in_ports(vid):
+#             inputs = []
+
+#             cpt = 0
+#             # For each connected node
+#             for npid, nvid, nactor in self.get_parent_nodes(pid):
+#                 if not self.is_stopped(nvid, nactor):
+#                     self.eval_vertex(nvid)
+
+#                 inputs.append(nactor.get_output(df.local_id(npid)))
+#                 cpt += 1
+
+#             # set input as a list or a simple value
+#             if (cpt == 1):
+#                 inputs = inputs[0]
+#             if (cpt > 0):
+#                 actor.set_input(df.local_id(pid), inputs)
+
+#         # Eval the node
+#         self.eval_vertex_code(vid)
+
+#     def eval(self, *args, **kwargs):
+#         """ Evaluate the whole dataflow starting from leaves"""
+
+#         t0 = time.time()
+#         df = self._dataflow
+
+#         if self._prov is not None:
+#             self._prov.init(df)
+#             self._prov.time_init = t0
+
+
+#         # Unvalidate all the nodes
+#         self._evaluated.clear()
+        
+#         # Eval from the leaf
+#         for vid in (vid for vid in df.vertices() if df.nb_out_edges(vid) == 0):
+#             self.eval_vertex(vid)
+
+#         t1 = time.time()
+
+#         if self._prov is not None:
+#             self._prov.time_end = t1
+#             # Save the provenance in a file
+#             wf_id = str(df.factory.uid) + ".json"
+#             home = os.path.expanduser("~")
+#             provenance_path = os.path.join(home, ".openalea/provenance", wf_id)
+#             if not os.path.exists(os.path.dirname(provenance_path)):
+#                 os.makedirs(provenance_path)
+#             provenance = self._prov.as_wlformat()
+#             with open(provenance_path, "a+") as f:
+#                 json.dump(provenance, f, indent=4)
+
+#         if quantify:
+#             print "Evaluation time: %s" % (t1 - t0)
+
+
+class FragmentEvaluation(AbstractEvaluation):
+    """ Evaluation with By fragments """
+    __evaluators__.append("FragmentEvaluation")
+
+    # TODO: It doesn't work with provenance
+    def __init__(self, dataflow, record_provenance=False, fragment_infos=None, *args, **kwargs):
+
+        AbstractEvaluation.__init__(self, dataflow, record_provenance)
+        # a property to specify if the node has already been evaluated
+        self._evaluated = set()
+        self._fragment_infos = fragment_infos
+
+    def is_stopped(self, vid, actor):
+        """ Return True if evaluation must be stop at this vertex """
+
+        if vid in self._evaluated:
+            return True
+
+        try:
+            if actor.block:
+                status = True
+                n = actor.get_nb_output()
+                outputs = [i for i in range(n) if
+                           actor.get_output(i) is not None]
+                if not outputs:
+                    status = False
+                return status
+        except:
+            pass
+        return False
+
+    def eval_vertex(self, vid, *args, **kwargs):
+        """ Evaluate the vertex vid """
+
+        df = self._dataflow
+        actor = df.actor(vid)
+
+        self._evaluated.add(vid)
+
+        # For each inputs
+        for pid in df.in_ports(vid):
+            inputs = []
+
+            # check if the data has to be loaded
+            tmp_path = check_data_to_load(vid, pid, self._fragment_infos)
+            if tmp_path:
+                cpt = 1
+                inputs.append(load_data(tmp_path))
+            else:
+                cpt = 0
+                # For each connected node
+                for npid, nvid, nactor in self.get_parent_nodes(pid):
+                    if not self.is_stopped(nvid, nactor):
+                        self.eval_vertex(nvid)
+
+                    
+                    inputs.append(nactor.get_output(df.local_id(npid)))
+                    cpt += 1
+
+            # set input as a list or a simple value
+            if (cpt == 1):
+                inputs = inputs[0]
+            if (cpt > 0):
+                actor.set_input(df.local_id(pid), inputs)
+
+        # Eval the node
+        self.eval_vertex_code(vid)
+
+    def eval(self, *args, **kwargs):
+        """ Evaluate the whole dataflow starting from leaves"""
+
+        t0 = time.time()
+        
+        df = self._dataflow
+
+        if self._prov is not None:
+            self._prov.init(df)
+            self._prov.time_init = t0
+
+
+        # Unvalidate all the nodes
+        self._evaluated.clear()
+        # Start by stoping all parents node of input fragments nodes
+        if self._fragment_infos:
+            for ivid, ipid in self._fragment_infos['inputs_vid']:
+                for p in df.in_ports(ivid):
+                    for npid, nvid, nactor in self.get_parent_nodes(p):
+                        self._evaluated.add(nvid)
+                        print "Set : ", nvid, " as EVALUATED"
+        
+        
+        # Eval from the leaf
+        for vid in (vid for vid in df.vertices() if df.nb_out_edges(vid) == 0):
+            self.eval_vertex(vid)
+
+        t1 = time.time()
+
+        # Save the outputs of the fragment into file
+        for i, vid in enumerate([v[0] for v in self._fragment_infos['outputs_vid']]):
+            home = os.path.expanduser("~")
+            cache_path = os.path.join(home, ".openalea", "fragments_tmp_data")
+            if not os.path.exists(os.path.dirname(cache_path)):
+                os.makedirs(cache_path)
+            write_outputs(self._dataflow, vid, cache_path)
+
 
         if self._prov is not None:
             self._prov.time_end = t1
