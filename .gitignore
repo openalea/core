@@ -93,4 +93,6 @@ doc/_dvlpt/
 # #}
 
 # user custom filters
+# ignore cassandra files
+.cassandraWorkbench*
 
