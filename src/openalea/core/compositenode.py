@@ -521,7 +521,8 @@ class CompositeNode(Node, DataFlow):
         return self.eval_algo
 
     def eval_as_expression(self, vtx_id=None, step=False,
-                           record_provenance=False, fragment_infos=None):
+                           record_provenance=False, fragment_infos=None,
+                           *args, **kwargs):
         """
         Evaluate a vtx_id
 

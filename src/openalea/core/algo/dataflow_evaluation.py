@@ -144,7 +144,9 @@ class AbstractEvaluation(object):
             t1 = clock()
 
             if self._prov is not None:
-                self._prov.after_eval(self._dataflow, vid)
+                taskitem = self._prov.after_eval(self._dataflow, vid, dt)
+                if self._provdb and taskitem:
+                    self._provdb.add_task_item(taskitem)
                 # print self._prov.as_wlformat()
 
 
@@ -260,6 +262,18 @@ class BrutEvaluation(AbstractEvaluation):
             self._prov.init(df)
             self._prov.time_init = t0
 
+        if self._provdb is not None:
+            self._provdb.init(
+                            remote=cloud_info.REMOTE,
+                            path=cloud_info.FILEPATH,
+                            ssh_ip_addr=cloud_info.PROVDB_SSH_ADDR,
+                            ssh_pkey=cloud_info.SSH_PKEY,
+                            ssh_username=cloud_info.SSU_USERNAME,
+                            remote_bind_address=(cloud_info.MONGO_ADDR, cloud_info.MONGO_PORT),
+                            mongo_ip_addr=cloud_info.MONGO_ADDR,
+                            mongo_port=cloud_info.MONGO_PORT
+                             )
+
 
         # Unvalidate all the nodes
         self._evaluated.clear()
@@ -272,15 +286,23 @@ class BrutEvaluation(AbstractEvaluation):
 
         if self._prov is not None:
             self._prov.time_end = t1
+            wfitem = self._prov.as_wlformat()
+        if self._provdb is not None:
+            self._provdb.add_wf_item(wfitem)
+            # self._provdb.add_list_task_item(taskitemslist)
+
+            # close remote connections
+            self._provdb.close()
+
             # Save the provenance in a file
-            wf_id = str(df.factory.uid) + ".json"
-            home = os.path.expanduser("~")
-            provenance_path = os.path.join(home, ".openalea/provenance", wf_id)
-            if not os.path.exists(os.path.dirname(provenance_path)):
-                os.makedirs(provenance_path)
-            provenance = self._prov.as_wlformat()
-            with open(provenance_path, "a+") as f:
-                json.dump(provenance, f, indent=4)
+            # wf_id = str(df.factory.uid) + ".json"
+            # home = os.path.expanduser("~")
+            # provenance_path = os.path.join(home, ".openalea/provenance", wf_id)
+            # if not os.path.exists(os.path.dirname(provenance_path)):
+            #     os.makedirs(provenance_path)
+            # provenance = self._prov.as_wlformat()
+            # with open(provenance_path, "a+") as f:
+            #     json.dump(provenance, f, indent=4)
 
         if quantify:
             print "Evaluation time: %s" % (t1 - t0)
