@@ -34,6 +34,8 @@ import json
 
 from openalea.core.data_manager import load_data, check_data_to_load, write_outputs
 
+from distributed.cloud_infos.tmp_path import TMP_PATH, PROVENANCE_PATH
+
 # test for distributed executions
 # from openalea.core.metadata.provenance_data import Prov
 # from openalea.core.metadata.cache_index import Cache_index
@@ -1372,9 +1374,12 @@ class FragmentEvaluation(AbstractEvaluation):
 
             # check if the data has to be loaded
             tmp_path = check_data_to_load(vid, pid, self._fragment_infos)
+            print "le noeud à récupérer : ", tmp_path
             if tmp_path:
                 cpt = 1
-                inputs.append(load_data(tmp_path))
+                for npid, nvid, nactor in self.get_parent_nodes(pid):
+                    print npid, nvid, nactor
+                # inputs.append(load_data(tmp_path))
             else:
                 cpt = 0
                 # For each connected node
@@ -1426,19 +1431,16 @@ class FragmentEvaluation(AbstractEvaluation):
 
         # Save the outputs of the fragment into file
         for i, vid in enumerate([v[0] for v in self._fragment_infos['outputs_vid']]):
-            home = os.path.expanduser("~")
-            cache_path = os.path.join(home, ".openalea", "fragments_tmp_data")
-            if not os.path.exists(os.path.dirname(cache_path)):
-                os.makedirs(cache_path)
-            write_outputs(self._dataflow, vid, cache_path)
+            if not os.path.exists(os.path.dirname(TMP_PATH)):
+                os.makedirs(TMP_PATH)
+            write_outputs(self._dataflow, vid, TMP_PATH)
 
 
         if self._prov is not None:
             self._prov.time_end = t1
             # Save the provenance in a file
             wf_id = str(df.factory.uid) + ".json"
-            home = os.path.expanduser("~")
-            provenance_path = os.path.join(home, ".openalea/provenance", wf_id)
+            provenance_path = os.path.join(PROVENANCE_PATH, wf_id)
             if not os.path.exists(os.path.dirname(provenance_path)):
                 os.makedirs(provenance_path)
             provenance = self._prov.as_wlformat()
