@@ -112,8 +112,11 @@ class AbstractEvaluation(object):
 
         if record_provenance:
             self._prov = RVProvenance()
+            self._provdb = ProvMongo()
         else:
             self._prov = None
+            self._provdb = None
+
 
     def eval(self, *args):
         """todo"""
@@ -123,7 +126,7 @@ class AbstractEvaluation(object):
         """ Return True if evaluation must be stop at this vertex. """
         return actor.block
 
-    def eval_vertex_code(self, vid):
+    def eval_vertex_code(self, vid, *args, **kwargs):
         """
         Evaluate the vertex vid.
         Can raise an exception if evaluation failed.
@@ -1234,100 +1237,195 @@ class TestEvaluation(AbstractEvaluation):
             print "Evaluation time: %s" % (t1 - t0)
 
 
-# class ZMQEvaluation(AbstractEvaluation):
-#     """ Evaluation with ZMQ """
-#     __evaluators__.append("ZMQEvaluation")
+class ZMQEvaluation(AbstractEvaluation):
+    """ Basic evaluation algorithm """
+    __evaluators__.append("ZMQEvaluation")
 
-#     def __init__(self, dataflow, record_provenance=False, *args, **kwargs):
+    def __init__(self, dataflow, record_provenance=False, *args, **kwargs):
 
-#         AbstractEvaluation.__init__(self, dataflow, record_provenance)
-#         # a property to specify if the node has already been evaluated
-#         self._evaluated = set()
+        AbstractEvaluation.__init__(self, dataflow, record_provenance)
+        # a property to specify if the node has already been evaluated
+        self._evaluated = set()
+        self.socket=None
 
-#     def is_stopped(self, vid, actor):
-#         """ Return True if evaluation must be stop at this vertex """
+    def is_stopped(self, vid, actor):
+        """ Return True if evaluation must be stop at this vertex """
 
-#         if vid in self._evaluated:
-#             return True
+        if vid in self._evaluated:
+            return True
 
-#         try:
-#             if actor.block:
-#                 status = True
-#                 n = actor.get_nb_output()
-#                 outputs = [i for i in range(n) if
-#                            actor.get_output(i) is not None]
-#                 if not outputs:
-#                     status = False
-#                 return status
-#         except:
-#             pass
-#         return False
+        try:
+            if actor.block:
+                status = True
+                n = actor.get_nb_output()
+                outputs = [i for i in range(n) if
+                           actor.get_output(i) is not None]
+                if not outputs:
+                    status = False
+                return status
+        except:
+            pass
+        return False
 
-#     def eval_vertex(self, vid, *args, **kwargs):
-#         """ Evaluate the vertex vid """
+    def eval_vertex(self, vid, *args, **kwargs):
+        """ Evaluate the vertex vid """
 
-#         df = self._dataflow
-#         actor = df.actor(vid)
+        df = self._dataflow
+        actor = df.actor(vid)
 
-#         self._evaluated.add(vid)
+        self._evaluated.add(vid)
 
-#         # For each inputs
-#         for pid in df.in_ports(vid):
-#             inputs = []
+        # For each inputs
+        for pid in df.in_ports(vid):
+            inputs = []
 
-#             cpt = 0
-#             # For each connected node
-#             for npid, nvid, nactor in self.get_parent_nodes(pid):
-#                 if not self.is_stopped(nvid, nactor):
-#                     self.eval_vertex(nvid)
+            cpt = 0
+            # For each connected node
+            for npid, nvid, nactor in self.get_parent_nodes(pid):
+                if not self.is_stopped(nvid, nactor):
+                    self.eval_vertex(nvid)
 
-#                 inputs.append(nactor.get_output(df.local_id(npid)))
-#                 cpt += 1
+                inputs.append(nactor.get_output(df.local_id(npid)))
+                cpt += 1
 
-#             # set input as a list or a simple value
-#             if (cpt == 1):
-#                 inputs = inputs[0]
-#             if (cpt > 0):
-#                 actor.set_input(df.local_id(pid), inputs)
+            # set input as a list or a simple value
+            if (cpt == 1):
+                inputs = inputs[0]
+            if (cpt > 0):
+                actor.set_input(df.local_id(pid), inputs)
 
-#         # Eval the node
-#         self.eval_vertex_code(vid)
+        # Get the best worker
+        # TODO
+        worker_id = 0
 
-#     def eval(self, *args, **kwargs):
-#         """ Evaluate the whole dataflow starting from leaves"""
+        # Eval the node
+        self.eval_vertex_code(vid, worker_id)
 
-#         t0 = time.time()
-#         df = self._dataflow
+    def eval(self, *args, **kwargs):
+        """ Evaluate the whole dataflow starting from leaves"""
 
-#         if self._prov is not None:
-#             self._prov.init(df)
-#             self._prov.time_init = t0
+        # Init the provenance
+        t0 = clock()
+        df = self._dataflow
+        if self._prov is not None:
+            self._prov.init(df)
+            self._prov.time_init = t0
 
+            self._provdb.init(
+                            remote=cloud_info.REMOTE,
+                            path=cloud_info.FILEPATH,
+                            ssh_ip_addr=cloud_info.PROVDB_SSH_ADDR,
+                            ssh_pkey=cloud_info.SSH_PKEY,
+                            ssh_username=cloud_info.SSU_USERNAME,
+                            remote_bind_address=(cloud_info.MONGO_ADDR, cloud_info.MONGO_PORT),
+                            mongo_ip_addr=cloud_info.MONGO_ADDR,
+                            mongo_port=cloud_info.MONGO_PORT
+                             )
+        # Init the workers
+        # context = zmq.Context()
+        # socket = context.socket(zmq.REQ)
+        # socket.connect("tcp://localhost:5559")
+        # self.socket = socket
+        # TODO: FIND A WAY TO INIT WF ON ALL WORKER - for now the worker are started by hand
+        # msg=dict()
+        # msg['pkg_name'] = self._dataflow.get_factory().package.name
+        # msg['wf_name'] = self._dataflow.get_factory().name
+        # socket.send(json.dumps(msg))
+        # state=socket.recv()
+        # state=json.loads(state)
+        # if not state['Initialization']=="success":
+        #     print "Eval failed due to failed init workers"
+        #     return
 
-#         # Unvalidate all the nodes
-#         self._evaluated.clear()
-        
-#         # Eval from the leaf
-#         for vid in (vid for vid in df.vertices() if df.nb_out_edges(vid) == 0):
-#             self.eval_vertex(vid)
+        # Unvalidate all the nodes
+        self._evaluated.clear()
 
-#         t1 = time.time()
+        # Eval from the leaf
+        for vid in (vid for vid in df.vertices() if df.nb_out_edges(vid) == 0):
+            self.eval_vertex(vid)
 
-#         if self._prov is not None:
-#             self._prov.time_end = t1
-#             # Save the provenance in a file
-#             wf_id = str(df.factory.uid) + ".json"
-#             home = os.path.expanduser("~")
-#             provenance_path = os.path.join(home, ".openalea/provenance", wf_id)
-#             if not os.path.exists(os.path.dirname(provenance_path)):
-#                 os.makedirs(provenance_path)
-#             provenance = self._prov.as_wlformat()
-#             with open(provenance_path, "a+") as f:
-#                 json.dump(provenance, f, indent=4)
+        # Update workflow provenance
+        t1 = clock()
+        if self._prov is not None:
+            self._prov.time_end = t1
+            wfitem = self._prov.as_wlformat()
+            self._provdb.add_wf_item(wfitem)
 
-#         if quantify:
-#             print "Evaluation time: %s" % (t1 - t0)
+            # close remote connections
+            self._provdb.close()
 
+        if quantify:
+            print "Evaluation time: %s" % (t1 - t0)
+
+    def eval_vertex_code(self, vid, *args, **kwargs):
+        """
+                Evaluate the vertex vid.
+                Can raise an exception if evaluation failed.
+                """
+
+        node = self._dataflow.actor(vid)
+
+        try:
+            t0 = clock()
+            if self._prov is not None:
+                self._prov.before_eval(self._dataflow, vid)
+
+            # Send value to worker
+            context = zmq.Context()
+            socket = context.socket(zmq.REQ)
+            print "Start evaluating node : ", vid
+            socket.connect("tcp://localhost:5559")
+
+            msg = dict()
+            # msg['pkg_name'] = self._dataflow.get_factory().package.name
+            # msg['wf_name'] = self._dataflow.get_factory().name
+            msg['vid'] = vid
+            inputs = node.input_desc
+            for inp in inputs:
+                inp['interface']=None
+                inp['value']=node.get_input(inp['name'])
+            msg['inputs'] = inputs
+
+            if (vid != 0) & (vid != 1):
+                socket.send(json.dumps(msg))
+                outputs = socket.recv()
+                outputs = json.loads(outputs)
+                for out in outputs:
+                    node.set_output(out['name'], val=out['value'])
+            else:
+                ret = node.eval()
+            # ret = node.eval()
+
+            dt = clock() - t0
+            if self._prov is not None:
+                taskitem=self._prov.after_eval(self._dataflow, vid, dt)
+                if taskitem:
+                    self._provdb.add_task_item(taskitem)
+
+            # When an exception is raised, a flag is set.
+            # So we remove it when evaluation is ok.
+            node.raise_exception = False
+            # if hasattr(node, 'raise_exception'):
+            #     del node.raise_exception
+            node.notify_listeners(('data_modified', None, None))
+            # return ret
+            return
+
+        except EvaluationException, e:
+            e.vid = vid
+            e.node = node
+            # When an exception is raised, a flag is set.
+            node.raise_exception = True
+            node.notify_listeners(('data_modified', None, None))
+            raise e
+
+        except Exception, e:
+            # When an exception is raised, a flag is set.
+            node.raise_exception = True
+            node.notify_listeners(('data_modified', None, None))
+            raise EvaluationException(vid, node, e, \
+                                      tb.format_tb(sys.exc_info()[2]))
+        return
 
 class FragmentEvaluation(AbstractEvaluation):
     """ Evaluation with By fragments """
