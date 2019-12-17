@@ -34,7 +34,7 @@ import json
 
 from openalea.core.data_manager import load_data, check_data_to_load, write_outputs
 
-from distributed.cloud_infos.tmp_path import TMP_PATH, PROVENANCE_PATH
+from openalea.distributed.cloud_infos.paths import TMP_PATH, PROVENANCE_PATH
 
 # test for distributed executions
 # from openalea.core.metadata.provenance_data import Prov
