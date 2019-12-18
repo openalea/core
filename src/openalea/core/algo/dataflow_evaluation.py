@@ -32,18 +32,13 @@ import os
 import time
 import json
 
-from openalea.core.data_manager import load_data, check_data_to_load, write_outputs
+from openalea.core.data_manager import load_data, check_data_to_load, write_data
 
 from openalea.distributed.cloud_infos.paths import TMP_PATH, PROVENANCE_PATH
+import openalea.core.metadata.cloud_info
 
-# test for distributed executions
-# from openalea.core.metadata.provenance_data import Prov
-# from openalea.core.metadata.cache_index import Cache_index
-# from openalea.core.metadata.cloud_sites import Site, MultiSiteCloud, link_two_sites
-
-# from openalea.core.metadata.costs import minimum_cost_site
-# from openalea.core.metadata.scheduling_plan import SchedulingPlan
-# from openalea.core.metadata.data_size import total_size
+from openalea.distributed.index.cacheIndex import IndexCassandra
+from openalea.distributed.index.id import get_id
 
 
 # This variable has to be retrieve by the settings
@@ -1460,6 +1455,7 @@ class FragmentEvaluation(AbstractEvaluation):
         # a property to specify if the node has already been evaluated
         self._evaluated = set()
         self._fragment_infos = fragment_infos
+        self._index = None
 
     def is_stopped(self, vid, actor):
         """ Return True if evaluation must be stop at this vertex """
@@ -1492,14 +1488,14 @@ class FragmentEvaluation(AbstractEvaluation):
         for pid in df.in_ports(vid):
             inputs = []
 
-            # check if the data has to be loaded
-            tmp_path = check_data_to_load(vid, pid, self._fragment_infos)
-            print "le noeud à récupérer : ", tmp_path
-            if tmp_path:
+            # check if the data has to be loaded | and get path
+            ituple = check_data_to_load(vid, pid, self._fragment_infos)
+            if ituple:
                 cpt = 1
                 for npid, nvid, nactor in self.get_parent_nodes(pid):
-                    print npid, nvid, nactor
-                # inputs.append(load_data(tmp_path))
+                    data_id = get_id(ituple[0], ituple[1])
+                    row = self._index.find_one(data_id=data_id)
+                    inputs.append(load_data(row[0].path[0]))
             else:
                 cpt = 0
                 # For each connected node
@@ -1522,8 +1518,11 @@ class FragmentEvaluation(AbstractEvaluation):
 
     def eval(self, *args, **kwargs):
         """ Evaluate the whole dataflow starting from leaves"""
-
+        print "START fragment evaluation"
         t0 = time.time()
+
+        self._index = IndexCassandra()
+        self._index.initialize()
         
         df = self._dataflow
 
@@ -1537,10 +1536,9 @@ class FragmentEvaluation(AbstractEvaluation):
         # Start by stoping all parents node of input fragments nodes
         if self._fragment_infos:
             for ivid, ipid in self._fragment_infos['inputs_vid']:
-                for p in df.in_ports(ivid):
-                    for npid, nvid, nactor in self.get_parent_nodes(p):
-                        self._evaluated.add(nvid)
-                        print "Set : ", nvid, " as EVALUATED"
+                for npid, nvid, nactor in self.get_parent_nodes(ipid):
+                    self._evaluated.add(nvid)
+                    print "Set : ", nvid, " as EVALUATED"
         
         
         # Eval from the leaf
@@ -1550,10 +1548,13 @@ class FragmentEvaluation(AbstractEvaluation):
         t1 = time.time()
 
         # Save the outputs of the fragment into file
-        for i, vid in enumerate([v[0] for v in self._fragment_infos['outputs_vid']]):
-            if not os.path.exists(os.path.dirname(TMP_PATH)):
+        if not os.path.exists(os.path.dirname(TMP_PATH)):
                 os.makedirs(TMP_PATH)
-            write_outputs(self._dataflow, vid, TMP_PATH)
+        for i, vid in enumerate([v[0] for v in self._fragment_infos['outputs_vid']]):
+            for port in range(df.node(vid).get_nb_output()):
+                data_id = get_id(vid, port)
+                write_data(data_id=data_id, data=df.node(vid).get_output(port), path=TMP_PATH)
+                self._index.add_data(data_id=data_id, path=str(os.path.join(TMP_PATH, data_id)))
 
 
         if self._prov is not None:

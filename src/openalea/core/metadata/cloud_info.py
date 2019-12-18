@@ -15,4 +15,6 @@ MONGO_ADDR='127.0.0.1'
 MONGO_PORT = 27017
 
 # file infos
-FILEPATH = path(settings.get_openalea_home_dir()) / 'provenance'
+PROVENANCE_PATH = path(settings.get_openalea_home_dir()) / 'provenance'
+TMP_PATH = path(settings.get_openalea_home_dir()) / "execution_data"
+CACHE_PATH = path(settings.get_openalea_home_dir()) / "cached_data"
