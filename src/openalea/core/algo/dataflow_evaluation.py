@@ -32,10 +32,14 @@ import os
 import time
 import json
 
-from openalea.core.data_manager import load_data, check_data_to_load, write_data
+from openalea.distributed.data.data_manager import load_data, check_data_to_load, write_data
 
-from openalea.distributed.cloud_infos.paths import TMP_PATH, PROVENANCE_PATH
-import openalea.core.metadata.cloud_info
+from openalea.distributed.cloud_infos.paths import (TMP_PATH, PROVENANCE_PATH, CACHE_PATH)
+from openalea.distributed.cloud_infos.ssh_info import (PROVDB_SSH_ADDR, SSH_PKEY, SSU_USERNAME)
+from openalea.distributed.cloud_infos.mongo_info import REMOTE, MONGO_PORT, MONGO_ADDR
+# import openalea.core.metadata.cloud_info
+
+from openalea.distributed.provenance.provenanceDB import ProvMongo
 
 from openalea.distributed.index.cacheIndex import IndexCassandra
 from openalea.distributed.index.id import get_id
@@ -259,14 +263,14 @@ class BrutEvaluation(AbstractEvaluation):
 
         if self._provdb is not None:
             self._provdb.init(
-                            remote=cloud_info.REMOTE,
-                            path=cloud_info.FILEPATH,
-                            ssh_ip_addr=cloud_info.PROVDB_SSH_ADDR,
-                            ssh_pkey=cloud_info.SSH_PKEY,
-                            ssh_username=cloud_info.SSU_USERNAME,
-                            remote_bind_address=(cloud_info.MONGO_ADDR, cloud_info.MONGO_PORT),
-                            mongo_ip_addr=cloud_info.MONGO_ADDR,
-                            mongo_port=cloud_info.MONGO_PORT
+                            remote=REMOTE,
+                            path=CACHE_PATH,
+                            ssh_ip_addr=PROVDB_SSH_ADDR,
+                            ssh_pkey=SSH_PKEY,
+                            ssh_username=SSU_USERNAME,
+                            remote_bind_address=(MONGO_ADDR, MONGO_PORT),
+                            mongo_ip_addr=MONGO_ADDR,
+                            mongo_port=MONGO_PORT
                              )
 
 
@@ -1329,14 +1333,14 @@ class ZMQEvaluation(AbstractEvaluation):
             self._prov.time_init = t0
 
             self._provdb.init(
-                            remote=cloud_info.REMOTE,
-                            path=cloud_info.FILEPATH,
-                            ssh_ip_addr=cloud_info.PROVDB_SSH_ADDR,
-                            ssh_pkey=cloud_info.SSH_PKEY,
-                            ssh_username=cloud_info.SSU_USERNAME,
-                            remote_bind_address=(cloud_info.MONGO_ADDR, cloud_info.MONGO_PORT),
-                            mongo_ip_addr=cloud_info.MONGO_ADDR,
-                            mongo_port=cloud_info.MONGO_PORT
+                            remote=REMOTE,
+                            path=CACHE_PATH,
+                            ssh_ip_addr=PROVDB_SSH_ADDR,
+                            ssh_pkey=SSH_PKEY,
+                            ssh_username=SSU_USERNAME,
+                            remote_bind_address=(MONGO_ADDR, MONGO_PORT),
+                            mongo_ip_addr=MONGO_ADDR,
+                            mongo_port=MONGO_PORT
                              )
         # Init the workers
         # context = zmq.Context()
