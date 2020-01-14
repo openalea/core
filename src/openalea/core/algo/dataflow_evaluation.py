@@ -34,9 +34,9 @@ import json
 
 from openalea.distributed.data.data_manager import load_data, check_data_to_load, write_data
 
-from openalea.distributed.cloud_infos.paths import (TMP_PATH, PROVENANCE_PATH, CACHE_PATH)
-from openalea.distributed.cloud_infos.ssh_info import (PROVDB_SSH_ADDR, SSH_PKEY, SSU_USERNAME)
-from openalea.distributed.cloud_infos.mongo_info import REMOTE, MONGO_PORT, MONGO_ADDR
+from openalea.distributed.cloud_infos.cloud_infos import (TMP_PATH, PROVENANCE_PATH, CACHE_PATH,
+ PROVDB_SSH_ADDR, SSH_PKEY, SSU_USERNAME,
+ REMOTE, MONGO_PORT, MONGO_ADDR)
 # import openalea.core.metadata.cloud_info
 
 from openalea.distributed.provenance.provenanceDB import ProvMongo
@@ -1454,12 +1454,18 @@ class FragmentEvaluation(AbstractEvaluation):
 
     # TODO: It doesn't work with provenance
     def __init__(self, dataflow, record_provenance=False, fragment_infos=None, *args, **kwargs):
-
+    
         AbstractEvaluation.__init__(self, dataflow, record_provenance)
         # a property to specify if the node has already been evaluated
         self._evaluated = set()
         self._fragment_infos = fragment_infos
         self._index = None
+        if "tmp_path" in kwargs:
+            print("use ", kwargs.get("tmp_path"), " as temporary file path")
+            self._tmp_path = kwargs.get("tmp_path")
+        else:
+            print("use ", TMP_PATH, " as temporary file path")
+            self._tmp_path = TMP_PATH
 
     def is_stopped(self, vid, actor):
         """ Return True if evaluation must be stop at this vertex """
@@ -1552,13 +1558,13 @@ class FragmentEvaluation(AbstractEvaluation):
         t1 = time.time()
 
         # Save the outputs of the fragment into file
-        if not os.path.exists(os.path.dirname(TMP_PATH)):
-                os.makedirs(TMP_PATH)
+        if not os.path.exists(os.path.dirname(self._tmp_path)):
+                os.makedirs(self._tmp_path)
         for i, vid in enumerate([v[0] for v in self._fragment_infos['outputs_vid']]):
             for port in range(df.node(vid).get_nb_output()):
                 data_id = get_id(vid, port)
-                write_data(data_id=data_id, data=df.node(vid).get_output(port), path=TMP_PATH)
-                self._index.add_data(data_id=data_id, path=str(os.path.join(TMP_PATH, data_id)))
+                write_data(data_id=data_id, data=df.node(vid).get_output(port), path=self._tmp_path)
+                self._index.add_data(data_id=data_id, path=str(os.path.join(self._tmp_path, data_id)))
 
 
         if self._prov is not None:
