@@ -1552,8 +1552,12 @@ class FragmentEvaluation(AbstractEvaluation):
         
         
         # Eval from the leaf
-        for vid in (vid for vid in df.vertices() if df.nb_out_edges(vid) == 0):
-            self.eval_vertex(vid)
+        # for vid in (vid for vid in df.vertices() if df.nb_out_edges(vid) == 0):
+        #     self.eval_vertex(vid)
+
+        # Eval from the outputs node of the fragment:
+        for ovid in self._fragment_infos['outputs_vid']:
+            self.eval_vertex(ovid[0])
 
         t1 = time.time()
 
@@ -1577,6 +1581,88 @@ class FragmentEvaluation(AbstractEvaluation):
             provenance = self._prov.as_wlformat()
             with open(provenance_path, "a+") as f:
                 json.dump(provenance, f, indent=4)
+
+        if quantify:
+            print "Evaluation time: %s" % (t1 - t0)
+
+
+class FakeEvaluation(AbstractEvaluation):
+    """ Evaluation to get id of egdes """
+    __evaluators__.append("FakeEvaluation")
+
+    # TODO: It doesn't work with provenance
+    def __init__(self, dataflow, record_provenance=False, *args, **kwargs):
+
+        AbstractEvaluation.__init__(self, dataflow, record_provenance)
+        # a property to specify if the node has already been evaluated
+        self._evaluated = set()
+
+    def is_stopped(self, vid, actor):
+        """ Return True if evaluation must be stop at this vertex """
+
+        if vid in self._evaluated:
+            return True
+
+        try:
+            if actor.block:
+                status = True
+                n = actor.get_nb_output()
+                outputs = [i for i in range(n) if
+                           actor.get_output(i) is not None]
+                if not outputs:
+                    status = False
+                return status
+        except:
+            pass
+        return False
+
+    def eval_vertex(self, vid, *args, **kwargs):
+        """ Evaluate the vertex vid """
+        
+        df = self._dataflow
+        actor = df.actor(vid)
+        print("eval node: ", vid)
+        self._evaluated.add(vid)
+
+        # For each inputs
+        for pid in df.in_ports(vid):
+            inputs = []
+
+            cpt = 0
+            # For each connected node
+            for npid, nvid, nactor in self.get_parent_nodes(pid):
+                print("node: ", vid, " - input port : ", pid, ' - to output port: ',
+                npid, " - from node: ", nvid)
+                if not self.is_stopped(nvid, nactor):
+                    self.eval_vertex(nvid)
+
+                inputs.append(nactor.get_output(df.local_id(npid)))
+                cpt += 1
+
+            # set input as a list or a simple value
+            if (cpt == 1):
+                inputs = inputs[0]
+            if (cpt > 0):
+                actor.set_input(df.local_id(pid), inputs)
+
+        # Eval the node
+        # self.eval_vertex_code(vid)
+
+    def eval(self, *args, **kwargs):
+        """ Evaluate the whole dataflow starting from leaves"""
+
+        t0 = time.time()
+        df = self._dataflow
+
+
+        # Unvalidate all the nodes
+        self._evaluated.clear()
+
+        # Eval from the leaf
+        for vid in (vid for vid in df.vertices() if df.nb_out_edges(vid) == 0):
+            self.eval_vertex(vid)
+
+        t1 = time.time()
 
         if quantify:
             print "Evaluation time: %s" % (t1 - t0)
