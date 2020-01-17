@@ -34,9 +34,7 @@ import json
 
 from openalea.distributed.data.data_manager import load_data, check_data_to_load, write_data
 
-from openalea.distributed.cloud_infos.cloud_infos import (TMP_PATH, PROVENANCE_PATH, CACHE_PATH,
- PROVDB_SSH_ADDR, SSH_PKEY, SSU_USERNAME,
- REMOTE, MONGO_PORT, MONGO_ADDR)
+from openalea.distributed.cloud_infos.cloud_infos import *
 # import openalea.core.metadata.cloud_info
 
 from openalea.distributed.provenance.provenanceDB import ProvMongo
@@ -267,7 +265,7 @@ class BrutEvaluation(AbstractEvaluation):
                             path=CACHE_PATH,
                             ssh_ip_addr=PROVDB_SSH_ADDR,
                             ssh_pkey=SSH_PKEY,
-                            ssh_username=SSU_USERNAME,
+                            ssh_username=SSH_USERNAME,
                             remote_bind_address=(MONGO_ADDR, MONGO_PORT),
                             mongo_ip_addr=MONGO_ADDR,
                             mongo_port=MONGO_PORT
@@ -1337,7 +1335,7 @@ class ZMQEvaluation(AbstractEvaluation):
                             path=CACHE_PATH,
                             ssh_ip_addr=PROVDB_SSH_ADDR,
                             ssh_pkey=SSH_PKEY,
-                            ssh_username=SSU_USERNAME,
+                            ssh_username=SSH_USERNAME,
                             remote_bind_address=(MONGO_ADDR, MONGO_PORT),
                             mongo_ip_addr=MONGO_ADDR,
                             mongo_port=MONGO_PORT
@@ -1532,8 +1530,14 @@ class FragmentEvaluation(AbstractEvaluation):
         t0 = time.time()
 
         self._index = IndexCassandra()
-        self._index.initialize()
-        
+        self._index.initialize(
+                        remote=REMOTE,
+                        ssh_pkey=SSH_PKEY,
+                        ssh_ip_addr=CASSANDRA_SSH_IP,
+                        ssh_username=SSH_USERNAME,
+                        remote_bind_address=("localhost", CASSANDRA_PORT),
+                        )
+        print "INDEX loaded"
         df = self._dataflow
 
         if self._prov is not None:
