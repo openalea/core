@@ -538,7 +538,7 @@ class CompositeNode(Node, DataFlow):
 
         try:
             self.evaluating = True
-            algo.eval(vtx_id, step=step)
+            algo.eval(vtx_id, step=step, *args, **kwargs)
         finally:
             self.evaluating = False
         t1 = time.time()

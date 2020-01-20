@@ -111,13 +111,12 @@ class AbstractEvaluation(object):
             self._prov = RVProvenance()
             self._provdb = start_provdb(provenance_config=kwargs.get('provenance_config', None),
                                         provenance_type=kwargs.get('provenance_type', "Files"))
-            
         else:
             self._prov = None
             self._provdb = None
 
 
-    def eval(self, *args):
+    def eval(self, *args, **kwargs):
         """todo"""
         raise NotImplementedError()
 
@@ -146,7 +145,6 @@ class AbstractEvaluation(object):
                 taskitem = self._prov.after_eval(self._dataflow, vid, dt)
                 if self._provdb and taskitem:
                     self._provdb.add_task_item(taskitem)
-                # print self._prov.as_wlformat()
 
 
             # When an exception is raised, a flag is set.
@@ -198,7 +196,7 @@ class BrutEvaluation(AbstractEvaluation):
 
     def __init__(self, dataflow, record_provenance=False, *args, **kwargs):
 
-        AbstractEvaluation.__init__(self, dataflow, record_provenance)
+        AbstractEvaluation.__init__(self, dataflow, record_provenance, *args, **kwargs)
         # a property to specify if the node has already been evaluated
         self._evaluated = set()
 
@@ -260,21 +258,7 @@ class BrutEvaluation(AbstractEvaluation):
         if self._prov is not None:
             self._prov.init(df)
             self._prov.time_init = t0
-
-
         # if self._provdb is not None:
-        #     self._provdb.init(
-        #                     remote=REMOTE_PROV,
-        #                     path=CACHE_PATH,
-        #                     ssh_ip_addr=PROVDB_SSH_ADDR,
-        #                     ssh_pkey=SSH_PKEY,
-        #                     ssh_username=SSH_USERNAME,
-        #                     remote_bind_address=(MONGO_ADDR, MONGO_PORT),
-        #                     mongo_ip_addr=MONGO_ADDR,
-        #                     mongo_port=MONGO_PORT
-        #                      )
-
-
         # Unvalidate all the nodes
         self._evaluated.clear()
 
@@ -293,16 +277,6 @@ class BrutEvaluation(AbstractEvaluation):
 
             # close remote connections
             self._provdb.close()
-
-            # Save the provenance in a file
-            # wf_id = str(df.factory.uid) + ".json"
-            # home = os.path.expanduser("~")
-            # provenance_path = os.path.join(home, ".openalea/provenance", wf_id)
-            # if not os.path.exists(os.path.dirname(provenance_path)):
-            #     os.makedirs(provenance_path)
-            # provenance = self._prov.as_wlformat()
-            # with open(provenance_path, "a+") as f:
-            #     json.dump(provenance, f, indent=4)
 
         if quantify:
             print "Evaluation time: %s" % (t1 - t0)
