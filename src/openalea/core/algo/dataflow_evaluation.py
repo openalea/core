@@ -34,10 +34,10 @@ import json
 
 from openalea.distributed.data.data_manager import load_data, check_data_to_load, write_data
 
-from openalea.distributed.cloud_infos.cloud_infos import *
+# from openalea.distributed.cloud_infos.cloud_infos import *
 # import openalea.core.metadata.cloud_info
 
-from openalea.distributed.provenance.provenanceDB import ProvMongo
+from openalea.distributed.provenance.provenanceDB import start_provdb
 
 from openalea.distributed.index.cacheIndex import IndexCassandra
 from openalea.distributed.index.id import get_id
@@ -101,7 +101,7 @@ def cmp_posx(x, y):
 
 
 class AbstractEvaluation(object):
-    def __init__(self, dataflow, record_provenance=False):
+    def __init__(self, dataflow, record_provenance=False, *args, **kwargs):
         """
         :param dataflow: to be done
         """
@@ -109,7 +109,9 @@ class AbstractEvaluation(object):
 
         if record_provenance:
             self._prov = RVProvenance()
-            self._provdb = ProvMongo()
+            self._provdb = start_provdb(provenance_config=kwargs.get('provenance_config', None),
+                                        provenance_type=kwargs.get('provenance_type', "Files"))
+            
         else:
             self._prov = None
             self._provdb = None
@@ -138,8 +140,8 @@ class AbstractEvaluation(object):
 
             t0 = clock()
             ret = node.eval()
-            t1 = clock()
 
+            dt = clock() - t0
             if self._prov is not None:
                 taskitem = self._prov.after_eval(self._dataflow, vid, dt)
                 if self._provdb and taskitem:
@@ -259,17 +261,18 @@ class BrutEvaluation(AbstractEvaluation):
             self._prov.init(df)
             self._prov.time_init = t0
 
-        if self._provdb is not None:
-            self._provdb.init(
-                            remote=REMOTE,
-                            path=CACHE_PATH,
-                            ssh_ip_addr=PROVDB_SSH_ADDR,
-                            ssh_pkey=SSH_PKEY,
-                            ssh_username=SSH_USERNAME,
-                            remote_bind_address=(MONGO_ADDR, MONGO_PORT),
-                            mongo_ip_addr=MONGO_ADDR,
-                            mongo_port=MONGO_PORT
-                             )
+
+        # if self._provdb is not None:
+        #     self._provdb.init(
+        #                     remote=REMOTE_PROV,
+        #                     path=CACHE_PATH,
+        #                     ssh_ip_addr=PROVDB_SSH_ADDR,
+        #                     ssh_pkey=SSH_PKEY,
+        #                     ssh_username=SSH_USERNAME,
+        #                     remote_bind_address=(MONGO_ADDR, MONGO_PORT),
+        #                     mongo_ip_addr=MONGO_ADDR,
+        #                     mongo_port=MONGO_PORT
+        #                      )
 
 
         # Unvalidate all the nodes
@@ -1244,8 +1247,9 @@ class TestEvaluation(AbstractEvaluation):
             self._prov.time_end = t1
             # Save the provenance in a file
             wf_id = str(df.factory.uid) + ".json"
-            home = os.path.expanduser("~")
-            provenance_path = os.path.join(home, ".openalea/provenance", wf_id)
+            # Save the provenance in a file
+            wf_id = str(df.factory.uid) + ".json"
+            provenance_path = os.path.join(PROVENANCE_PATH, wf_id)
             if not os.path.exists(os.path.dirname(provenance_path)):
                 os.makedirs(provenance_path)
             provenance = self._prov.as_wlformat()
@@ -1330,16 +1334,16 @@ class ZMQEvaluation(AbstractEvaluation):
             self._prov.init(df)
             self._prov.time_init = t0
 
-            self._provdb.init(
-                            remote=REMOTE,
-                            path=CACHE_PATH,
-                            ssh_ip_addr=PROVDB_SSH_ADDR,
-                            ssh_pkey=SSH_PKEY,
-                            ssh_username=SSH_USERNAME,
-                            remote_bind_address=(MONGO_ADDR, MONGO_PORT),
-                            mongo_ip_addr=MONGO_ADDR,
-                            mongo_port=MONGO_PORT
-                             )
+            # self._provdb.init(
+            #                 remote=REMOTE_PROV,
+            #                 path=CACHE_PATH,
+            #                 ssh_ip_addr=PROVDB_SSH_ADDR,
+            #                 ssh_pkey=SSH_PKEY,
+            #                 ssh_username=SSH_USERNAME,
+            #                 remote_bind_address=(MONGO_ADDR, MONGO_PORT),
+            #                 mongo_ip_addr=MONGO_ADDR,
+            #                 mongo_port=MONGO_PORT
+            #                  )
         # Init the workers
         # context = zmq.Context()
         # socket = context.socket(zmq.REQ)
@@ -1531,7 +1535,7 @@ class FragmentEvaluation(AbstractEvaluation):
 
         self._index = IndexCassandra()
         self._index.initialize(
-                        remote=REMOTE,
+                        remote=REMOTE_INDEX,
                         ssh_pkey=SSH_PKEY,
                         ssh_ip_addr=CASSANDRA_SSH_IP,
                         ssh_username=SSH_USERNAME,
