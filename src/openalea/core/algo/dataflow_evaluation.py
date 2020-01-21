@@ -28,18 +28,17 @@ from openalea.core import ScriptLibrary
 from openalea.core.dataflow import SubDataflow
 from openalea.core.interface import IFunction
 
+from openalea.core.path import path
+from openalea.core import settings
+
 import os
 import time
 import json
 
 from openalea.distributed.data.data_manager import load_data, check_data_to_load, write_data
 
-# from openalea.distributed.cloud_infos.cloud_infos import *
-# import openalea.core.metadata.cloud_info
-
 from openalea.distributed.provenance.provenanceDB import start_provdb
-
-from openalea.distributed.index.cacheIndex import IndexCassandra
+from openalea.distributed.index.indexDB import start_index
 from openalea.distributed.index.id import get_id
 
 
@@ -115,6 +114,12 @@ class AbstractEvaluation(object):
             self._prov = None
             self._provdb = None
 
+        if kwargs.get('use_index'):
+            self._index = start_index(index_config=kwargs.get('index_config', None),
+                                        index_type=kwargs.get('index_type', "Cassandra"))
+        else:
+            self._index = None
+
 
     def eval(self, *args, **kwargs):
         """todo"""
@@ -145,7 +150,8 @@ class AbstractEvaluation(object):
                 taskitem = self._prov.after_eval(self._dataflow, vid, dt)
                 if self._provdb and taskitem:
                     self._provdb.add_task_item(taskitem)
-
+            # if self._index is not None:
+            #     self._index.add
 
             # When an exception is raised, a flag is set.
             # So we remove it when evaluation is ok.
@@ -258,7 +264,6 @@ class BrutEvaluation(AbstractEvaluation):
         if self._prov is not None:
             self._prov.init(df)
             self._prov.time_init = t0
-        # if self._provdb is not None:
         # Unvalidate all the nodes
         self._evaluated.clear()
 
@@ -273,7 +278,6 @@ class BrutEvaluation(AbstractEvaluation):
             wfitem = self._prov.as_wlformat()
         if self._provdb is not None:
             self._provdb.add_wf_item(wfitem)
-            # self._provdb.add_list_task_item(taskitemslist)
 
             # close remote connections
             self._provdb.close()
@@ -550,12 +554,15 @@ class LambdaEvaluation(PriorityEvaluation):
                                 is_subdataflow=is_subdataflow)
         self.lambda_value.clear()  # do not keep context in memory
 
-        # if PROVENANCE:
-        #     self.provenance.end_time()
-
         t1 = clock()
         if self._prov is not None:
             self._prov.time_end = t1
+            wfitem = self._prov.as_wlformat()
+        if self._provdb is not None:
+            self._provdb.add_wf_item(wfitem)
+
+            # close remote connections
+            self._provdb.close()
 
         if quantify:
             print "Evaluation time: %s" % (t1 - t0)
@@ -1144,7 +1151,7 @@ class TestEvaluation(AbstractEvaluation):
 
     def __init__(self, dataflow, record_provenance=False, *args, **kwargs):
 
-        AbstractEvaluation.__init__(self, dataflow, record_provenance)
+        AbstractEvaluation.__init__(self, dataflow, record_provenance, *args, **kwargs)
         # a property to specify if the node has already been evaluated
         self._evaluated = set()
 
@@ -1219,16 +1226,24 @@ class TestEvaluation(AbstractEvaluation):
 
         if self._prov is not None:
             self._prov.time_end = t1
-            # Save the provenance in a file
-            wf_id = str(df.factory.uid) + ".json"
-            # Save the provenance in a file
-            wf_id = str(df.factory.uid) + ".json"
-            provenance_path = os.path.join(PROVENANCE_PATH, wf_id)
-            if not os.path.exists(os.path.dirname(provenance_path)):
-                os.makedirs(provenance_path)
-            provenance = self._prov.as_wlformat()
-            with open(provenance_path, "a+") as f:
-                json.dump(provenance, f, indent=4)
+            wfitem = self._prov.as_wlformat()
+        if self._provdb is not None:
+            self._provdb.add_wf_item(wfitem)
+
+            # close remote connections
+            self._provdb.close()
+
+
+            # # Save the provenance in a file
+            # wf_id = str(df.factory.uid) + ".json"
+            # # Save the provenance in a file
+            # wf_id = str(df.factory.uid) + ".json"
+            # provenance_path = os.path.join(PROVENANCE_PATH, wf_id)
+            # if not os.path.exists(os.path.dirname(provenance_path)):
+            #     os.makedirs(provenance_path)
+            # provenance = self._prov.as_wlformat()
+            # with open(provenance_path, "a+") as f:
+            #     json.dump(provenance, f, indent=4)
 
         if quantify:
             print "Evaluation time: %s" % (t1 - t0)
@@ -1346,6 +1361,7 @@ class ZMQEvaluation(AbstractEvaluation):
         if self._prov is not None:
             self._prov.time_end = t1
             wfitem = self._prov.as_wlformat()
+        if self._provdb is not None:
             self._provdb.add_wf_item(wfitem)
 
             # close remote connections
@@ -1428,20 +1444,23 @@ class FragmentEvaluation(AbstractEvaluation):
     """ Evaluation with By fragments """
     __evaluators__.append("FragmentEvaluation")
 
-    # TODO: It doesn't work with provenance
     def __init__(self, dataflow, record_provenance=False, fragment_infos=None, *args, **kwargs):
     
         AbstractEvaluation.__init__(self, dataflow, record_provenance)
         # a property to specify if the node has already been evaluated
         self._evaluated = set()
         self._fragment_infos = fragment_infos
-        self._index = None
-        if "tmp_path" in kwargs:
-            print("use ", kwargs.get("tmp_path"), " as temporary file path")
-            self._tmp_path = kwargs.get("tmp_path")
-        else:
-            print("use ", TMP_PATH, " as temporary file path")
-            self._tmp_path = TMP_PATH
+
+        # Define the path where execution data is store during execution - delete after
+        tpath = path(settings.get_openalea_home_dir()) / "execution_data"
+        print("use ", kwargs.get("tmp_path", tpath), " as temporary file path")
+        self._tmp_path = kwargs.get("tmp_path", tpath)
+
+        # If the data index is not use - force its init
+        if self._index is None:
+            self._index = start_index(index_config=kwargs.get('index_config', None),
+                                        index_type=kwargs.get('index_type', "Cassandra"))
+
 
     def is_stopped(self, vid, actor):
         """ Return True if evaluation must be stop at this vertex """
@@ -1507,15 +1526,6 @@ class FragmentEvaluation(AbstractEvaluation):
         print "START fragment evaluation"
         t0 = time.time()
 
-        self._index = IndexCassandra()
-        self._index.initialize(
-                        remote=REMOTE_INDEX,
-                        ssh_pkey=SSH_PKEY,
-                        ssh_ip_addr=CASSANDRA_SSH_IP,
-                        ssh_username=SSH_USERNAME,
-                        remote_bind_address=("localhost", CASSANDRA_PORT),
-                        )
-        print "INDEX loaded"
         df = self._dataflow
 
         if self._prov is not None:
@@ -1550,19 +1560,17 @@ class FragmentEvaluation(AbstractEvaluation):
             for port in range(df.node(vid).get_nb_output()):
                 data_id = get_id(vid, port)
                 write_data(data_id=data_id, data=df.node(vid).get_output(port), path=self._tmp_path)
-                self._index.add_data(data_id=data_id, path=str(os.path.join(self._tmp_path, data_id)))
+                self._index.add_data(data_id=data_id, path=str(os.path.join(self._tmp_path, data_id)), exec_data=True, cache_data=False)
 
 
         if self._prov is not None:
             self._prov.time_end = t1
-            # Save the provenance in a file
-            wf_id = str(df.factory.uid) + ".json"
-            provenance_path = os.path.join(PROVENANCE_PATH, wf_id)
-            if not os.path.exists(os.path.dirname(provenance_path)):
-                os.makedirs(provenance_path)
-            provenance = self._prov.as_wlformat()
-            with open(provenance_path, "a+") as f:
-                json.dump(provenance, f, indent=4)
+            wfitem = self._prov.as_wlformat()
+        if self._provdb is not None:
+            self._provdb.add_wf_item(wfitem)
+
+            # close remote connections
+            self._provdb.close()
 
         if quantify:
             print "Evaluation time: %s" % (t1 - t0)
@@ -1635,7 +1643,9 @@ class FakeEvaluation(AbstractEvaluation):
 
         t0 = time.time()
         df = self._dataflow
-
+        if self._prov is not None:
+            self._prov.init(df)
+            self._prov.time_init = t0
 
         # Unvalidate all the nodes
         self._evaluated.clear()
@@ -1645,6 +1655,14 @@ class FakeEvaluation(AbstractEvaluation):
             self.eval_vertex(vid)
 
         t1 = time.time()
+
+        if self._prov is not None:
+            self._prov.time_end = t1
+            wfitem = self._prov.as_wlformat()
+        if self._provdb is not None:
+            self._provdb.add_wf_item(wfitem)
+            # close remote connections
+            self._provdb.close()
 
         if quantify:
             print "Evaluation time: %s" % (t1 - t0)
