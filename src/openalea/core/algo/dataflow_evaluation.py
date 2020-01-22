@@ -100,13 +100,13 @@ def cmp_posx(x, y):
 
 
 class AbstractEvaluation(object):
-    def __init__(self, dataflow, record_provenance=False, *args, **kwargs):
+    def __init__(self, dataflow, *args, **kwargs):
         """
         :param dataflow: to be done
         """
         self._dataflow = dataflow
 
-        if record_provenance:
+        if kwargs.get("record_provenance"):
             self._prov = RVProvenance()
             self._provdb = start_provdb(provenance_config=kwargs.get('provenance_config', None),
                                         provenance_type=kwargs.get('provenance_type', "Files"))
@@ -200,9 +200,9 @@ class BrutEvaluation(AbstractEvaluation):
     """ Basic evaluation algorithm """
     __evaluators__.append("BrutEvaluation")
 
-    def __init__(self, dataflow, record_provenance=False, *args, **kwargs):
+    def __init__(self, dataflow, *args, **kwargs):
 
-        AbstractEvaluation.__init__(self, dataflow, record_provenance, *args, **kwargs)
+        AbstractEvaluation.__init__(self, dataflow, *args, **kwargs)
         # a property to specify if the node has already been evaluated
         self._evaluated = set()
 
@@ -325,9 +325,9 @@ class GeneratorEvaluation(AbstractEvaluation):
     """ Evaluation algorithm with generator / priority and selection"""
     __evaluators__.append("GeneratorEvaluation")
 
-    def __init__(self, dataflow, record_provenance=False):
+    def __init__(self, dataflow, *args, **kwargs):
 
-        AbstractEvaluation.__init__(self, dataflow, record_provenance)
+        AbstractEvaluation.__init__(self, dataflow, *args, **kwargs)
         # a property to specify if the node has already been evaluated
         self._evaluated = set()
         self.reeval = False  # Flag to force reevaluation (for generator)
@@ -414,8 +414,8 @@ class LambdaEvaluation(PriorityEvaluation):
     """ Evaluation algorithm with support of lambda / priority and selection"""
     __evaluators__.append("LambdaEvaluation")
 
-    def __init__(self, dataflow, record_provenance=False):
-        PriorityEvaluation.__init__(self, dataflow, record_provenance)
+    def __init__(self, dataflow, *args, **kwargs):
+        PriorityEvaluation.__init__(self, dataflow, *args, **kwargs)
 
         self.lambda_value = {}  # lambda resolution dictionary
         self._resolution_node = set()
@@ -1149,9 +1149,9 @@ class TestEvaluation(AbstractEvaluation):
     """ Basic evaluation algorithm with provenance capture in file """
     __evaluators__.append("TestEvaluation")
 
-    def __init__(self, dataflow, record_provenance=False, *args, **kwargs):
+    def __init__(self, dataflow, *args, **kwargs):
 
-        AbstractEvaluation.__init__(self, dataflow, record_provenance, *args, **kwargs)
+        AbstractEvaluation.__init__(self, dataflow, *args, **kwargs)
         # a property to specify if the node has already been evaluated
         self._evaluated = set()
 
@@ -1253,9 +1253,9 @@ class ZMQEvaluation(AbstractEvaluation):
     """ Basic evaluation algorithm """
     __evaluators__.append("ZMQEvaluation")
 
-    def __init__(self, dataflow, record_provenance=False, *args, **kwargs):
+    def __init__(self, dataflow, *args, **kwargs):
 
-        AbstractEvaluation.__init__(self, dataflow, record_provenance)
+        AbstractEvaluation.__init__(self, dataflow, *args, **kwargs)
         # a property to specify if the node has already been evaluated
         self._evaluated = set()
         self.socket=None
@@ -1444,12 +1444,12 @@ class FragmentEvaluation(AbstractEvaluation):
     """ Evaluation with By fragments """
     __evaluators__.append("FragmentEvaluation")
 
-    def __init__(self, dataflow, record_provenance=False, fragment_infos=None, *args, **kwargs):
+    def __init__(self, dataflow, *args, **kwargs):
     
-        AbstractEvaluation.__init__(self, dataflow, record_provenance)
+        AbstractEvaluation.__init__(self, dataflow, *args, **kwargs)
         # a property to specify if the node has already been evaluated
         self._evaluated = set()
-        self._fragment_infos = fragment_infos
+        self._fragment_infos = kwargs.get("fragment_infos", None)
 
         # Define the path where execution data is store during execution - delete after
         tpath = path(settings.get_openalea_home_dir()) / "execution_data"
@@ -1581,9 +1581,9 @@ class FakeEvaluation(AbstractEvaluation):
     __evaluators__.append("FakeEvaluation")
 
     # TODO: It doesn't work with provenance
-    def __init__(self, dataflow, record_provenance=False, *args, **kwargs):
+    def __init__(self, dataflow, *args, **kwargs):
 
-        AbstractEvaluation.__init__(self, dataflow, record_provenance)
+        AbstractEvaluation.__init__(self, dataflow, *args, **kwargs)
         # a property to specify if the node has already been evaluated
         self._evaluated = set()
 
