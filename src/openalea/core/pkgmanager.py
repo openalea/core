@@ -904,9 +904,9 @@ class PackageManager(Observed):
 
         # Filter ports
         if(nb_inputs >= 0):
-            match = filter(lambda (sc, x): x and x.inputs and len(x.inputs) == nb_inputs, match)
+            match = filter(lambda sc_x: sc_x[1] and sc_x[1].inputs and len(sc_x[1].inputs) == nb_inputs, match)
         if(nb_outputs >= 0):
-            match = filter(lambda (sc, x): x and x.outputs and len(x.outputs) == nb_outputs, match)
+            match = filter(lambda sc_x: sc_x[1] and sc_x[1].outputs and len(sc_x[1].outputs) == nb_outputs, match)
 
         if not len(match):
             return match
