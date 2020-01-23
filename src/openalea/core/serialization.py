@@ -230,7 +230,7 @@ class BGEOMSaver(object):
             return sc.save(str(filename), "BGEOM")
         except ImportError:
             warnings.warn("You must install PlantGL if you want to load a BGEOM object.")
-        except Exception, e:
+        except Exception as e:
             print e
             warnings.warn("Impossible to save the scene for object %s into %s" % (obj, filename))
 
@@ -313,7 +313,7 @@ class CPickleLoader(AbstractLoader):
                     ret = cPickle.load(file_)
                     file_.close()
                     return ret
-                except Exception, e:
+                except Exception as e:
                     print "Can't load file " + filename + " with loader CPickleLoader. "
                     print e
 
@@ -341,6 +341,6 @@ class BGEOMLoader(AbstractLoader):
                 return sc
             except ImportError:
                 warnings.warn("You must install PlantGL if you want to load a BGEOM object.")
-            except Exception, e:
+            except Exception as e:
                 print e
                 warnings.warn("Impossible to load the scene")

@@ -245,7 +245,7 @@ class Package(PackageDict):
         try:
             factory.is_valid()
 
-        except Exception, e:
+        except Exception as e:
             factory.package = None
             del(self[factory.name])
             raise e
@@ -579,10 +579,10 @@ class PyPackageReader(AbstractPackageReader):
             wraleamodule = imp.load_module(modulename, file, pathname, desc)
             pkg = self.build_package(wraleamodule, pkgmanager)
 
-        except Exception, e:
+        except Exception as e:
             try:
                 pkgmanager.log.add('%s is invalid : %s' % (self.filename, e))
-            except Exception, e:
+            except Exception as e:
                 print '%s is invalid : %s' % (self.filename, e)
                 pass
 
@@ -658,7 +658,7 @@ class PyPackageReaderWralea(PyPackageReader):
             try:
                 if (f):
                     p.add_factory(f)
-            except Exception, e:
+            except Exception as e:
                 pkgmanager.log.add(str(e))
 
         pkgmanager.add_package(p)
@@ -787,7 +787,7 @@ $FACTORY_DECLARATION
 
         try:
             result = self.get_str()
-        except Exception, e:
+        except Exception as e:
             print e
             print "FILE HAS NOT BEEN SAVED !!"
             return

@@ -87,7 +87,7 @@ def get_node(component, inputs, pm=None):
 
     try:
         factory = pm[pkg_id][node_id]
-    except Exception, e:
+    except Exception as e:
         print "Cannot run node %s:%s" % (pkg_id, node_id)
         query(component, pm)
         raise e
@@ -98,7 +98,7 @@ def get_node(component, inputs, pm=None):
         for k, v in inputs.iteritems():
             try:
                 node.set_input(k, v)
-            except KeyError, e:
+            except KeyError as e:
                 print "Unknown input %s" % (k, )
                 query(component, pm)
                 raise e
@@ -124,7 +124,7 @@ def run_and_display(component, inputs, gui=False, pm=None):
         try:
             node.eval()
             print _outputs(node)
-        except Exception, error:
+        except Exception as error:
             print "Error while executing component : ", error
             print "Try with -g flag"
         return
@@ -333,7 +333,7 @@ or
 
     try:
         (options, args)= parser.parse_args()
-    except Exception, error:
+    except Exception as error:
         parser.print_usage()
         print "Error while parsing args:", error
         return

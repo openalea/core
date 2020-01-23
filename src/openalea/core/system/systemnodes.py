@@ -73,11 +73,11 @@ class IterNode(Node):
             self.nextval = self.iterable.next()
             return True
 
-        except TypeError, e:
+        except TypeError as e:
             self.outputs[0] = self.inputs[0]
             return False
 
-        except StopIteration, e:
+        except StopIteration as e:
             self.iterable = "Empty"
             if(hasattr(self, "nextval")):
                 del self.nextval
@@ -103,11 +103,11 @@ class IterWithDelayNode(IterNode):
             self.nextval = self.iterable.next()
             return self.inputs[1]
 
-        except TypeError, e:
+        except TypeError as e:
             self.outputs[0] = self.inputs[0]
             return False
 
-        except StopIteration, e:
+        except StopIteration as e:
             self.iterable = "Empty"
             if(hasattr(self, "nextval")):
                 del self.nextval

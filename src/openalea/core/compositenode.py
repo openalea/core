@@ -347,7 +347,7 @@ class CompositeNodeFactory(AbstractFactory):
         pkg = pkgmanager[package_id]
         try:
             factory = pkg.get_factory(factory_id)
-        except UnknownNodeError, e:
+        except UnknownNodeError as e:
             # Bug when both package_id and protected(package_id) exist
             pkg = pkgmanager[protected(package_id)]
             factory = pkg.get_factory(factory_id)
@@ -513,7 +513,7 @@ class CompositeNode(Node, DataFlow):
             classobj = module.__dict__[algo_str]
             return classobj(self)
 
-        except Exception, e:
+        except Exception as e:
             from  openalea.core.algo.dataflow_evaluation import DefaultEvaluation
             return DefaultEvaluation(self)
 

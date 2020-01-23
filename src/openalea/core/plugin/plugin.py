@@ -85,7 +85,7 @@ def iter_plugins(group, name=None, debug=False):
         else:
             try:
                 ep = ep.load()
-            except Exception, err:
+            except Exception as err:
                 print err
             else:
                 if isinstance(ep, (list, tuple)):

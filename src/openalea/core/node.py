@@ -1160,7 +1160,7 @@ class NodeFactory(AbstractFactory):
         else:
             try:
                 node = classobj(self.inputs, self.outputs)
-            except TypeError, e:
+            except TypeError as e:
                 node = classobj()
 
         # Properties
@@ -1190,7 +1190,7 @@ class NodeFactory(AbstractFactory):
             w = get_editor()(parent)
             try:
                 w.edit_module(self.get_node_module(), self.nodeclass_name)
-            except Exception, e:
+            except Exception as e:
                 # Unable to load the module
                 # Try to retrieve the file and open the file in an editor
                 src_path = self.get_node_file()
@@ -1264,7 +1264,7 @@ class NodeFactory(AbstractFactory):
             nodemodule = sys.modules[self.nodemodule_name]
             try:
                 self.nodemodule_path = inspect.getsourcefile(nodemodule)
-            except TypeError, type_error:
+            except TypeError as type_error:
                 self.nodemodule_path = None
                 print type_error
 
@@ -1272,7 +1272,7 @@ class NodeFactory(AbstractFactory):
             sys.path = sav_path
             return nodemodule
 
-        except ImportError, import_error:
+        except ImportError as import_error:
             sys.path = sav_path
             print self.nodemodule_name
             raise import_error

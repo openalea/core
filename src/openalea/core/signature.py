@@ -96,7 +96,7 @@ class Signature(object):
                 if keywords is not None:
                     self.keywords = {"keywords":arg, "interface":"IDict","value":{}}
 
-            except Exception, e:
+            except Exception as e:
                 traceback.print_exc()
 
 

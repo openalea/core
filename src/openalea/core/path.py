@@ -973,7 +973,7 @@ class path(unicode):
     def mkdir_p(self, mode=0777):
         try:
             self.mkdir(mode)
-        except OSError, e:
+        except OSError as e:
             if e.errno != errno.EEXIST:
                 raise
         return self
@@ -985,7 +985,7 @@ class path(unicode):
     def makedirs_p(self, mode=0777):
         try:
             self.makedirs(mode)
-        except OSError, e:
+        except OSError as e:
             if e.errno != errno.EEXIST:
                 raise
         return self
@@ -997,7 +997,7 @@ class path(unicode):
     def rmdir_p(self):
         try:
             self.rmdir()
-        except OSError, e:
+        except OSError as e:
             if e.errno != errno.ENOTEMPTY and e.errno != errno.EEXIST:
                 raise
         return self
@@ -1009,7 +1009,7 @@ class path(unicode):
     def removedirs_p(self):
         try:
             self.removedirs()
-        except OSError, e:
+        except OSError as e:
             if e.errno != errno.ENOTEMPTY and e.errno != errno.EEXIST:
                 raise
         return self
@@ -1032,7 +1032,7 @@ class path(unicode):
     def remove_p(self):
         try:
             self.unlink()
-        except OSError, e:
+        except OSError as e:
             if e.errno != errno.ENOENT:
                 raise
         return self
@@ -1094,7 +1094,7 @@ class path(unicode):
     def rmtree_p(self):
         try:
             self.rmtree()
-        except OSError, e:
+        except OSError as e:
             if e.errno != errno.ENOENT:
                 raise
         return self

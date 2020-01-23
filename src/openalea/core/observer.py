@@ -22,7 +22,7 @@ __revision__ = " $Id$ "
 try:
     import openalea.grapheditor
     graphobserver = True
-except ImportError, e:
+except ImportError as e:
     print "NOT using graph editor observer", e
     graphobserver = False
 
@@ -121,7 +121,7 @@ else:
                    if(not listener.is_notification_locked()):
                        try:
                            listener.call_notify(self, event)
-                       except Exception, e:
+                       except Exception as e:
                            print "Warning :", str(self), "notification of", str(listener), "failed", e
 
                for dead in toDelete:

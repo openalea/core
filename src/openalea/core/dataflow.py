@@ -256,7 +256,7 @@ class DataFlow(PropertyGraph):
         associate an actor to a given vertex
         """
         try : actor.set_id(vid)
-        except Exception, e: print e
+        except Exception as e: print e
         self.vertex_property("_actor")[vid] = actor
 
     def actor(self, vid):

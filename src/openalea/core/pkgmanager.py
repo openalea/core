@@ -250,7 +250,7 @@ class PackageManager(Observed):
 
             try:
                 m = __import__(epoint.module_name, fromlist=epoint.module_name)
-            except ImportError, e:
+            except ImportError as e:
                 logger.error("Cannot load %s : %s" % (epoint.module_name, e))
                 # self.log.add("Cannot load %s : %s"%(epoint.module_name, e))
                 continue
@@ -1114,7 +1114,7 @@ class PseudoGroup(PackageDict):
             except:
                 try:
                     self[str(id(value))] = value
-                except Exception, e:
+                except Exception as e:
                     print e
                     pass
             return
@@ -1133,12 +1133,12 @@ class PseudoGroup(PackageDict):
 
         try:
             self[key].add_name(remain, value)
-        except Exception, e:
+        except Exception as e:
             print 'Package %s[%s]' % (self.name, name)
             print e
             try:
                 self[str(id(key))].add_name(remain, value)
-            except Exception, e:
+            except Exception as e:
                 print 'Unable to find these nodes: %s' % value
                 print e
                 pass

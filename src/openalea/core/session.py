@@ -174,7 +174,7 @@ class Session(Observed):
             try:
                 d['datapool'][key] = self.datapool[key]
                 d.sync()
-            except Exception, e:
+            except Exception as e:
                 print e
                 print "Unable to save %s in the datapool..." % str(key)
                 del d['datapool'][key]
@@ -185,7 +185,7 @@ class Session(Observed):
             try:
                 d['workspaces'].append(ws)
                 d.sync()
-            except Exception, e:
+            except Exception as e:
                 print e
                 print "Unable to save workspace %i. Skip this." % (cpt, )
                 print " WARNING: Your session is not saved. Please save your dataflow as a composite node !!!!!"
@@ -231,5 +231,5 @@ class Session(Observed):
         try:
             (file, filename, desc) = imp.find_module(lastname, [path])
             imp.load_module(name, file, filename, desc)
-        except Exception, e:
+        except Exception as e:
             pass

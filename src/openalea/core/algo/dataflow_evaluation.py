@@ -239,7 +239,7 @@ class AbstractEvaluation(object):
             node.notify_listeners(('data_modified', None, None))
             return ret
 
-        except EvaluationException, e:
+        except EvaluationException as e:
             e.vid = vid
             e.node = node
             # When an exception is raised, a flag is set.
@@ -247,7 +247,7 @@ class AbstractEvaluation(object):
             node.notify_listeners(('data_modified', None, None))
             raise e
 
-        except Exception, e:
+        except Exception as e:
             # When an exception is raised, a flag is set.
             node.raise_exception = True
             node.notify_listeners(('data_modified', None, None))
