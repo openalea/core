@@ -72,5 +72,5 @@ def worker(queue):
 
     while True:
         (func, args) = queue.get()
-        apply(func, args)
+        func(*args)
         queue.task_done()
