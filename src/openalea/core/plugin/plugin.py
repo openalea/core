@@ -33,6 +33,7 @@ import site
 import sys
 
 from openalea.core.factory import AbstractFactory
+import six
 
 def plugin_name(plugin):
     return plugin.name if hasattr(plugin, 'name') else plugin.__name__
@@ -58,7 +59,7 @@ def iter_groups():
     groups = set()
     paths = site.getsitepackages()
     usersite = site.getusersitepackages()
-    if isinstance(usersite, basestring):
+    if isinstance(usersite, six.string_types):
         paths.append(usersite)
     elif isinstance(usersite, (tuple, list)):
         paths += list(usersite)

@@ -24,6 +24,7 @@ from .configobj import ConfigObj
 from openalea.core.service.interface import interface_name
 from openalea.core.project import Project
 from openalea.core.customexception import ErrorInvalidItem
+import six
 
 
 class ProjectLoader(object):
@@ -55,7 +56,7 @@ class ProjectLoader(object):
                 else:
                     value = config['metadata'][info]
                 if interface_name(default_metadata[info].interface) == 'ISequence':
-                    if isinstance(value, basestring):
+                    if isinstance(value, six.string_types):
                         value = value.split(',')
                 setattr(project, info, value)
 

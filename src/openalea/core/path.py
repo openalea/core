@@ -43,6 +43,7 @@ path.py requires Python 2.5 or later.
 """
 
 from __future__ import with_statement
+import six
 try:
     # Python 2: "unicode" is built-in
     unicode
@@ -116,7 +117,7 @@ class path(unicode):
     """
 
     def __init__(self, other):
-        if not isinstance(other, basestring):
+        if not isinstance(other, six.string_types):
             raise TypeError("path must be a string")
 
     module = os.path
@@ -151,7 +152,7 @@ class path(unicode):
             return NotImplemented
 
     def __radd__(self, other):
-        if not isinstance(other, basestring):
+        if not isinstance(other, six.string_types):
             return NotImplemented
         return self._next_class(other.__add__(self))
 

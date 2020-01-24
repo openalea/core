@@ -7,6 +7,7 @@
 
 from openalea.core.interface import IInterface, TypeInterfaceMap
 from openalea.core.service.plugin import plugins
+import six
 
 
 __all__ = [
@@ -91,7 +92,7 @@ def interface_class(interface=None):
             return interface_class(type_to_iname[interface][0])
 
     # interface is a string of an interface or builtin type ('int', 'IInt', ...)
-    if isinstance(interface, basestring):
+    if isinstance(interface, six.string_types):
         for _interface in interfaces():
             if _interface.__name__ == interface:
                 _interface_class = _interface
