@@ -966,11 +966,11 @@ class path(unicode):
     #
     # --- Create/delete operations on directories
 
-    def mkdir(self, mode=0777):
+    def mkdir(self, mode=0o777):
         os.mkdir(self, mode)
         return self
 
-    def mkdir_p(self, mode=0777):
+    def mkdir_p(self, mode=0o777):
         try:
             self.mkdir(mode)
         except OSError as e:
@@ -978,11 +978,11 @@ class path(unicode):
                 raise
         return self
 
-    def makedirs(self, mode=0777):
+    def makedirs(self, mode=0o777):
         os.makedirs(self, mode)
         return self
 
-    def makedirs_p(self, mode=0777):
+    def makedirs_p(self, mode=0o777):
         try:
             self.makedirs(mode)
         except OSError as e:
@@ -1020,7 +1020,7 @@ class path(unicode):
         """ Set the access/modified times of this file to the current time.
         Create the file if it does not exist.
         """
-        fd = os.open(self, os.O_WRONLY | os.O_CREAT, 0666)
+        fd = os.open(self, os.O_WRONLY | os.O_CREAT, 0o666)
         os.close(fd)
         os.utime(self, None)
         return self
