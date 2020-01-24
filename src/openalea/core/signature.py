@@ -26,6 +26,7 @@ import re
 import traceback
 import copy
 from openalea.core.interface import TypeInterfaceMap
+from six.moves import zip
 
 
 class Signature(object):
@@ -74,7 +75,7 @@ class Signature(object):
                     return
 
                 # -- create a set out of the default arg names for later reference
-                defaultArgNames = [] if len(defaults)==0 else set(zip(*defaults)[0])
+                defaultArgNames = [] if len(defaults)==0 else set(list(zip(*defaults))[0])
 
                 # -- create parameters that do not have defaults (not in defaultArgNames)
                 for arg in args:
@@ -161,7 +162,7 @@ class Signature(object):
             if argspec.defaults:
                 ndefs    = len(argspec.defaults)
                 args     = argspec.args[:-ndefs]
-                defaults = zip(argspec.args[-ndefs:], argspec.defaults)
+                defaults = list(zip(argspec.args[-ndefs:], argspec.defaults))
             else:
                 args     = argspec.args
                 defaults = []

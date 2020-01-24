@@ -22,6 +22,7 @@
 from __future__ import generators
 import six
 from six.moves import map
+from six.moves import zip
 try:
     # Python 2: "unicode" is built-in
     unicode
@@ -731,7 +732,7 @@ class Section(dict):
 
     def items(self):
         """D.items() -> list of D's (key, value) pairs, as 2-tuples"""
-        return zip((self.scalars + self.sections), self.values())
+        return list(zip((self.scalars + self.sections), self.values()))
 
 
     def keys(self):

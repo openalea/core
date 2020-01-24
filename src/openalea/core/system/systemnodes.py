@@ -21,6 +21,7 @@ __revision__ = " $Id$ "
 
 from openalea.core.node import AbstractNode, Node, Annotation
 from openalea.core.dataflow import SubDataflow
+from six.moves import zip
 
 DEBUG = False
 
@@ -536,4 +537,4 @@ def get_data(pattern='*.*', pkg_name=None, as_paths=False):
         node.eval()
     names = [x.name for x in result]
     filenames = [node.get_output(0) for node in nodes]
-    return dict(zip(names, filenames))
+    return dict(list(zip(names, filenames)))

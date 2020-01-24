@@ -26,6 +26,7 @@ from openalea.core import ScriptLibrary
 
 from openalea.core.dataflow import SubDataflow
 from openalea.core.interface import IFunction
+from six.moves import zip
 
 
 PROVENANCE = False
