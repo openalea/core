@@ -81,7 +81,7 @@ class Session(Observed):
     ws = property(get_current_workspace)
 
     def get_graph_views(self):
-        return self.graphViews.keys()
+        return list(self.graphViews.keys())
 
     def add_graph_view(self, view):
         self.graphViews[view] = None
@@ -222,7 +222,7 @@ class Session(Observed):
     def load_module(self, name, path):
 
         import imp
-        if (name in sys.modules.keys()):
+        if (name in list(sys.modules.keys())):
             return
         lastname = name.rsplit('.', 1)[-1]
         if (not os.path.isdir(path)):

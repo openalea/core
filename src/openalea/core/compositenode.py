@@ -117,7 +117,7 @@ class CompositeNodeFactory(AbstractFactory):
         # Replace old pkg name to new pkg name
         (old_pkg, new_pkg) = args['replace_pkg']
 
-        for k, v in ret.elt_factory.iteritems():
+        for k, v in list(ret.elt_factory.items()):
             pkg_id, factory_id = v
 
             if(pkg_id == old_pkg.get_id()):
@@ -187,7 +187,7 @@ class CompositeNodeFactory(AbstractFactory):
             pass
 
         # Create the connections
-        for eid, link in self.connections.iteritems():
+        for eid, link in list(self.connections.items()):
             (source_vid, source_port, target_vid, target_port) = link
 
             # Replace id for in and out nodes
@@ -219,7 +219,7 @@ class CompositeNodeFactory(AbstractFactory):
         ins = 0
         outs = 0
 
-        for eid, link in self.connections.iteritems():
+        for eid, link in self.connections.items():
             (source_vid, source_port, target_vid, target_port) = link
 
             if(source_vid == vid):
@@ -296,7 +296,7 @@ class CompositeNodeFactory(AbstractFactory):
             idmap[vid] = newid
 
         # Create the connections
-        for eid, link in self.connections.iteritems():
+        for eid, link in list(self.connections.items()):
             (source_vid, source_port, target_vid, target_port) = link
 
             # convert id
@@ -305,7 +305,7 @@ class CompositeNodeFactory(AbstractFactory):
 
             cnode.connect(source_vid, source_port, target_vid, target_port)
 
-        return idmap.values()
+        return list(idmap.values())
 
     def load_ad_hoc_data(self, node, elt_data, elt_ad_hoc=None):
         if elt_ad_hoc and len(elt_ad_hoc):
@@ -320,7 +320,7 @@ class CompositeNodeFactory(AbstractFactory):
             #These dictionnaries are used to extend ad_hoc_dict of a node with the
             #data that views expect. See node.initialise_standard_metadata() for an example.
             if hasattr(node, "__ad_hoc_from_old_map__"):
-                for newKey, oldKeys in node.__ad_hoc_from_old_map__.iteritems():
+                for newKey, oldKeys in list(node.__ad_hoc_from_old_map__.items()):
                     data = [] #list that stores the new values
                     _type, default = node.__ad_hoc_slots__.get(newKey)
                     for key in oldKeys:
@@ -821,7 +821,7 @@ class CompositeNode(Node, DataFlow):
             # Forward compatibility for versions earlier than 0.8.0
             # We do the exact opposite than in load_ad_hoc_data, have a look there.
             if hasattr(node, "__ad_hoc_from_old_map__"):
-                for newKey, oldKeys in node.__ad_hoc_from_old_map__.iteritems():
+                for newKey, oldKeys in node.__ad_hoc_from_old_map__.items():
                     if len(oldKeys)==0: continue
                     data = node.get_ad_hoc_dict().get_metadata(newKey)
                     for pos, newKey in enumerate(oldKeys):
@@ -1209,12 +1209,12 @@ class JSONCNFactoryWriter(PyCNFactoryWriter):
     def __repr__(self):
         f = self.factory
 
-        minx = min(f.elt_ad_hoc.itervalues(), key=lambda x: x["position"][0])["position"][0]
-        miny = min(f.elt_ad_hoc.itervalues(), key=lambda x: x["position"][1])["position"][1]
+        minx = min(f.elt_ad_hoc.values(), key=lambda x: x["position"][0])["position"][0]
+        miny = min(f.elt_ad_hoc.values(), key=lambda x: x["position"][1])["position"][1]
 
         print minx, miny
 
-        for elt in f.elt_ad_hoc.itervalues():
+        for elt in f.elt_ad_hoc.values():
             elt["position"][0] -= minx
             elt["position"][1] -= miny
 
@@ -1226,7 +1226,7 @@ class JSONCNFactoryWriter(PyCNFactoryWriter):
                  #inputs=f.inputs,
                  #outputs=f.outputs,
                  #elt_factory=f.elt_factory,
-                 elt_connections=list(f.connections.itervalues()),
+                 elt_connections=list(f.connections.values()),
                  #elt_data=f.elt_data,
                  #elt_value=f.elt_value,
                  elt_ad_hoc=f.elt_ad_hoc,

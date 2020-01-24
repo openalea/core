@@ -33,6 +33,6 @@ def HTMLColorToRGB(colorstring):
     return (r, g, b)
 
     
-for k, v in __dict__.iteritems():
+for k, v in __dict__.items():
     if isinstance(v, str):
         globals()[k] = HTMLColorToRGB(v)

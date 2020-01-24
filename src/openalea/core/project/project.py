@@ -153,7 +153,7 @@ class Project(Observed):
         self._path = _normpath(path)
 
         # Fill metadata
-        for k, v in self.DEFAULT_METADATA.iteritems():
+        for k, v in self.DEFAULT_METADATA.items():
             self.metadata[k] = kwargs.get(k, v.value)
 
         # Allocate category dictionaries

@@ -304,7 +304,7 @@ class LoggerOffice(object):
         return handler
 
     def get_handler_names(self):
-        return list(self.__handlers.iterkeys())
+        return list(self.__handlers.keys())
 
     def get_handler(self, name):
         handler =  self.__handlers.get(name)
@@ -313,7 +313,7 @@ class LoggerOffice(object):
         return handler
 
     def iter_handlers(self):
-        return self.__handlers.itervalues()
+        return self.__handlers.values()
 
     ###########
     # LOGGERS #
@@ -328,7 +328,7 @@ class LoggerOffice(object):
         return logger
 
     def get_logger_names(self):
-        return list(self.__pyLoggers.iterkeys())
+        return list(self.__pyLoggers.keys())
 
     def get_logger(self, name):
         logger = self.__pyLoggers.get(name)
@@ -337,7 +337,7 @@ class LoggerOffice(object):
         return logger
 
     def iter_loggers(self):
-        return self.__pyLoggers.itervalues()
+        return self.__pyLoggers.values()
 
     #################################
     # Logger to handler connections #

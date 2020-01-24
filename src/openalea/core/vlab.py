@@ -218,7 +218,7 @@ class VlabObject(object):
         fn = ''
         if len(command) > 1:
             fn = command[-1]
-            if fn not in self._files.keys():
+            if fn not in list(self._files.keys()):
                 print "WARNING: the file %s used by the editor %s in not in the specification file." %(fn, cmd)
                 return
                 #self._files[fn] = []
@@ -245,7 +245,7 @@ class VlabObject(object):
     def process_files(self):
         from openalea.core.data import DataFactory
         deps = self._files
-        files = deps.keys()
+        files = list(deps.keys())
         for f in files:
             fn = self.dir/f
             if fn.ext in ['.map', '.txt', '.s', '.e', '.rgb']:
@@ -268,7 +268,7 @@ class VlabObject(object):
         Specify connections between nodes.
         """
         prog_deps = []
-        files = self._files.keys()
+        files = list(self._files.keys())
         for p in self._programs:
             cmd = self.sg.node(p).inputs[1].split()
             fdeps = [f for f in files if f in cmd]
@@ -280,13 +280,13 @@ class VlabObject(object):
                 depnode = self._filenodes[fdep]
                 node = self._filenodes[f]
                 self.sg.connect(depnode, 0, node, 0)
-        for f, nodes in self._editors.iteritems():
+        for f, nodes in self._editors.items():
             if not f: # an editor can act withouot a file
                 continue
             fnode = self._filenodes[f]
             for node in nodes:
                 self.sg.connect(node, 0, fnode, 0)
-        for f, nodes in self._text.iteritems():
+        for f, nodes in self._text.items():
             fnode = self._filenodes[f]
             for node in nodes:
                 self.sg.connect(fnode, 0, node, 0)
@@ -425,8 +425,8 @@ class VlabObject2(VlabObject):
         from openalea.core.data import DataFactory
 
         deps = self._files
-        files = deps.keys()
-        for f, vf in deps.iteritems():
+        files = list(deps.keys())
+        for f, vf in deps.items():
             assert f[-1] != ':'
             fn = self.dir/f
             if fn.ext in ['.map', '.txt', '.s', '.e', '.rgb']:
@@ -436,7 +436,7 @@ class VlabObject2(VlabObject):
         # create the data here
         # Create vlab data rather than simple data
         self._filenodes = {}
-        for vf in deps.itervalues():
+        for vf in deps.values():
             factory = DataFactory(vf.name, editors=vf.editors)
             self._package.add_factory(factory)
             self.factories.append(factory)
@@ -454,7 +454,7 @@ class VlabObject2(VlabObject):
         Specify connections between nodes.
         """
         prog_deps = []
-        files = self._files.keys()
+        files = list(self._files.keys())
         for p in self._programs:
             cmd = self.sg.node(p).inputs[1].split()
             fdeps = [f for f in files if f in cmd]

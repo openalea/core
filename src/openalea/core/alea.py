@@ -95,7 +95,7 @@ def get_node(component, inputs, pm=None):
     node = factory.instantiate()
 
     if (inputs):
-        for k, v in inputs.iteritems():
+        for k, v in inputs.items():
             try:
                 node.set_input(k, v)
             except KeyError as e:
@@ -163,7 +163,7 @@ def query(component, pm=None):
         print "Package '%s' not found." % (pkg_id)
         print "\nAvailable packages are :"
 
-        keys = pm.keys()
+        keys = list(pm.keys())
         keys.sort()
 
         for p in keys:
@@ -182,11 +182,11 @@ def query(component, pm=None):
     print "-------"
     print "name : ", pkg.name
 
-    for key, info in pkg.metainfo.iteritems():
+    for key, info in pkg.metainfo.items():
         print "%s : %s" % (key, info)
 
     if(not node_id):
-        keys = pkg.keys()
+        keys = list(pkg.keys())
         keys.sort()
 
         print "\nAvailable nodes are:"
@@ -262,7 +262,7 @@ def get_intput_callback(option, opt_str, value, parser):
             del rargs[0]
 
 
-    for k, v in value.iteritems():
+    for k, v in value.items():
         try:
             v = eval(v)
             value[k] = v
@@ -281,7 +281,7 @@ def function(factory):
     def f(*args, **kwds):
         for i, v in enumerate(args):
             node.set_input(i,v)
-        for k, v in kwds.iteritems():
+        for k, v in kwds.items():
             node.set_input(k,v)
 
         node.eval()

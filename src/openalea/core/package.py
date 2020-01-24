@@ -264,7 +264,7 @@ class Package(PackageDict):
     def get_names(self):
         """ Return all the factory names in a list """
 
-        return self.keys()
+        return list(self.keys())
 
     def get_factory(self, id):
         """ Return the factory associated with id """
@@ -321,7 +321,7 @@ class UserPackage(Package):
             shutil.copyfile(src, dst)
 
         # Copy deeply all the factory
-        for k, v in pkg.iteritems():
+        for k, v in pkg.items():
             self[k] = v.copy(replace_pkg=(pkg, self),
                              path=self.path)
 
@@ -632,7 +632,7 @@ class PyPackageReaderWralea(PyPackageReader):
             icon='',
             alias=[], )
 
-        for k, v in wraleamodule.__dict__.iteritems():
+        for k, v in wraleamodule.__dict__.items():
 
             if not (k.startswith('__') and k.endswith('__')):
                 continue
@@ -668,7 +668,7 @@ class PyPackageReaderWralea(PyPackageReader):
         for name in palias:
             if protected(name) in pkgmanager:
                 alias_pkg = pkgmanager[protected(name)]
-                for name_factory, factory in p.iteritems():
+                for name_factory, factory in p.items():
                     if (name_factory not in alias_pkg and
                        (alias_pkg.name + '.' + name_factory) not in pkgmanager):
                         alias_pkg[name_factory] = factory
@@ -747,9 +747,9 @@ $FACTORY_DECLARATION
 
         fdict = self.get_factories_str()
 
-        all = fdict.keys()
+        all = list(fdict.keys())
 
-        fstr = '\n'.join(fdict.values())
+        fstr = '\n'.join(list(fdict.values()))
 
         pstr = string.Template(self.pkg_template)
 
@@ -757,7 +757,7 @@ $FACTORY_DECLARATION
 
         metainfo = '__editable__ = %s\n' % (repr(editable))
 
-        for (k, v) in self.package.metainfo.iteritems():
+        for (k, v) in self.package.metainfo.items():
             key = "__%s__" % (k)
             val = repr(v)
             metainfo += "%s = %s\n" % (key, val)

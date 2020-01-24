@@ -44,6 +44,7 @@ from openalea.core.pkgdict import PackageDict, is_protected, protected
 from openalea.core.category import PackageManagerCategory
 from openalea.core import logger
 
+import six
 from six.moves.configparser import NoSectionError, NoOptionError
 
 ###########################################################################
@@ -385,7 +386,7 @@ class PackageManager(Observed):
         pt = PseudoPackage('Root')
 
         # Build the name tree (on uniq objects)
-        for k, v in self.pkgs.iteritems():
+        for k, v in self.pkgs.items():
             if(not is_protected(k)):
                 pt.add_name(k, v)
 
@@ -399,7 +400,7 @@ class PackageManager(Observed):
     def update_category(self, package):
         """ Update the category dictionary with package contents """
 
-        for nf in package.itervalues():
+        for nf in package.values():
             # skip the deprecated name (starting with #)
             if is_protected(nf.name):
                 continue
@@ -431,7 +432,7 @@ class PackageManager(Observed):
         """ Rebuild all the category """
 
         self.category = PseudoGroup('Root')
-        for p in self.pkgs.itervalues():
+        for p in self.pkgs.values():
             self.update_category(p)
 
     # Wralea functions
@@ -793,13 +794,13 @@ class PackageManager(Observed):
         return self.pkgs.values()
 
     def iterkeys(self):
-        return self.pkgs.iterkeys()
+        return six.iterkeys(self.pkgs)
 
     def iteritems(self):
-        return self.pkgs.iteritems()
+        return six.iteritems(self.pkgs)
 
     def itervalues(self):
-        return self.pkgs.itervalues()
+        return six.itervalues(self.pkgs)
 
     def has_key(self, key):
         return key in self.pkgs
@@ -868,11 +869,11 @@ class PackageManager(Observed):
         match = []
 
         # Search for each package and for each factory
-        for name, pkg in self.iteritems():
+        for name, pkg in self.items():
             if is_protected(name):
                 continue  # alias
 
-            for fname, factory in pkg.iteritems():
+            for fname, factory in pkg.items():
                 if is_protected(fname): 
                     continue  # alias
 
@@ -929,7 +930,7 @@ class PackageManager(Observed):
         if pkg_name and pkg_name in self:
             pkgs = [pkg_name]
         else:
-            pkgs = set(pk.name for pk in self.itervalues() if not is_protected(pk.name))
+            pkgs = set(pk.name for pk in self.values() if not is_protected(pk.name))
         return [self[p] for p in pkgs]
 
     def get_data(self, pattern='*.*', pkg_name=None, as_paths=False):
@@ -937,19 +938,19 @@ class PackageManager(Observed):
         pkgs = self.get_packages(pkg_name)
         datafiles = [
             (pj(p.path, f.name) if as_paths else f) 
-            for p in pkgs for f in p.itervalues() if( 
+            for p in pkgs for f in p.values() if( 
                 not is_protected(f.name) and
                 f.is_data() and fnmatch(f.name, pattern))]
         return datafiles
 
     def get_composite_nodes(self, pkg_name=None):
         pkgs = self.get_packages(pkg_name)
-        cn = [f for p in pkgs for f in p.itervalues() if f.is_composite_node()]
+        cn = [f for p in pkgs for f in p.values() if f.is_composite_node()]
         return cn
 
     def get_nodes(self, pkg_name=None):
         pkgs = self.get_packages(pkg_name)
-        nf = [f for p in pkgs for f in p.itervalues() if f.is_node()]
+        nf = [f for p in pkgs for f in p.values() if f.is_node()]
         return nf
 
     def _dependencies(self, factory):
@@ -1023,7 +1024,7 @@ class PackageManager(Observed):
         return d
 
     def _pkg_dependencies(self, package):
-        cns = [f for f in package.itervalues() if f.is_composite_node()]
+        cns = [f for f in package.values() if f.is_composite_node()]
         factories = set(
             (f.package.name, f.name) for cn_factory in cns for f in self._dependencies(cn_factory) 
             if f.package.name != package.name)
@@ -1042,7 +1043,7 @@ class PackageManager(Observed):
         return d
 
     def _missing_pkg_dependencies(self, package):
-        cns = [f for f in package.itervalues() if f.is_composite_node()]
+        cns = [f for f in package.values() if f.is_composite_node()]
         l = []
         for cn in cns:
             self._missing(cn, l)
@@ -1065,7 +1066,7 @@ class PackageManager(Observed):
         """
         res = []
         for pkg in self.get_packages():
-            cns = [f for f in pkg.itervalues() if f.is_composite_node()]
+            cns = [f for f in pkg.values() if f.is_composite_node()]
             res.extend(
                 (pkg.name, cn.name) for cn in cns for pname, name in self._cn_dependencies(cn) 
                 if name == factory_name)
@@ -1109,7 +1110,7 @@ class PseudoGroup(PackageDict):
             # if value is a dict we include sub nodes
             self.item = value
             try:
-                for k, v in value.iteritems():
+                for k, v in value.items():
                     self[k] = v
             except:
                 try:

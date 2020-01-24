@@ -34,7 +34,7 @@ from openalea.core.settings import get_openalea_tmp_dir
 
 def get_criteria(project):
     criteria = {}
-    for criterion in Project.DEFAULT_METADATA.keys() + ['path']:
+    for criterion in list(Project.DEFAULT_METADATA.keys()) + ['path']:
         criteria[criterion] = getattr(project, criterion)
     return criteria
 
@@ -338,7 +338,7 @@ You can rename/move this project thanks to the button "Save As" in menu.
         if project is None:
             return
         sys.path = self.old_syspath
-        for k in project.ns.keys() + ['world', 'data', 'project']:
+        for k in list(project.ns.keys()) + ['world', 'data', 'project']:
             if k in interpreter.user_ns:
                 del interpreter.user_ns[k]
         from openalea.core.world import World

@@ -160,7 +160,7 @@ class Model(object):
         m = self.__class__(name=self.name)
         m.inputs_info = list(self.inputs_info)
         m.outputs_info = list(self.outputs_info)
-        for fname, code in self._code.iteritems():
+        for fname, code in self._code.items():
             m.set_func_code(fname, code)
         return m
 

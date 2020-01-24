@@ -19,7 +19,7 @@ def get_packages(pm, pkg_name=None):
     if pkg_name and pkg_name in pm:
         pkgs = [pkg_name]
     else:
-        pkgs = set(pk.name for pk in pm.itervalues() if not pk.name.startswith('#'))
+        pkgs = set(pk.name for pk in pm.values() if not pk.name.startswith('#'))
     return pkgs
 
 def data(pm, pattern = '*.*', pkg_name=None):
@@ -64,7 +64,7 @@ def cn_pkgs_deps(pm, cn_factory):
     return sorted(l)
 
 def package_dependencies(pm, package):
-    cns = [f for f in package.itervalues() if is_cn(f)]
+    cns = [f for f in package.values() if is_cn(f)]
     factories = set((f.package.name, f.name) for cn_factory in cns for f in cn_deps(pm, cn_factory))
     pkgs = set(f for f in factories if f[0] != package.name)
     l = list(pkgs)
@@ -80,13 +80,13 @@ def score_packages(pm):
     d = pm_dependencies(pm)
 
     score = {}
-    for k, l in d.iteritems():
+    for k, l in d.items():
         for p in l:
             score.setdefault(p,0)
             score[p]+=1
 
     new_score = {}
-    for k, v in score.iteritems():
+    for k, v in score.items():
         new_score.setdefault(v,[]).append(k)
     return new_score
 

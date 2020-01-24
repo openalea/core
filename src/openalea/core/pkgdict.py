@@ -94,7 +94,7 @@ class PackageDict(dict):
     def iter_public_values(self):
         """ Iterate througth dictionnary value (remove protected value)  """
 
-        for k, v in self.iteritems():
+        for k, v in self.items():
             if (not is_protected(k)):
                 yield v
 
@@ -103,7 +103,7 @@ class PackageDict(dict):
 
         if (self.nb_public is None):
             l = lambda x: not is_protected(x)
-            ks = filter(l, self.iterkeys())
+            ks = filter(l, self.keys())
             self.nb_public = len(ks)
 
         return self.nb_public

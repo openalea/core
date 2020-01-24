@@ -35,7 +35,7 @@ class PropertyGraph(IPropertyGraph, Graph):
     
     def vertex_property_names(self):
         """todo"""
-        return self._vertex_property.iterkeys()
+        return self._vertex_property.keys()
     vertex_property_names.__doc__ = IPropertyGraph.vertex_property_names.__doc__
     
     def vertex_property(self, property_name):
@@ -49,7 +49,7 @@ class PropertyGraph(IPropertyGraph, Graph):
     
     def edge_property_names(self):
         """todo"""
-        return self._edge_property.iterkeys()
+        return self._edge_property.keys()
     edge_property_names.__doc__ = IPropertyGraph.edge_property_names.__doc__
     
     def edge_property(self, property_name):
@@ -97,30 +97,30 @@ class PropertyGraph(IPropertyGraph, Graph):
     
     def remove_vertex(self, vid):
         """todo"""
-        for prop in self._vertex_property.itervalues():
+        for prop in self._vertex_property.values():
             prop.pop(vid, None)
         Graph.remove_vertex(self, vid)
     remove_vertex.__doc__ = Graph.remove_vertex.__doc__
     
     def clear(self):
         """todo"""
-        for prop in self._vertex_property.itervalues():
+        for prop in self._vertex_property.values():
             prop.clear()
-        for prop in self._edge_property.itervalues():
+        for prop in self._edge_property.values():
             prop.clear()
         Graph.clear(self)
     clear.__doc__ = Graph.clear.__doc__
     
     def remove_edge(self, eid):
         """todo"""
-        for prop in self._edge_property.itervalues():
+        for prop in self._edge_property.values():
             prop.pop(eid, None)
         Graph.remove_edge(self, eid)
     remove_edge.__doc__ = Graph.remove_edge.__doc__
     
     def clear_edges(self):
         """todo"""
-        for prop in self._edge_property.itervalues():
+        for prop in self._edge_property.values():
             prop.clear()
         Graph.clear_edges(self)
     clear_edges.__doc__ = Graph.clear_edges.__doc__
@@ -134,7 +134,7 @@ class PropertyGraph(IPropertyGraph, Graph):
                 self.add_vertex_property(prop_name)
             prop = self.vertex_property(prop_name)
             
-            for vid, val in graph.vertex_property(prop_name).iteritems():
+            for vid, val in graph.vertex_property(prop_name).items():
                 prop[trans_vid[vid]] = val
         #mise a jour des proprietes sur les edges
         for prop_name in graph.edge_property_names():
@@ -142,7 +142,7 @@ class PropertyGraph(IPropertyGraph, Graph):
                 self.add_edge_property(prop_name)
             prop = self.edge_property(prop_name)
             
-            for eid, val in graph.edge_property(prop_name).iteritems():
+            for eid, val in graph.edge_property(prop_name).items():
                 prop[trans_eid[eid]] = val
 
         return trans_vid, trans_eid
