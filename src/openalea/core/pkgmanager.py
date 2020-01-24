@@ -22,6 +22,7 @@ It stores the packages and nodes informations
 """
 from __future__ import division
 from six.moves import map
+from six.moves import filter
 __license__ = "Cecill-C"
 __revision__ = " $Id$ "
 
@@ -180,7 +181,7 @@ class PackageManager(Observed):
         """ return the list of wralea path (union of user and system)"""
 
         dirs = list(self.temporary_wralea_paths.union(self.sys_wralea_path.union(self.user_wralea_path)))
-        dirs = filter(isdir, dirs)
+        dirs = list(filter(isdir, dirs))
         return dirs
 
     def set_user_wralea_path(self):
@@ -616,7 +617,7 @@ class PackageManager(Observed):
         return files
 
     def create_readers(self, wralea_files):
-        return filter(None, (self.get_pkgreader(f) for f in wralea_files))
+        return [_f for _f in (self.get_pkgreader(f) for f in wralea_files) if _f]
 
     def get_pkgreader(self, filename):
         """ Return the pkg reader corresponding to the filename """
@@ -906,9 +907,9 @@ class PackageManager(Observed):
 
         # Filter ports
         if(nb_inputs >= 0):
-            match = filter(lambda sc_x: sc_x[1] and sc_x[1].inputs and len(sc_x[1].inputs) == nb_inputs, match)
+            match = [sc_x for sc_x in match if sc_x[1] and sc_x[1].inputs and len(sc_x[1].inputs) == nb_inputs]
         if(nb_outputs >= 0):
-            match = filter(lambda sc_x: sc_x[1] and sc_x[1].outputs and len(sc_x[1].outputs) == nb_outputs, match)
+            match = [sc_x for sc_x in match if sc_x[1] and sc_x[1].outputs and len(sc_x[1].outputs) == nb_outputs]
 
         if not len(match):
             return match

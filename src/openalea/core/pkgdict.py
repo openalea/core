@@ -14,6 +14,7 @@
 #
 ###############################################################################
 """Special Dict with case insensitive key and protected field"""
+from six.moves import filter
 
 __license__ = "Cecill-C"
 __revision__ = " $Id$ "
