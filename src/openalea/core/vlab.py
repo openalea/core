@@ -19,6 +19,8 @@ __license__ = "Cecill-C"
 __revision__ = " $Id$ "
 
 
+from __future__ import division
+
 import os
 import sys
 import re
@@ -325,7 +327,7 @@ def layout(obj):
     y = 250
     progs = obj._programs
     n = len(progs)+1
-    dx = x = size / n
+    dx = x = size // n
     dx = max(min_dx, dx)
     for vid in progs:
         data = sg.node(vid).internal_data
@@ -333,16 +335,16 @@ def layout(obj):
         data['posy'] = y
         x+= dx
 
-    size = size/n
+    size = size//n
     for vid in obj._programs:
         l = list(sg.in_neighbors(vid))
         if not l:
             continue
         n1 = sg.node(vid)
         x0, y0 = n1.internal_data['posx'], n1.internal_data['posy']
-        dx1 = max(min_dx, size/(2*len(l)+1))
+        dx1 = max(min_dx, size//(2*len(l)+1))
         y1 = y0 - dy
-        x1 = x0 - size/2
+        x1 = x0 - size//2
         for node_id in l:
             data = sg.node(node_id).internal_data
             data['posx'] = x1
@@ -367,8 +369,8 @@ def compute_layout(sg, vid, x, dx, y, dy):
     l = list(sg.in_neighbors(vid))
     if not l:
         return
-    x = x - dx/2
-    dx /= len(l)
+    x = x - dx//2
+    dx = dx//len(l)
     dx = max(min_dx, dx)
     y -= dy
     for node_id in l:

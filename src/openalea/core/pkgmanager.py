@@ -24,6 +24,8 @@ It stores the packages and nodes informations
 __license__ = "Cecill-C"
 __revision__ = " $Id$ "
 
+from __future__ import division
+
 import sys
 import os
 from os.path import join as pj
