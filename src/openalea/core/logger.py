@@ -137,6 +137,7 @@ from logging import DEBUG, INFO, WARNING, ERROR, CRITICAL, NOTSET
 import logging.handlers
 from logging.handlers import TimedRotatingFileHandler
 from openalea.core.singleton import Singleton
+from six.moves import map
 
 
 #: List of default handler names:
@@ -510,7 +511,7 @@ if QT_LOGGING_MODEL_AVAILABLE:
                 self.removeRow(0)
 
             vals = self.format(record).split(" - ")
-            items = map(QtGui.QStandardItem, vals )
+            items = list(map(QtGui.QStandardItem, vals ))
 
             # -- optionnal colouring --
             if self.messageTypeIndex is not None:

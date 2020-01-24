@@ -21,6 +21,7 @@
 
 from __future__ import generators
 import six
+from six.moves import map
 try:
     # Python 2: "unicode" is built-in
     unicode
@@ -170,7 +171,7 @@ class Builder(object):
         return m(o)
     
     def build_List(self, o):
-        return map(self.build, o.getChildren())
+        return list(map(self.build, o.getChildren()))
     
     def build_Const(self, o):
         return o.value
@@ -197,7 +198,7 @@ class Builder(object):
         raise UnknownType('Undefined Name')
     
     def build_Add(self, o):
-        real, imag = map(self.build_Const, o.getChildren())
+        real, imag = list(map(self.build_Const, o.getChildren()))
         try:
             real = float(real)
         except TypeError:

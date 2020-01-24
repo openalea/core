@@ -21,6 +21,7 @@ It is able to find installed package and their wralea.py
 It stores the packages and nodes informations
 """
 from __future__ import division
+from six.moves import map
 __license__ = "Cecill-C"
 __revision__ = " $Id$ "
 
@@ -497,7 +498,7 @@ class PackageManager(Observed):
             logger.info("Package Manager : found  VLAB %s" % p)
             # self.log.add("Package Manager : found  VLAB %s" % p)
 
-        return map(self.get_pkgreader, spec_files)
+        return list(map(self.get_pkgreader, spec_files))
 
     def find_wralea_dir(self, directory, recursive=True):
         """
@@ -534,7 +535,7 @@ class PackageManager(Observed):
             dt = t1 - t0
             print 'search wralea files takes %f sec' % dt
 
-        readers = map(self.get_pkgreader, wralea_files)
+        readers = list(map(self.get_pkgreader, wralea_files))
 
         if DEBUG:
             t2 = time.clock()

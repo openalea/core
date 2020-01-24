@@ -30,6 +30,7 @@ from openalea.core.project.project import Project
 from openalea.core.service.ipython import interpreter
 from openalea.core.service.plugin import plugins
 from openalea.core.settings import get_openalea_tmp_dir
+from six.moves import map
 
 
 def get_criteria(project):
@@ -158,7 +159,7 @@ class ProjectManager(GenericManager):
     def write_settings(self):
         """ Add a new path to the settings. """
         lst = list(set(self.repositories))
-        lst = map(str, lst)
+        lst = list(map(str, lst))
         config = settings.Settings()
         config.set("ProjectManager", "Path", str(lst))
 
