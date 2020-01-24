@@ -1320,7 +1320,7 @@ class NodeFactory(AbstractFactory):
         module = self.get_node_module()
 
         # Run src
-        exec newsrc in module.__dict__
+        exec(newsrc, module.__dict__)
 
         # save the current newsrc
         self.src_cache = newsrc
@@ -1334,7 +1334,7 @@ class NodeFactory(AbstractFactory):
         nodesrc = self.get_node_src(cache=False)
 
         # Run src
-        exec newsrc in module.__dict__
+        exec(newsrc, module.__dict__)
 
         # get the module code
         import inspect

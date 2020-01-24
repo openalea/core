@@ -62,9 +62,9 @@ def adapt_interpreter(ip):
         :param namespace: dict to use to execute the source
         """
         if namespace is not None:
-            exec source in namespace
+            exec(source, namespace)
         else:
-            exec source in self.locals, self.locals
+            exec(source, self.locals, self.locals)
 
     def runsource(self, source=None, filename="<input>", symbol="single"):
         try:
