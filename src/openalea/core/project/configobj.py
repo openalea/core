@@ -23,6 +23,7 @@ from __future__ import generators
 import six
 from six.moves import map
 from six.moves import zip
+from six.moves import range
 try:
     # Python 2: "unicode" is built-in
     unicode

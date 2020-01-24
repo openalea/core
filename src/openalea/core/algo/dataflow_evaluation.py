@@ -587,7 +587,7 @@ class LambdaEvaluation(PriorityEvaluation):
 
         else:
             # set the node output with subdataflow
-            for i in xrange(actor.get_nb_output()):
+            for i in range(actor.get_nb_output()):
                 actor.set_output(i, SubDataflow(df, self, vid, i))
 
     def eval(self, vtx_id=None, context=None, is_subdataflow=False, step=False):

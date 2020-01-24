@@ -832,7 +832,7 @@ class CompositeNode(Node, DataFlow):
 
             # Copy value
             sgfactory.elt_value[vid] = []
-            for port in xrange(node.get_nb_input()):
+            for port in range(node.get_nb_input()):
                 if node.input_states[port] is not "connected":
                     val = node.get_input(port)
                     if "pyqt" in repr(val).lower():
@@ -861,10 +861,10 @@ class CompositeNode(Node, DataFlow):
         node.set_compositenode(self)
 
         node.set_id(vid)
-        for local_pid in xrange(node.get_nb_input()):
+        for local_pid in range(node.get_nb_input()):
             self.add_in_port(vid, local_pid)
 
-        for local_pid in xrange(node.get_nb_output()):
+        for local_pid in range(node.get_nb_output()):
             self.add_out_port(vid, local_pid)
 
         self.set_actor(vid, node)

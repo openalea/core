@@ -39,6 +39,7 @@ from .observer import Observed, AbstractListener
 from .actor import IActor
 from .metadatadict import MetaDataDict, HasAdHoc
 from .interface import TypeNameInterfaceMap
+from six.moves import range
 # Exceptions
 class RecursionError (Exception):
     """todo"""
@@ -685,7 +686,7 @@ class Node(AbstractNode):
         odict['modified'] = True
 
 
-        outputs = range(len(self.outputs))
+        outputs = list(range(len(self.outputs)))
         for i in range(self.get_nb_output()):
             try:
                 outputs[i] = copy(self.outputs[i])
@@ -693,7 +694,7 @@ class Node(AbstractNode):
                 outputs[i] = None
         odict['outputs'] = outputs
 
-        inputs = range(self.get_nb_input())
+        inputs = list(range(self.get_nb_input()))
         for i in range(self.get_nb_input()):
             try:
                 inputs[i] = copy(self.inputs[i])
@@ -733,7 +734,7 @@ class Node(AbstractNode):
             self.outputs[i] = None
 
         i = self.get_nb_input()
-        for i in xrange(i):
+        for i in range(i):
             # if(not connected or self.input_states[i] is "connected"):
             self.set_input(i, self.input_desc[i].get('value', None))
 

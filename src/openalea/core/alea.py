@@ -211,7 +211,7 @@ def query(component, pm=None):
         print "Name : %s" % (factory.name)
         print "Documentation : %s" % (doc, )
         print "Inputs:"
-        for i in xrange(node.get_nb_input()):
+        for i in range(node.get_nb_input()):
             port = node.get_input_port(i)
             print "  ", port.get_tip()
         print "Outputs:"
