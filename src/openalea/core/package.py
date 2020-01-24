@@ -21,6 +21,12 @@ and meta informations (authors, license, doc...)
 """
 
 from __future__ import print_function
+try:
+    # Python 2: "reload" is built-in
+    reload
+except NameError:
+    from importlib import reload
+    
 __license__ = "Cecill-C"
 __revision__ = " $Id$ "
 
