@@ -310,7 +310,7 @@ class AccuList(Node):
             varname = "AccuList_%i" % (id(self))
 
         # Create datapool variable if necessary
-        if(not self.pool.has_key(varname) or
+        if(varname not in self.pool or
            not isinstance(self.pool[varname], list)):
             l = list()
             self.pool[varname] = l
@@ -346,7 +346,7 @@ class AccuFloat(Node):
             varname = "AccuFloat_%i" % (id(self))
 
         # Create datapool variable if necessary
-        if(not self.pool.has_key(varname) or
+        if(varname not in self.pool or
            not isinstance(self.pool[varname], float)):
             self.pool[varname] = 0.
 

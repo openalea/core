@@ -562,7 +562,7 @@ class LambdaEvaluation(PriorityEvaluation):
                         # E.g. f(x=3). We replace x subdf by 3.
                         # If x is used elsewhere (f(x,x)), we referenced it
                         # in a dict.
-                        if (not lambda_value.has_key(outval)):
+                        if (outval not in lambda_value):
                             try:
                                 lambda_value[outval] = context.pop()
                             except Exception:

@@ -123,7 +123,7 @@ class Session(Observed):
         self.pkgmanager.find_and_register_packages()
 
         # Create user package if needed
-        if (not self.pkgmanager.has_key(self.USR_PKG_NAME)):
+        if (self.USR_PKG_NAME not in self.pkgmanager):
             try:
                 self.pkgmanager.create_user_package(self.USR_PKG_NAME, {})
             except:

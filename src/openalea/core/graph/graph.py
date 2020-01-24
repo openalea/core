@@ -78,11 +78,11 @@ class Graph (IGraph,
     __contains__.__doc__=IGraph.__contains__.__doc__
 
     def has_vertex(self, vid):
-        return self._vertices.has_key(vid)
+        return vid in self._vertices
     has_vertex.__doc__=IGraph.has_vertex.__doc__
 
     def has_edge(self, eid):
-        return self._edges.has_key(eid)
+        return eid in self._edges
     has_edge.__doc__=IGraph.has_edge.__doc__
 
     def is_valid(self):

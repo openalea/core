@@ -880,7 +880,7 @@ class CompositeNode(Node, DataFlow):
     def notify_vertex_addition(self, vertex, vid=None):
         vtype = "vertex"
         doNotify = True
-        if(vertex.__class__.__dict__.has_key("__graphitem__")): vtype = "annotation"
+        if("__graphitem__" in vertex.__class__.__dict__): vtype = "annotation"
         elif isinstance(vertex, CompositeNodeOutput):
             vtype = "outNode"
             doNotify = True if len(vertex.input_desc) else False
@@ -894,7 +894,7 @@ class CompositeNode(Node, DataFlow):
     def notify_vertex_removal(self, vertex):
         vtype = "vertex"
         doNotify = True
-        if(vertex.__class__.__dict__.has_key("__graphitem__")): vtype = "annotation"
+        if("__graphitem__" in vertex.__class__.__dict__): vtype = "annotation"
         elif isinstance(vertex, CompositeNodeOutput): vtype = "outNode"
         elif isinstance(vertex, CompositeNodeInput) : vtype = "inNode"
         else: pass

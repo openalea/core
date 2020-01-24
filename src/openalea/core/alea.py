@@ -158,7 +158,7 @@ def query(component, pm=None):
         pm = load_package_manager()
 
     # package not found
-    if (not pkg_id or not pm.has_key(pkg_id)):
+    if (not pkg_id or pkg_id not in pm):
 
         print "Package '%s' not found." % (pkg_id)
         print "\nAvailable packages are :"
@@ -173,7 +173,7 @@ def query(component, pm=None):
 
     pkg = pm[pkg_id]
 
-    if(not pkg.has_key(node_id)):
+    if(node_id not in pkg):
         print "Unknown node '%s'" % (node_id, )
         node_id = None
 

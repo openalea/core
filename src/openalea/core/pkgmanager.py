@@ -801,8 +801,8 @@ class PackageManager(Observed):
     def itervalues(self):
         return self.pkgs.itervalues()
 
-    def has_key(self, *args):
-        return self.pkgs.has_key(*args)
+    def has_key(self, key):
+        return key in self.pkgs
 
     def get(self, *args):
         return self.pkgs.get(*args)
