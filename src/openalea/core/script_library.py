@@ -20,7 +20,7 @@ to register objects with their names"""
 __license__ = "Cecill-C"
 __revision__ = " $Id$ "
 
-from singleton import Singleton
+from .singleton import Singleton
 
 class ScriptLibrary(object):
     """The ScriptLibrary is a library that register

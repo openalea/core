@@ -19,8 +19,8 @@
 __license__ = "Cecill-C"
 __revision__ = " $Id$ "
 
-from interface.property_graph import IPropertyGraph, PropertyError
-from graph import Graph, InvalidVertex, InvalidEdge
+from .interface.property_graph import IPropertyGraph, PropertyError
+from .graph import Graph, InvalidVertex, InvalidEdge
 
 class PropertyGraph(IPropertyGraph, Graph):
     """

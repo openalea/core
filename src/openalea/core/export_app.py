@@ -43,7 +43,7 @@ def export_app(name, filename, cn_factory):
     #todo replace this line so as to remove string import that is deprecated
     template_str = string.Template(template)
 
-    import version as versionmodule
+    from . import version as versionmodule
     import time
 
     try:

@@ -7,7 +7,7 @@ __version__ = version.__version__
 # #}
 
 from openalea.core.external import *
-from script_library import ScriptLibrary
+from .script_library import ScriptLibrary
 
 
 def global_module(module):

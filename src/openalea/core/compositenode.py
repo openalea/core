@@ -34,7 +34,7 @@ from openalea.core.package import UnknownNodeError
 from openalea.core.dataflow import DataFlow, InvalidEdge, PortError
 from openalea.core.settings import Settings
 from openalea.core.metadatadict import MetaDataDict
-import logger
+from . import logger
 
 quantify = False
 
@@ -572,7 +572,7 @@ class CompositeNode(Node, DataFlow):
     def to_script (self) :
         """Translate the dataflow into a python script.
         """
-        from algo.dataflow_evaluation import ToScriptEvaluation
+        from .algo.dataflow_evaluation import ToScriptEvaluation
         algo = ToScriptEvaluation(self)
         return algo.eval()
 

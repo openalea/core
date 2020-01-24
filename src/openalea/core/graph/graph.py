@@ -21,11 +21,11 @@ graph interface do not implement copy concept.
 __license__ = "Cecill-C"
 __revision__ = " $Id$ "
 
-from interface.graph import InvalidEdge, InvalidVertex, IGraph, \
+from .interface.graph import InvalidEdge, InvalidVertex, IGraph, \
                     IVertexListGraph, IEdgeListGraph, \
                     IMutableVertexGraph, IMutableEdgeGraph, \
                     IExtendGraph
-from id_generator import IdGenerator
+from .id_generator import IdGenerator
 
 
 class Graph (IGraph,

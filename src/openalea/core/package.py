@@ -438,7 +438,7 @@ def %s(%s):
         """
         # Avoid cyclic import:
         # composite node factory import package...
-        from compositenode import CompositeNodeFactory
+        from .compositenode import CompositeNodeFactory
 
         newfactory = CompositeNodeFactory(name=name,
                                           description=description,

@@ -1,6 +1,8 @@
 """ OpenAlea.Core.
 
 """
+from __future__ import absolute_import
+
 def get_interpreter_class():
     """
     :return: the interpreter class to instantiate the shell

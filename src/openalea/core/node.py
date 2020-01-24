@@ -34,11 +34,11 @@ from copy import copy, deepcopy
 from weakref import ref, proxy
 
 # from signature import get_parameters
-import signature as sgn
-from observer import Observed, AbstractListener
-from actor import IActor
-from metadatadict import MetaDataDict, HasAdHoc
-from interface import TypeNameInterfaceMap
+from . import signature as sgn
+from .observer import Observed, AbstractListener
+from .actor import IActor
+from .metadatadict import MetaDataDict, HasAdHoc
+from .interface import TypeNameInterfaceMap
 # Exceptions
 class RecursionError (Exception):
     """todo"""

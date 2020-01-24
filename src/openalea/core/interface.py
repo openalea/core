@@ -24,7 +24,7 @@ from openalea.core.metaclass import make_metaclass
 from openalea.core.singleton import Singleton
 from openalea.core.observer import AbstractListener
 
-import color_palette # used for colors of interfaces
+from . import color_palette # used for colors of interfaces
 import types
 
 # Dictionary to map Interface with corresponding python type
