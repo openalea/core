@@ -204,8 +204,8 @@ class CPickleSaver(AbstractSaver):
         """
         file_ = self._open_file(path)
         try:
-            import cPickle
-            cPickle.dumps(obj, file_)
+            import six.moves.cPickle
+            six.moves.cPickle.dumps(obj, file_)
         except ImportError:
             warnings.warn("You must install cPickle.")
 
@@ -303,14 +303,14 @@ class CPickleLoader(AbstractLoader):
         if filename.exists():
             cpik = "False"
             try:
-                import cPickle
+                import six.moves.cPickle
                 cpik = "True"
             except ImportError:
                 warnings.warn("You must install cPickle.")
             if cpik:
                 try:
                     file_ = open(filename, "r")
-                    ret = cPickle.load(file_)
+                    ret = six.moves.cPickle.load(file_)
                     file_.close()
                     return ret
                 except Exception as e:

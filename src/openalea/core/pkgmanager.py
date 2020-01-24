@@ -30,7 +30,7 @@ from os.path import join as pj
 from os.path import isdir
 
 import tempfile
-import urlparse
+import six.moves.urllib.parse
 from openalea.core.path import path
 from fnmatch import fnmatch
 from pkg_resources import iter_entry_points
@@ -44,7 +44,7 @@ from openalea.core.pkgdict import PackageDict, is_protected, protected
 from openalea.core.category import PackageManagerCategory
 from openalea.core import logger
 
-from ConfigParser import NoSectionError, NoOptionError
+from six.moves.configparser import NoSectionError, NoOptionError
 
 ###########################################################################
 # Exceptions
@@ -128,7 +128,7 @@ class PackageManager(Observed):
         self.log = Logger()
 
         # make urlparse correctly handle the glorious "oa" protocol :)
-        urlparse.uses_query.append("oa")
+        six.moves.urllib.parse.uses_query.append("oa")
 
         self.verbose = verbose
         # remove namespace option
@@ -833,9 +833,9 @@ class PackageManager(Observed):
 
     def get_package_from_url(self, url):
         if isinstance(url, str):
-            url = urlparse.urlparse(url)
-        assert isinstance(url, urlparse.ParseResult)
-        queries = urlparse.parse_qs(url.query)
+            url = six.moves.urllib.parse.urlparse(url)
+        assert isinstance(url, six.moves.urllib.parse.ParseResult)
+        queries = six.moves.urllib.parse.parse_qs(url.query)
         pkg_id = url.path.strip("/")  # the path is preceded by one "/"
         pkg = self[pkg_id]
         return pkg, queries

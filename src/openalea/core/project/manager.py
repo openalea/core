@@ -19,7 +19,7 @@
 from openalea.core.manager import GenericManager, UnknownItemError
 
 
-from ConfigParser import NoSectionError, NoOptionError
+from six.moves.configparser import NoSectionError, NoOptionError
 import os
 import sys
 

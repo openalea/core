@@ -24,7 +24,7 @@ __revision__ = " $Id$ "
 import os
 import sys
 import platform
-from ConfigParser import SafeConfigParser, NoSectionError, NoOptionError
+from six.moves.configparser import SafeConfigParser, NoSectionError, NoOptionError
 from openalea.core.singleton import Singleton, ProxySingleton
 from openalea.core import logger
 

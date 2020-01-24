@@ -13,5 +13,5 @@ from .script_library import ScriptLibrary
 def global_module(module):
     """ Declare a module accessible everywhere. """
 
-    import __builtin__
-    __builtin__.__dict__[module.__name__] = module
+    import six.moves.builtins
+    six.moves.builtins.__dict__[module.__name__] = module

@@ -23,7 +23,7 @@ __revision__ = " $Id$ "
 
 
 from threading import Thread
-from Queue import Queue
+from six.moves.queue import Queue
 
 from openalea.core.singleton import Singleton
 
