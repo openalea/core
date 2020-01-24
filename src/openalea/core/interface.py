@@ -26,18 +26,17 @@ from openalea.core.observer import AbstractListener
 
 from . import color_palette # used for colors of interfaces
 import types
+import six
 
 # Dictionary to map Interface with corresponding python type
 
 
-class TypeInterfaceMap(dict):
+class TypeInterfaceMap(six.with_metaclass(Singleton, dict)):
 
     """
     Singleton class to map Interface with standard python type
     InterfaceWidgetMap inherits from dict class
     """
-
-    __metaclass__ = Singleton
 
     def declare_interface(self, type, interface):
         """
@@ -54,14 +53,12 @@ class TypeInterfaceMap(dict):
         TypeNameInterfaceMap().declare_interface(str(interface), interface)
 
 
-class TypeNameInterfaceMap(dict):
+class TypeNameInterfaceMap(six.with_metaclass(Singleton, dict)):
 
     """
     Singleton class to map Interface Name with interface type
     InterfaceWidgetMap inherits from dict class
     """
-
-    __metaclass__ = Singleton
 
     def declare_interface(self, name, interface):
         """
@@ -106,10 +103,9 @@ class IInterfaceMetaClass(type):
 # Defaults interfaces
 
 
-class IInterface(object):
+class IInterface(six.with_metaclass(IInterfaceMetaClass, object)):
 
     """ Abstract base class for all interfaces """
-    __metaclass__ = IInterfaceMetaClass
     __pytype__ = None
     __color__ = None
 
@@ -360,14 +356,12 @@ class IData(IStr):
 # Dictionary to map Interface with corresponding widget
 
 
-class InterfaceWidgetMap(dict):
+class InterfaceWidgetMap(six.with_metaclass(Singleton, dict)):
 
     """
     Singleton class to map Interface with InterfaceWidget
     InterfaceWidgetMap inherits from dict class
     """
-
-    __metaclass__ = Singleton
 
     def __init__(self, *args):
         dict.__init__(self, *args)
@@ -395,11 +389,9 @@ class IWidgetMetaClass(type):
             InterfaceWidgetMap().declare_interface(cls.__interface__, cls)
 
 
-class IInterfaceWidget(AbstractListener):
+class IInterfaceWidget(six.with_metaclass(IWidgetMetaClass, AbstractListener)):
 
     """ Base class for widget associated to an interface """
-
-    __metaclass__ = IWidgetMetaClass
     __interface__ = None
 
     def __init__(self, node, parent, parameter_str, interface):

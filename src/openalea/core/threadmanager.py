@@ -27,12 +27,11 @@ from six.moves.queue import Queue
 
 from openalea.core.singleton import Singleton
 from six.moves import range
+import six
 
 
-class ThreadManager(object):
+class ThreadManager(six.with_metaclass(Singleton, object)):
     """ ThreadManager provides thread on demand """
-
-    __metaclass__ = Singleton
 
     NUM_THREAD = 4 # Default number of threads
 

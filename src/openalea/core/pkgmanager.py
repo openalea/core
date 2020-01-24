@@ -118,13 +118,11 @@ class Logger(object):
 
 ###############################################################################
 
-class PackageManager(Observed):
+class PackageManager(six.with_metaclass(Singleton, Observed)):
     """
     The PackageManager is a Dictionary of Packages
     It can locate OpenAlea packages on the system (with wralea).
     """
-
-    __metaclass__ = Singleton
 
     def __init__(self, verbose=True):
         """ Constructor """

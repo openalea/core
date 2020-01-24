@@ -138,6 +138,7 @@ import logging.handlers
 from logging.handlers import TimedRotatingFileHandler
 from openalea.core.singleton import Singleton
 from six.moves import map
+import six
 
 
 #: List of default handler names:
@@ -251,18 +252,11 @@ def default_init(level=logging.ERROR, handlers=defaultHandlerNames[:]):
 ############################
 # Openalea Logging Central #
 ############################
-class LoggerOffice(object):
+class LoggerOffice(six.with_metaclass(Singleton, object)):
     """ This class behaves as the central registry of loggers
     and handlers for Openalea. This way, the application can
     query information about them.
     """
-
-    ##################################################################
-    # As the top level function (public API) simply redirect to this #
-    # singleton, see the documentation of the former.                #
-    ##################################################################
-
-    __metaclass__ = Singleton
 
     def __init__(self, level=DEBUG):
         logging.info("Logger started")
