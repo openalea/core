@@ -20,11 +20,9 @@
 It is able to find installed package and their wralea.py
 It stores the packages and nodes informations
 """
-
+from __future__ import division
 __license__ = "Cecill-C"
 __revision__ = " $Id$ "
-
-from __future__ import division
 
 import sys
 import os

@@ -1,6 +1,6 @@
 # {# pkglts, base
 
-from . import version
+from openalea.core import version
 
 __version__ = version.__version__
 

@@ -1,3 +1,4 @@
+
 # -*- python -*-
 #
 #       OpenAlea.Core
@@ -14,12 +15,10 @@
 #
 ############################################################################
 """doc todo"""
+from __future__ import division
 
 __license__ = "Cecill-C"
 __revision__ = " $Id$ "
-
-
-from __future__ import division
 
 import os
 import sys
