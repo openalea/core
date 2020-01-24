@@ -296,7 +296,7 @@ class MutableEdgeGraphConcept(EdgeListGraphConcept):
         raise NotImplementedError
 
 
-class CopyConcept:
+class CopyConcept(object):
     """
     Copy Concept.
     """
@@ -307,7 +307,7 @@ class CopyConcept:
         raise NotImplementedError
 
 
-class ExtendConcept:
+class ExtendConcept(object):
     """
     Extend the actul data structure with an other.
     """
