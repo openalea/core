@@ -17,6 +17,7 @@
 #       OpenAlea WebSite : http://openalea.gforge.inria.fr
 #
 ###############################################################################
+from __future__ import print_function
 __revision__ = ""
 
 """
@@ -87,7 +88,7 @@ def iter_plugins(group, name=None, debug=False):
             try:
                 ep = ep.load()
             except Exception as err:
-                print err
+                print(err)
             else:
                 if isinstance(ep, (list, tuple)):
                     for item in ep:

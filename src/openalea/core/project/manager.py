@@ -16,6 +16,7 @@
 #
 ###############################################################################
 
+from __future__ import print_function
 from openalea.core.manager import GenericManager, UnknownItemError
 
 
@@ -263,7 +264,7 @@ You can rename/move this project thanks to the button "Save As" in menu.
             if full_path.exists():
                 project = Project(full_path)
             else:
-                print 'Project %s in repository %s does not exist' % (name, projectdir)
+                print('Project %s in repository %s does not exist' % (name, projectdir))
 
         if project:
             self.cproject = project

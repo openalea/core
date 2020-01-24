@@ -16,6 +16,7 @@
 ###############################################################################
 """This module provide an implementation of a dataflow"""
 
+from __future__ import print_function
 __license__ = "Cecill-C"
 __revision__ = " $Id$ "
 
@@ -256,7 +257,7 @@ class DataFlow(PropertyGraph):
         associate an actor to a given vertex
         """
         try : actor.set_id(vid)
-        except Exception as e: print e
+        except Exception as e: print(e)
         self.vertex_property("_actor")[vid] = actor
 
     def actor(self, vid):

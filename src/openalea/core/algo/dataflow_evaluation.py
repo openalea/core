@@ -16,6 +16,7 @@
 ###############################################################################
 """This module provide an algorithm to evaluate a dataflow"""
 
+from __future__ import print_function
 __license__ = "Cecill-C"
 __revision__ = " $Id$ "
 
@@ -120,7 +121,7 @@ class Provenance(object):
 
 class PrintProvenance(Provenance):
     def workflow_exec(self, *args):
-        print 'Workflow execution ', self.workflow.factory.name
+        print('Workflow execution ', self.workflow.factory.name)
     def node_exec(self, vid, node, start_time, end_time, *args):
         provenance(vid, node, start_time, end_time)
 
@@ -136,11 +137,11 @@ def provenance(vid, node, start_time, end_time):
         pname = node.factory.package.name
         name = node.factory.name
 
-        print "Provenance Process:"
-        print "instance ID ", vid, "Package Name: ",pname, "Name: ", name
-        print "start time :", start_time, "end_time: ", end_time, "duration : ", end_time-start_time 
-        print 'Inputs : ', node.inputs
-        print 'outputs : ', node.outputs
+        print("Provenance Process:")
+        print("instance ID ", vid, "Package Name: ",pname, "Name: ", name)
+        print("start time :", start_time, "end_time: ", end_time, "duration : ", end_time-start_time) 
+        print('Inputs : ', node.inputs)
+        print('outputs : ', node.outputs)
 
 # print the evaluation time
 # This variable has to be retrieve by the settings
@@ -347,7 +348,7 @@ class BrutEvaluation(AbstractEvaluation):
 
         t1 = clock()
         if quantify:
-            print "Evaluation time: %s"%(t1-t0)
+            print("Evaluation time: %s"%(t1-t0))
 
 
 class PriorityEvaluation(BrutEvaluation):
@@ -381,7 +382,7 @@ class PriorityEvaluation(BrutEvaluation):
 
         t1 = clock()
         if quantify:
-            print "Evaluation time: %s"%(t1-t0)
+            print("Evaluation time: %s"%(t1-t0))
 
 
 class GeneratorEvaluation(AbstractEvaluation):
@@ -469,7 +470,7 @@ class GeneratorEvaluation(AbstractEvaluation):
 
         t1 = clock()
         if quantify:
-            print "Evaluation time: %s"%(t1-t0)
+            print("Evaluation time: %s"%(t1-t0))
         return False
 
 
@@ -617,7 +618,7 @@ class LambdaEvaluation(PriorityEvaluation):
 
         t1 = clock()
         if quantify:
-            print "Evaluation time: %s"%(t1-t0)
+            print("Evaluation time: %s"%(t1-t0))
 
         if not is_subdataflow:
             self._resolution_node.clear()
@@ -1056,7 +1057,7 @@ class DiscreteTimeEvaluation(AbstractEvaluation):
 
         t1 = clock()
         if quantify:
-            print "Evaluation time: %s"%(t1-t0)
+            print("Evaluation time: %s"%(t1-t0))
 
         return False
 
@@ -1191,6 +1192,6 @@ class SciFlowareEvaluation(AbstractEvaluation):
 
         t1 = clock()
         if quantify:
-            print "Evaluation time: %s"%(t1-t0)
+            print("Evaluation time: %s"%(t1-t0))
 
         return False

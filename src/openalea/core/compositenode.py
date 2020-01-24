@@ -20,6 +20,7 @@ instances. Different instances of the same factory can coexist and can be
 modified in a dataflow.
 """
 
+from __future__ import print_function
 __license__ = "Cecill-C"
 __revision__ = " $Id$ "
 
@@ -166,9 +167,9 @@ class CompositeNodeFactory(AbstractFactory):
 
             except (UnknownNodeError, UnknownPackageError):
 
-                print "WARNING : The graph is not fully operational "
+                print("WARNING : The graph is not fully operational ")
                 (pkg, fact) = self.elt_factory[vid]
-                print "-> Cannot find '%s:%s'" % (pkg, fact)
+                print("-> Cannot find '%s:%s'" % (pkg, fact))
                 node = self.create_fake_node(vid)
                 node.raise_exception = True
                 node.notify_listeners(('data_modified', None, None ))
@@ -541,7 +542,7 @@ class CompositeNode(Node, DataFlow):
         t1 = time.time()
         if quantify:
             logger.info('Evaluation time: %s'%(t1-t0))
-            print 'Evaluation time: %s'%(t1-t0)
+            print('Evaluation time: %s'%(t1-t0))
     # Functions used by the node evaluator
 
     def eval(self, *args, **kwds):
@@ -1212,7 +1213,7 @@ class JSONCNFactoryWriter(PyCNFactoryWriter):
         minx = min(f.elt_ad_hoc.values(), key=lambda x: x["position"][0])["position"][0]
         miny = min(f.elt_ad_hoc.values(), key=lambda x: x["position"][1])["position"][1]
 
-        print minx, miny
+        print(minx, miny)
 
         for elt in f.elt_ad_hoc.values():
             elt["position"][0] -= minx

@@ -16,6 +16,7 @@
 ###############################################################################
 """System Nodes"""
 
+from __future__ import print_function
 __license__ = "Cecill-C"
 __revision__ = " $Id$ "
 
@@ -421,7 +422,7 @@ class WhileUniVar(Node):
             else:
                 value = newvalue
             if DEBUG:
-                print value
+                print(value)
 
         return (value, )
 
@@ -458,7 +459,7 @@ class WhileMultiVar(Node):
                 values = newvals
 
             if DEBUG:
-                print values
+                print(values)
 
         return values
 
@@ -476,7 +477,7 @@ def while_multi2(values, test, function):
             else:
                 values = newvals
 
-            print values
+            print(values)
 
         return values
 

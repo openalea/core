@@ -20,6 +20,7 @@ A Package is a deplyment unit and contains a factories (Node generator)
 and meta informations (authors, license, doc...)
 """
 
+from __future__ import print_function
 __license__ = "Cecill-C"
 __revision__ = " $Id$ "
 
@@ -184,7 +185,7 @@ class Package(PackageDict):
                 if (modulefile in s):
                     module.oa_invalidate = True
                     reload(module)
-                    print "Reloaded ", module.__name__
+                    print("Reloaded ", module.__name__)
             except:
                 pass
 
@@ -336,7 +337,7 @@ class UserPackage(Package):
         if (not os.path.isdir(self.path)):
             os.mkdir(self.path)
 
-        print "Writing", self.wralea_path
+        print("Writing", self.wralea_path)
 
         writer.write_wralea(self.wralea_path)
 
@@ -583,7 +584,7 @@ class PyPackageReader(AbstractPackageReader):
             try:
                 pkgmanager.log.add('%s is invalid : %s' % (self.filename, e))
             except Exception as e:
-                print '%s is invalid : %s' % (self.filename, e)
+                print('%s is invalid : %s' % (self.filename, e))
                 pass
 
         except:  # Treat all exception
@@ -788,8 +789,8 @@ $FACTORY_DECLARATION
         try:
             result = self.get_str()
         except Exception as e:
-            print e
-            print "FILE HAS NOT BEEN SAVED !!"
+            print(e)
+            print("FILE HAS NOT BEEN SAVED !!")
             return
 
         handler = open(full_filename, 'w')

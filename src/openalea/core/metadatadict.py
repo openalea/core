@@ -14,6 +14,7 @@
 #
 ###############################################################################
 
+from __future__ import print_function
 __license__ = "Cecill-C"
 __revision__ = " $Id$ "
 
@@ -118,9 +119,9 @@ class MetaDataDict(observer.Observed):
 
         valType = self._metaTypes[key]
         if self.__doTypeChecking and type(value) != valType :
-            print self.__class__, "set_metadata : Unexpected value type", key, \
+            print(self.__class__, "set_metadata : Unexpected value type", key, \
                   " : ", type(value), "instead of", valType, \
-                  " assuming duck-typing"
+                  " assuming duck-typing")
 
         self._metaValues[key] = value
         if(notify):

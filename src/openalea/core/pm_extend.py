@@ -1,3 +1,4 @@
+from __future__ import print_function
 from fnmatch import fnmatch
 
 from openalea.core.alea import *
@@ -92,6 +93,6 @@ def score_packages(pm):
 
 def print_score(score):
      for i in sorted(score.keys()):
-         print
-         print i, score[i]
+         print()
+         print(i, score[i])
 

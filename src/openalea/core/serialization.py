@@ -21,6 +21,7 @@
 #
 ###############################################################################
 
+from __future__ import print_function
 from openalea.core.path import path as Path
 import warnings
 
@@ -109,7 +110,7 @@ class AbstractSaver(object):
     def _open_file(self, path):
         filename = Path(path)
         if filename.isdir():
-            print 'BUG: filename is a dir'
+            print('BUG: filename is a dir')
             return
 
         try:
@@ -231,7 +232,7 @@ class BGEOMSaver(object):
         except ImportError:
             warnings.warn("You must install PlantGL if you want to load a BGEOM object.")
         except Exception as e:
-            print e
+            print(e)
             warnings.warn("Impossible to save the scene for object %s into %s" % (obj, filename))
 
 
@@ -314,8 +315,8 @@ class CPickleLoader(AbstractLoader):
                     file_.close()
                     return ret
                 except Exception as e:
-                    print "Can't load file " + filename + " with loader CPickleLoader. "
-                    print e
+                    print("Can't load file " + filename + " with loader CPickleLoader. ")
+                    print(e)
 
 
 class BGEOMLoader(AbstractLoader):
@@ -342,5 +343,5 @@ class BGEOMLoader(AbstractLoader):
             except ImportError:
                 warnings.warn("You must install PlantGL if you want to load a BGEOM object.")
             except Exception as e:
-                print e
+                print(e)
                 warnings.warn("Impossible to load the scene")

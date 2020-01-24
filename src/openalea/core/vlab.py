@@ -17,6 +17,7 @@
 """doc todo"""
 from __future__ import division
 
+from __future__ import print_function
 __license__ = "Cecill-C"
 __revision__ = " $Id$ "
 
@@ -79,7 +80,7 @@ class VlabObject(object):
 
     def __init__(self, directory, pkgmanager):
         self.dir = directory
-        print "Import into OpenAlea the %s directory"%self.dir.basename()
+        print("Import into OpenAlea the %s directory"%self.dir.basename())
         self._programs = []
         self._files = {}
         self._text = {}
@@ -105,7 +106,7 @@ class VlabObject(object):
         d = self.dir
         search_name(d)
         _pkgname = 'vlab.'+'.'.join(names)
-        print _pkgname
+        print(_pkgname)
         return 'vlab.'+'.'.join(names)
 
     def get_package(self):
@@ -200,7 +201,7 @@ class VlabObject(object):
         elif prog in self.text:
             self.process_text(name, command)
         else:
-            print 'Do not know how to process this command: %s' % cmd
+            print('Do not know how to process this command: %s' % cmd)
 
     def process_program(self, name, command):
         """ Build a process node from the command.
@@ -219,7 +220,7 @@ class VlabObject(object):
         if len(command) > 1:
             fn = command[-1]
             if fn not in list(self._files.keys()):
-                print "WARNING: the file %s used by the editor %s in not in the specification file." %(fn, cmd)
+                print("WARNING: the file %s used by the editor %s in not in the specification file." %(fn, cmd))
                 return
                 #self._files[fn] = []
 
@@ -409,7 +410,7 @@ class VlabObject2(VlabObject):
         if len(command) > 1:
             fn = command[-1]
             if fn not in self._files.keys():
-                print "WARNING: the file %s used by the editor %s in not in the specification file." %(fn, cmd)
+                print("WARNING: the file %s used by the editor %s in not in the specification file." %(fn, cmd))
 
         prog = command[0]
         if prog.lower() != 'edit':

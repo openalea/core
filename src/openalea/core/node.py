@@ -21,6 +21,7 @@ A Factory build Node from its description. Factories instantiate
 Nodes on demand for the dataflow.
 """
 
+from __future__ import print_function
 __license__ = "Cecill-C"
 __revision__ = " $Id$ "
 
@@ -1195,7 +1196,7 @@ class NodeFactory(AbstractFactory):
                 # Unable to load the module
                 # Try to retrieve the file and open the file in an editor
                 src_path = self.get_node_file()
-                print "instantiate widget exception:", e
+                print("instantiate widget exception:", e)
                 if src_path:
                     w.edit_file(src_path)
             return w
@@ -1267,7 +1268,7 @@ class NodeFactory(AbstractFactory):
                 self.nodemodule_path = inspect.getsourcefile(nodemodule)
             except TypeError as type_error:
                 self.nodemodule_path = None
-                print type_error
+                print(type_error)
 
             self.module_cache = nodemodule
             sys.path = sav_path
@@ -1275,7 +1276,7 @@ class NodeFactory(AbstractFactory):
 
         except ImportError as import_error:
             sys.path = sav_path
-            print self.nodemodule_name
+            print(self.nodemodule_name)
             raise import_error
         else:
             sys.path = sav_path

@@ -17,6 +17,7 @@
 """Session regroups all the data which can be stored between different 
 executions of the system."""
 
+from __future__ import print_function
 __license__ = "Cecill-C"
 __revision__ = " $Id$ "
 
@@ -175,8 +176,8 @@ class Session(Observed):
                 d['datapool'][key] = self.datapool[key]
                 d.sync()
             except Exception as e:
-                print e
-                print "Unable to save %s in the datapool..." % str(key)
+                print(e)
+                print("Unable to save %s in the datapool..." % str(key))
                 del d['datapool'][key]
 
         # workspaces
@@ -186,9 +187,9 @@ class Session(Observed):
                 d['workspaces'].append(ws)
                 d.sync()
             except Exception as e:
-                print e
-                print "Unable to save workspace %i. Skip this." % (cpt, )
-                print " WARNING: Your session is not saved. Please save your dataflow as a composite node !!!!!"
+                print(e)
+                print("Unable to save workspace %i. Skip this." % (cpt, ))
+                print(" WARNING: Your session is not saved. Please save your dataflow as a composite node !!!!!")
                 d['workspaces'].pop()
 
         d.close()

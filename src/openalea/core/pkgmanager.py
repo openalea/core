@@ -21,6 +21,7 @@ It is able to find installed package and their wralea.py
 It stores the packages and nodes informations
 """
 from __future__ import division
+from __future__ import print_function
 from six.moves import map
 from six.moves import filter
 __license__ = "Cecill-C"
@@ -111,7 +112,7 @@ class Logger(object):
         """ Print log file """
 
         f = open(self.log_file)
-        print f.read()
+        print(f.read())
         f.close()
 
 
@@ -248,7 +249,7 @@ class PackageManager(Observed):
             # Be careful, this lines will import __init__.py and all its predecessor
             # to find the path.
             if DEBUG:
-                print(epoint.module_name)
+                print((epoint.module_name))
                 t1 = time.clock()
 
             try:
@@ -259,7 +260,7 @@ class PackageManager(Observed):
                 continue
 
             if DEBUG:
-                print(epoint.module_name)
+                print((epoint.module_name))
                 tn = time.clock() - t1
                 res[tn] = epoint.module_name
 
@@ -534,14 +535,14 @@ class PackageManager(Observed):
         if DEBUG:
             t1 = time.clock()
             dt = t1 - t0
-            print 'search wralea files takes %f sec' % dt
+            print('search wralea files takes %f sec' % dt)
 
         readers = list(map(self.get_pkgreader, wralea_files))
 
         if DEBUG:
             t2 = time.clock()
             dt1 = t2 - t1
-            print 'readers takes %f sec: ' % (dt1,)
+            print('readers takes %f sec: ' % (dt1,))
 
         return readers
 
@@ -655,8 +656,8 @@ class PackageManager(Observed):
 
         if DEBUG:
             t2 = time.clock()
-            print '-------------------'
-            print 'find_wralea_files takes %f seconds' % (t2 - t1)
+            print('-------------------')
+            print('find_wralea_files takes %f seconds' % (t2 - t1))
 
         if DEBUG:
             res = {}
@@ -666,12 +667,12 @@ class PackageManager(Observed):
             x.register_packages(self)
             if DEBUG:
                 tt = time.clock() - tn
-                print 'register package ', x.get_pkg_name(), 'in ', time.clock() - tn
+                print('register package ', x.get_pkg_name(), 'in ', time.clock() - tn)
                 res[x.filename]=tt
         if DEBUG:
             t3 = time.clock()
-            print '-------------------'
-            print 'register_packages takes %f seconds' % (t3 - t2)
+            print('-------------------')
+            print('register_packages takes %f seconds' % (t3 - t2))
 #        self.save_cache()
 
         self.rebuild_category()
@@ -1118,7 +1119,7 @@ class PseudoGroup(PackageDict):
                 try:
                     self[str(id(value))] = value
                 except Exception as e:
-                    print e
+                    print(e)
                     pass
             return
 
@@ -1137,13 +1138,13 @@ class PseudoGroup(PackageDict):
         try:
             self[key].add_name(remain, value)
         except Exception as e:
-            print 'Package %s[%s]' % (self.name, name)
-            print e
+            print('Package %s[%s]' % (self.name, name))
+            print(e)
             try:
                 self[str(id(key))].add_name(remain, value)
             except Exception as e:
-                print 'Unable to find these nodes: %s' % value
-                print e
+                print('Unable to find these nodes: %s' % value)
+                print(e)
                 pass
 
 
