@@ -14,6 +14,12 @@
 #
 ###############################################################################
 
+try:
+    # Python 2: "unicode" is built-in
+    unicode
+except NameError:
+    unicode = str
+    
 from openalea.core.plugin.plugin import plugin_name
 
 

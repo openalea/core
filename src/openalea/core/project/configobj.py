@@ -20,7 +20,12 @@
 # Comments, suggestions and bug reports welcome.
 
 from __future__ import generators
-
+try:
+    # Python 2: "unicode" is built-in
+    unicode
+except NameError:
+    unicode = str
+    
 import os
 import re
 import sys

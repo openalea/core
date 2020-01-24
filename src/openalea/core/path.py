@@ -43,7 +43,12 @@ path.py requires Python 2.5 or later.
 """
 
 from __future__ import with_statement
-
+try:
+    # Python 2: "unicode" is built-in
+    unicode
+except NameError:
+    unicode = str
+    
 import sys
 import warnings
 import os
