@@ -180,9 +180,9 @@ class Builder(object):
     
     def build_Dict(self, o):
         d = {}
-        i = iter(map(self.build, o.getChildren()))
+        i = map(self.build, o.getChildren())
         for el in i:
-            d[el] = i.next()
+            d[el] = next(i)
         return d
     
     def build_Tuple(self, o):

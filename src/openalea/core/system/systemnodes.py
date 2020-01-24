@@ -69,9 +69,9 @@ class IterNode(Node):
             if(hasattr(self, "nextval")):
                 self.outputs[0] = self.nextval
             else:
-                self.outputs[0] = self.iterable.next()
+                self.outputs[0] = next(self.iterable)
 
-            self.nextval = self.iterable.next()
+            self.nextval = next(self.iterable)
             return True
 
         except TypeError as e:
@@ -99,9 +99,9 @@ class IterWithDelayNode(IterNode):
             if(hasattr(self, "nextval")):
                 self.outputs[0] = self.nextval
             else:
-                self.outputs[0] = self.iterable.next()
+                self.outputs[0] = next(self.iterable)
 
-            self.nextval = self.iterable.next()
+            self.nextval = next(self.iterable)
             return self.inputs[1]
 
         except TypeError as e:
