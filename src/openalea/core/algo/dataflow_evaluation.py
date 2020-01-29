@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 # -*- python -*-
 #
 #       OpenAlea.Core
@@ -39,6 +40,8 @@ from openalea.distributed.data.data_manager import load_data, check_data_to_load
 
 from openalea.distributed.provenance.provenanceDB import start_provdb
 from openalea.distributed.index.indexDB import start_index
+from openalea.distributed.index.graph_id import Task_UID_graph
+# TODO: remove this id method - used in fragment evaluation - to get a general one
 from openalea.distributed.index.id import get_id
 
 
@@ -115,10 +118,21 @@ class AbstractEvaluation(object):
             self._provdb = None
 
         if kwargs.get('use_index'):
-            self._index = start_index(index_config=kwargs.get('index_config', None),
-                                        index_type=kwargs.get('index_type', "Cassandra"))
+            #  Connect to the index db
+            # self._indexdb = start_index(index_config=kwargs.get('index_config', None),
+            #                             index_type=kwargs.get('index_type', "Cassandra"))
+            # Eval the workflow with a fake evaluation to get the tasks ids of each task
+            real_eval_algo = dataflow.eval_algo
+            dataflow.eval_algo= "FakeEvaluation"
+            dataflow.eval()
+            tid = dataflow.node(1).get_output("task_ids")
+            print tid
+            dataflow.eval_algo= real_eval_algo
+            # self._index = 
+            # self._index 
         else:
             self._index = None
+            self._indexdb = None
 
 
     def eval(self, *args, **kwargs):
@@ -1233,18 +1247,6 @@ class TestEvaluation(AbstractEvaluation):
             # close remote connections
             self._provdb.close()
 
-
-            # # Save the provenance in a file
-            # wf_id = str(df.factory.uid) + ".json"
-            # # Save the provenance in a file
-            # wf_id = str(df.factory.uid) + ".json"
-            # provenance_path = os.path.join(PROVENANCE_PATH, wf_id)
-            # if not os.path.exists(os.path.dirname(provenance_path)):
-            #     os.makedirs(provenance_path)
-            # provenance = self._prov.as_wlformat()
-            # with open(provenance_path, "a+") as f:
-            #     json.dump(provenance, f, indent=4)
-
         if quantify:
             print "Evaluation time: %s" % (t1 - t0)
 
@@ -1323,16 +1325,6 @@ class ZMQEvaluation(AbstractEvaluation):
             self._prov.init(df)
             self._prov.time_init = t0
 
-            # self._provdb.init(
-            #                 remote=REMOTE_PROV,
-            #                 path=CACHE_PATH,
-            #                 ssh_ip_addr=PROVDB_SSH_ADDR,
-            #                 ssh_pkey=SSH_PKEY,
-            #                 ssh_username=SSH_USERNAME,
-            #                 remote_bind_address=(MONGO_ADDR, MONGO_PORT),
-            #                 mongo_ip_addr=MONGO_ADDR,
-            #                 mongo_port=MONGO_PORT
-            #                  )
         # Init the workers
         # context = zmq.Context()
         # socket = context.socket(zmq.REQ)
@@ -1457,8 +1449,8 @@ class FragmentEvaluation(AbstractEvaluation):
         self._tmp_path = kwargs.get("tmp_path", tpath)
 
         # If the data index is not use - force its init
-        if self._index is None:
-            self._index = start_index(index_config=kwargs.get('index_config', None),
+        if self._indexdb is None:
+            self._indexdb = start_index(index_config=kwargs.get('index_config', None),
                                         index_type=kwargs.get('index_type', "Cassandra"))
 
 
@@ -1499,7 +1491,7 @@ class FragmentEvaluation(AbstractEvaluation):
                 cpt = 1
                 for npid, nvid, nactor in self.get_parent_nodes(pid):
                     data_id = get_id(ituple[0], ituple[1])
-                    row = self._index.find_one(data_id=data_id)
+                    row = self._indexdb.find_one(data_id=data_id)
                     inputs.append(load_data(row[0].path[0]))
             else:
                 cpt = 0
@@ -1560,7 +1552,7 @@ class FragmentEvaluation(AbstractEvaluation):
             for port in range(df.node(vid).get_nb_output()):
                 data_id = get_id(vid, port)
                 write_data(data_id=data_id, data=df.node(vid).get_output(port), path=self._tmp_path)
-                self._index.add_data(data_id=data_id, path=str(os.path.join(self._tmp_path, data_id)), exec_data=True, cache_data=False)
+                self._indexdb.add_data(data_id=data_id, path=str(os.path.join(self._tmp_path, data_id)), exec_data=True, cache_data=False)
 
 
         if self._prov is not None:
@@ -1583,9 +1575,11 @@ class FakeEvaluation(AbstractEvaluation):
     # TODO: It doesn't work with provenance
     def __init__(self, dataflow, *args, **kwargs):
 
-        AbstractEvaluation.__init__(self, dataflow, *args, **kwargs)
+        AbstractEvaluation.__init__(self, dataflow)
         # a property to specify if the node has already been evaluated
         self._evaluated = set()
+
+        self._index = Task_UID_graph(dataflow)
 
     def is_stopped(self, vid, actor):
         """ Return True if evaluation must be stop at this vertex """
@@ -1606,12 +1600,55 @@ class FakeEvaluation(AbstractEvaluation):
             pass
         return False
 
+    def eval_vertex_code(self, vid, *args, **kwargs):
+        """
+        Evaluate the vertex vid.
+        Can raise an exception if evaluation failed.
+        """
+
+        node = self._dataflow.actor(vid)
+
+        try:
+
+            if self._index is not None:
+                self._index.before_eval(self._dataflow, vid)
+
+            t0 = clock()
+            ret = 0
+
+            dt = clock() - t0
+            if self._index is not None:
+                self._index.after_eval(self._dataflow, vid)
+
+            # When an exception is raised, a flag is set.
+            # So we remove it when evaluation is ok.
+            node.raise_exception = False
+            # if hasattr(node, 'raise_exception'):
+            #     del node.raise_exception
+            node.notify_listeners(('data_modified', None, None))
+            return ret
+
+        except EvaluationException, e:
+            e.vid = vid
+            e.node = node
+            # When an exception is raised, a flag is set.
+            node.raise_exception = True
+            node.notify_listeners(('data_modified', None, None))
+            raise e
+
+        except Exception, e:
+            # When an exception is raised, a flag is set.
+            node.raise_exception = True
+            node.notify_listeners(('data_modified', None, None))
+            raise EvaluationException(vid, node, e, \
+                                      tb.format_tb(sys.exc_info()[2]))
+
+
     def eval_vertex(self, vid, *args, **kwargs):
         """ Evaluate the vertex vid """
         
         df = self._dataflow
         actor = df.actor(vid)
-        print("eval node: ", vid)
         self._evaluated.add(vid)
 
         # For each inputs
@@ -1621,8 +1658,6 @@ class FakeEvaluation(AbstractEvaluation):
             cpt = 0
             # For each connected node
             for npid, nvid, nactor in self.get_parent_nodes(pid):
-                print("node: ", vid, " - input port : ", pid, ' - to output port: ',
-                npid, " - from node: ", nvid)
                 if not self.is_stopped(nvid, nactor):
                     self.eval_vertex(nvid)
 
@@ -1634,18 +1669,14 @@ class FakeEvaluation(AbstractEvaluation):
                 inputs = inputs[0]
             if (cpt > 0):
                 actor.set_input(df.local_id(pid), inputs)
-
         # Eval the node
-        # self.eval_vertex_code(vid)
+        self.eval_vertex_code(vid)
 
     def eval(self, *args, **kwargs):
         """ Evaluate the whole dataflow starting from leaves"""
 
         t0 = time.time()
         df = self._dataflow
-        if self._prov is not None:
-            self._prov.init(df)
-            self._prov.time_init = t0
 
         # Unvalidate all the nodes
         self._evaluated.clear()
@@ -1656,13 +1687,12 @@ class FakeEvaluation(AbstractEvaluation):
 
         t1 = time.time()
 
-        if self._prov is not None:
-            self._prov.time_end = t1
-            wfitem = self._prov.as_wlformat()
-        if self._provdb is not None:
-            self._provdb.add_wf_item(wfitem)
-            # close remote connections
-            self._provdb.close()
+        if self._index is not None:
+            tid = self._index.as_dict()
 
         if quantify:
             print "Evaluation time: %s" % (t1 - t0)
+        self._dataflow.node(1).add_input(name="task_ids")
+        self._dataflow.node(1).set_output("task_ids", tid)
+        return 
+        
