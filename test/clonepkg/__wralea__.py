@@ -1,10 +1,10 @@
 
-# This file has been generated at Wed Jan 31 21:28:23 2018
+# This file has been generated at Mon Jul 27 15:31:48 2015
 
 from openalea.core import *
 
 
-__name__ = 'ClonePkg'
+__name__ = 'DummyPkg'
 
 __editable__ = True
 __description__ = 'Base library.'

@@ -2,7 +2,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 #
-# Package core documentation build configuration file, created by
+# Package (Undefined, u'core') documentation build configuration file, created by
 # sphinx-quickstart on Tue Jul  9 22:26:36 2013.
 #
 # This file is execfile()d with the current directory set to its
@@ -247,7 +247,7 @@ latex_elements = {
 latex_documents = [
     ('index', 'core.tex',
      u'core Documentation',
-     u'openalea', 'manual'),
+     u'Christophe Pradal', 'manual'),
 ]
 
 # The name of an image file (relative to this directory) to place at
@@ -293,7 +293,7 @@ man_pages = [
 texinfo_documents = [
     ('index', 'core',
      u'core Documentation',
-     u'openalea',
+     u'Christophe Pradal',
      'core',
      'OpenAlea.Core is able to discover and manage packages and logical components, build and evaluate dataflows and Generate final applications',
      'Miscellaneous'),
@@ -315,16 +315,30 @@ texinfo_documents = [
 # use apidoc to generate developer doc
 import os
 from os import path
+from sphinx.apidoc import create_modules_toc_file, recurse_tree
 
-from sphinx.apidoc import main
+
+class Opt(object):
+    pass
 
 
 rootpath = path.abspath(path.join(project_root, "src"))
-destdir = path.abspath(path.join(project_root, "doc", "_dvlpt"))
+opts = Opt()
+opts.modulefirst = None
+opts.separatemodules = None
+opts.noheadings = None
+opts.destdir = path.abspath(path.join(project_root, "doc", "_dvlpt"))
+opts.suffix = source_suffix[1:]
+opts.dryrun = None
+opts.force = None
+opts.header = 'src'
+opts.maxdepth = 4
+opts.includeprivate = False
 
-if not path.isdir(destdir):
-    os.makedirs(destdir)
+if not path.isdir(opts.destdir):
+    os.makedirs(opts.destdir)
 
-main(['-e', '-o', destdir, '-d', '4', '-s', source_suffix[1:], '--force', rootpath])
+modules = recurse_tree(rootpath, [], opts)
+create_modules_toc_file(modules, opts)
 
 # #}

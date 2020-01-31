@@ -193,6 +193,13 @@ class ICodeStr(IStr):
     pass
 
 
+class IRef(IStr):
+    """Interface for uids
+    """
+    __label__ = u'ref'
+    pass
+
+
 class IFloat(IInterface):
 
     """ Float interface """

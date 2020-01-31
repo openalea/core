@@ -3,7 +3,8 @@
 # edit .pkglts/pkg_cfg instead
 # section pysetup
 
-#openalea/deploy  # pip install git+git
+# openalea/deploy
+# openalea/provenance
 
 # #}
 

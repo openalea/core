@@ -1,81 +1,65 @@
 {
   "_pkglts": {
-    "auto_install": true,
-    "install_front_end": "stdout",
-    "use_prompts": false,
-    "version": 11
-  },
+    "auto_install": true, 
+    "install_front_end": "stdout", 
+    "use_prompts": false, 
+    "version": 3
+  }, 
   "base": {
     "authors": [
       [
-        "Christophe Pradal",
+        "Christophe Pradal", 
         "christophe dot pradal at cirad dot fr"
-      ],
+      ], 
       [
-        "Samuel Dufour-Kowalski",
+        "Samuel Dufour-Kowalski", 
         "dufourko at cirad dot fr"
-      ],
+      ], 
       [
-        "revesansparole",
+        "revesansparole", 
         "revesansparole@gmail.com"
-      ],
-      [
-        "Guillaume Baty",
-        ""
       ]
-    ],
-    "namespace": "openalea",
-    "namespace_method": "pkg_util",
-    "pkgname": "core",
-    "url": "https://github.com/openalea/core"
-  },
-  "coverage": {},
+    ], 
+    "namespace": "openalea", 
+    "pkgname": "core", 
+    "url": null
+  }, 
+  "coverage": {}, 
   "doc": {
-    "description": "OpenAlea.Core is able to discover and manage packages and logical components, build and evaluate dataflows and Generate final applications",
-    "fmt": "rst",
+    "description": "OpenAlea.Core is able to discover and manage packages and logical components, build and evaluate dataflows and Generate final applications", 
     "keywords": [
       "openalea"
-    ],
-    "contributors": "OpenAlea",
-    "authors": "Christophe Pradal"
-  },
-  "git": {},
+    ]
+  }, 
   "github": {
-    "owner": "{{ base.authors[0][0] }}",
-    "project": "{{ base.pkgname }}",
+    "owner": "openalea", 
+    "project": "{{ base.pkgname }}", 
     "url": "https://github.com/{{ github.owner }}/{{ github.project }}"
-  },
+  }, 
   "license": {
-    "name": "cecill-c",
-    "organization": "CIRAD/INRIA",
-    "project": "{{ base.pkgname }}",
+    "name": "cecill-c", 
+    "organization": "CIRAD/INRIA", 
+    "project": "{{ base.pkgname }}", 
     "year": 2015
-  },
+  }, 
   "pysetup": {
     "intended_versions": [
       "27"
-    ],
-    "require": [
-      {
-        "name": "openalea/deploy",
-        "pkg_mng": "git"
-      }
-    ]
-  },
+    ], 
+    "require": [["git", "openalea/deploy"], ["git", "openalea/provenance"]]
+  }, 
   "readthedocs": {
     "project": "openalea-core"
-  },
+  }, 
   "sphinx": {
-    "autodoc_dvlpt": true,
-    "build_dir": "build/sphinx",
+    "autodoc_dvlpt": true, 
     "theme": "default"
-  },
-  "test": {
-    "suite_name": "pytest"
-  },
+  }, 
+  "test": {}, 
+  "travis": {}, 
   "version": {
-    "major": 2,
-    "minor": 0,
-    "post": 2
+    "major": 1, 
+    "minor": 4, 
+    "post": 0
   }
 }
