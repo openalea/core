@@ -20,10 +20,12 @@
 
 from openalea.core.serialization import AbstractSaver
 from openalea.core.path import path as Path
-from configobj import ConfigObj
+from .configobj import ConfigObj
 from openalea.core.service.interface import interface_name
 from openalea.core.project import Project
 from openalea.core.customexception import ErrorInvalidItem
+import six
+from io import open
 
 
 class ProjectLoader(object):
@@ -55,7 +57,7 @@ class ProjectLoader(object):
                 else:
                     value = config['metadata'][info]
                 if interface_name(default_metadata[info].interface) == 'ISequence':
-                    if isinstance(value, basestring):
+                    if isinstance(value, six.string_types):
                         value = value.split(',')
                 setattr(project, info, value)
 
@@ -120,7 +122,7 @@ class ProjectSaver(AbstractSaver):
 
     def _save_metadata(self, obj, path):
         path.touch()
-        from configobj import ConfigObj
+        from .configobj import ConfigObj
         config = ConfigObj()
         if not path.isfile():
             return

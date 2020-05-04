@@ -7,11 +7,16 @@ from openalea.core import Package
 
 from .small_tools import test_dir
 
+from io import open
+
+def compile_file(filename):
+    with open(filename, encoding='utf-8') as f:
+        return compile(f.read(), filename, 'exec')
 
 class TestClass:
     def setUp(self):
         d = {}
-        execfile(pj(test_dir(), 'catalog.py'), globals(), d)
+        exec(compile_file(pj(test_dir(), 'catalog.py')), globals(), d)
         self.pkg = d['pkg']
         self.plus_node = self.pkg['plus'].instantiate()
         self.float_node = self.pkg['float'].instantiate()

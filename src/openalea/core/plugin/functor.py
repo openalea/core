@@ -1,5 +1,6 @@
 import inspect
 from openalea.core.service.plugin import plugins, plugin, register_plugin
+import six
 
 
 class PluginFunctor(object):
@@ -47,7 +48,7 @@ class PluginFunctor(object):
         return plugin(name, self._group) # Get the plugin class
 
     def __setitem__(self, name, value):
-        if isinstance(value, basestring):
+        if isinstance(value, six.string_types):
             value = plugin(value, self._group).identifier
             self._aliases[name] = value
             self.__class__.plugin = property(get_plugin, set_plugin, doc=plugin_doc(self))

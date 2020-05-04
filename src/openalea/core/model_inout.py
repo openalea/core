@@ -193,7 +193,7 @@ def ast_parse(string):
     logger.debug("Parse code: " + string[:10] + "...")
     try:
         M = ast.parse(string)
-    except SyntaxError, e:
+    except SyntaxError as e:
         #raise e
         logger.warning(str(e))
         wraper = textwrap.TextWrapper(width=30)

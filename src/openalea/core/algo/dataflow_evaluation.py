@@ -16,6 +16,7 @@
 ###############################################################################
 """This module provide an algorithm to evaluate a dataflow"""
 
+from __future__ import print_function
 __license__ = "Cecill-C"
 __revision__ = " $Id$ "
 
@@ -26,6 +27,7 @@ from openalea.core import ScriptLibrary
 
 from openalea.core.dataflow import SubDataflow
 from openalea.core.interface import IFunction
+from six.moves import zip
 
 
 PROVENANCE = False
@@ -96,8 +98,8 @@ class Provenance(object):
     def edges(self):
         cn = self.workflow
         edges= list(cn.edges())
-        sources=map(cn.source,edges)
-        targets = map(cn.target,edges)
+        sources= [cn.source(eid) for eid in edges]
+        targets = [cn.target(eid) for eid in edges]
         source_ports=[cn.local_id(cn.source_port(eid)) for eid in edges]
         target_ports=[cn.local_id(cn.target_port(eid)) for eid in edges]
         _edges = dict(zip(edges,zip(sources,source_ports,targets, target_ports)))
@@ -119,7 +121,7 @@ class Provenance(object):
 
 class PrintProvenance(Provenance):
     def workflow_exec(self, *args):
-        print 'Workflow execution ', self.workflow.factory.name
+        print('Workflow execution ', self.workflow.factory.name)
     def node_exec(self, vid, node, start_time, end_time, *args):
         provenance(vid, node, start_time, end_time)
 
@@ -135,11 +137,11 @@ def provenance(vid, node, start_time, end_time):
         pname = node.factory.package.name
         name = node.factory.name
 
-        print "Provenance Process:"
-        print "instance ID ", vid, "Package Name: ",pname, "Name: ", name
-        print "start time :", start_time, "end_time: ", end_time, "duration : ", end_time-start_time 
-        print 'Inputs : ', node.inputs
-        print 'outputs : ', node.outputs
+        print("Provenance Process:")
+        print("instance ID ", vid, "Package Name: ",pname, "Name: ", name)
+        print("start time :", start_time, "end_time: ", end_time, "duration : ", end_time-start_time) 
+        print('Inputs : ', node.inputs)
+        print('outputs : ', node.outputs)
 
 # print the evaluation time
 # This variable has to be retrieve by the settings
@@ -159,6 +161,17 @@ class EvaluationException(Exception):
 
 # Sort functions
 
+def cmp(x, y):
+    """
+    Replacement for built-in function cmp that was removed in Python 3
+
+    Compare the two objects x and y and return an integer according to
+    the outcome. The return value is negative if x < y, zero if x == y
+    and strictly positive if x > y.
+    """
+
+    return (x > y) - (x < y)
+    
 # order function sort by priority
 
 
@@ -239,7 +252,7 @@ class AbstractEvaluation(object):
             node.notify_listeners(('data_modified', None, None))
             return ret
 
-        except EvaluationException, e:
+        except EvaluationException as e:
             e.vid = vid
             e.node = node
             # When an exception is raised, a flag is set.
@@ -247,7 +260,7 @@ class AbstractEvaluation(object):
             node.notify_listeners(('data_modified', None, None))
             raise e
 
-        except Exception, e:
+        except Exception as e:
             # When an exception is raised, a flag is set.
             node.raise_exception = True
             node.notify_listeners(('data_modified', None, None))
@@ -346,7 +359,7 @@ class BrutEvaluation(AbstractEvaluation):
 
         t1 = clock()
         if quantify:
-            print "Evaluation time: %s"%(t1-t0)
+            print("Evaluation time: %s"%(t1-t0))
 
 
 class PriorityEvaluation(BrutEvaluation):
@@ -380,7 +393,7 @@ class PriorityEvaluation(BrutEvaluation):
 
         t1 = clock()
         if quantify:
-            print "Evaluation time: %s"%(t1-t0)
+            print("Evaluation time: %s"%(t1-t0))
 
 
 class GeneratorEvaluation(AbstractEvaluation):
@@ -468,7 +481,7 @@ class GeneratorEvaluation(AbstractEvaluation):
 
         t1 = clock()
         if quantify:
-            print "Evaluation time: %s"%(t1-t0)
+            print("Evaluation time: %s"%(t1-t0))
         return False
 
 
@@ -562,7 +575,7 @@ class LambdaEvaluation(PriorityEvaluation):
                         # E.g. f(x=3). We replace x subdf by 3.
                         # If x is used elsewhere (f(x,x)), we referenced it
                         # in a dict.
-                        if (not lambda_value.has_key(outval)):
+                        if (outval not in lambda_value):
                             try:
                                 lambda_value[outval] = context.pop()
                             except Exception:
@@ -586,7 +599,7 @@ class LambdaEvaluation(PriorityEvaluation):
 
         else:
             # set the node output with subdataflow
-            for i in xrange(actor.get_nb_output()):
+            for i in range(actor.get_nb_output()):
                 actor.set_output(i, SubDataflow(df, self, vid, i))
 
     def eval(self, vtx_id=None, context=None, is_subdataflow=False, step=False):
@@ -616,7 +629,7 @@ class LambdaEvaluation(PriorityEvaluation):
 
         t1 = clock()
         if quantify:
-            print "Evaluation time: %s"%(t1-t0)
+            print("Evaluation time: %s"%(t1-t0))
 
         if not is_subdataflow:
             self._resolution_node.clear()
@@ -1055,7 +1068,7 @@ class DiscreteTimeEvaluation(AbstractEvaluation):
 
         t1 = clock()
         if quantify:
-            print "Evaluation time: %s"%(t1-t0)
+            print("Evaluation time: %s"%(t1-t0))
 
         return False
 
@@ -1190,6 +1203,6 @@ class SciFlowareEvaluation(AbstractEvaluation):
 
         t1 = clock()
         if quantify:
-            print "Evaluation time: %s"%(t1-t0)
+            print("Evaluation time: %s"%(t1-t0))
 
         return False

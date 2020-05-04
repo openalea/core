@@ -63,6 +63,7 @@ from openalea.core.service.data import DataFactory
 from openalea.core.service.interface import interface_name
 from openalea.core.service.model import to_model, ModelFactory
 from openalea.core.customexception import CustomException, ErrorInvalidItem, ErrorInvalidItemName
+from io import open
 
 
 class ErrorItemExistsInProject(CustomException):
@@ -153,7 +154,7 @@ class Project(Observed):
         self._path = _normpath(path)
 
         # Fill metadata
-        for k, v in self.DEFAULT_METADATA.iteritems():
+        for k, v in self.DEFAULT_METADATA.items():
             self.metadata[k] = kwargs.get(k, v.value)
 
         # Allocate category dictionaries

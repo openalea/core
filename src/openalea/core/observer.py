@@ -16,14 +16,15 @@
 ###############################################################################
 """This module defines all the classes for the Observer design Pattern"""
 
+from __future__ import print_function
 __license__ = "Cecill-C"
 __revision__ = " $Id$ "
 
 try:
     import openalea.grapheditor
     graphobserver = True
-except ImportError, e:
-    print "NOT using graph editor observer", e
+except ImportError as e:
+    print("NOT using graph editor observer", e)
     graphobserver = False
 
 ###############################################################################
@@ -121,8 +122,8 @@ else:
                    if(not listener.is_notification_locked()):
                        try:
                            listener.call_notify(self, event)
-                       except Exception, e:
-                           print "Warning :", str(self), "notification of", str(listener), "failed", e
+                       except Exception as e:
+                           print("Warning :", str(self), "notification of", str(listener), "failed", e)
 
                for dead in toDelete:
                    self.listeners.discard(dead)

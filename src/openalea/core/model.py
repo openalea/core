@@ -50,6 +50,7 @@ By default, functions are generated for "init", "run" and "animate"
 
 from ast import literal_eval
 from copy import copy
+import six
 
 
 class IModel(object):
@@ -159,12 +160,12 @@ class Model(object):
         m = self.__class__(name=self.name)
         m.inputs_info = list(self.inputs_info)
         m.outputs_info = list(self.outputs_info)
-        for fname, code in self._code.iteritems():
+        for fname, code in self._code.items():
             m.set_func_code(fname, code)
         return m
 
     def _run_code(self, code):
-        if isinstance(code, basestring):
+        if isinstance(code, six.string_types):
             self.interp.run_cell(code)
         else:
             self.interp.run_code(code)

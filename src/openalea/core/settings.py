@@ -24,9 +24,10 @@ __revision__ = " $Id$ "
 import os
 import sys
 import platform
-from ConfigParser import SafeConfigParser, NoSectionError, NoOptionError
+from six.moves.configparser import SafeConfigParser, NoSectionError, NoOptionError
 from openalea.core.singleton import Singleton, ProxySingleton
 from openalea.core import logger
+import six
 
 # [pkgmanager]
 # path = '.', '/home/user/directory'
@@ -134,10 +135,8 @@ def get_userpkg_dir(name='user_pkg'):
 ####################
 # Settings classes #
 ####################
-class Settings(object, SafeConfigParser):
+class Settings(six.with_metaclass(ProxySingleton, object, SafeConfigParser)):
     """ Retrieve and set user configuration """
-
-    __metaclass__ = ProxySingleton
     __notset__ = "NotSet"
 
     def __init__(self):

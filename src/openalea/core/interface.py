@@ -24,20 +24,33 @@ from openalea.core.metaclass import make_metaclass
 from openalea.core.singleton import Singleton
 from openalea.core.observer import AbstractListener
 
-import color_palette # used for colors of interfaces
+from . import color_palette # used for colors of interfaces
 import types
+import six
+# Python 3 <-> Python 3 equivalent types
+try:
+    from types import (StringType, SliceType, FloatType, IntType, BooleanType, TupleType,
+                      ListType, DictType)
+except ImportError:
+    StringType = six.string_types
+    SliceType = slice
+    FloatType = float
+    IntType = int
+    BooleanType = bool
+    TupleType = tuple
+    ListType = list
+    DictType = dict
+
 
 # Dictionary to map Interface with corresponding python type
 
 
-class TypeInterfaceMap(dict):
+class TypeInterfaceMap(six.with_metaclass(Singleton, dict)):
 
     """
     Singleton class to map Interface with standard python type
     InterfaceWidgetMap inherits from dict class
     """
-
-    __metaclass__ = Singleton
 
     def declare_interface(self, type, interface):
         """
@@ -54,14 +67,12 @@ class TypeInterfaceMap(dict):
         TypeNameInterfaceMap().declare_interface(str(interface), interface)
 
 
-class TypeNameInterfaceMap(dict):
+class TypeNameInterfaceMap(six.with_metaclass(Singleton, dict)):
 
     """
     Singleton class to map Interface Name with interface type
     InterfaceWidgetMap inherits from dict class
     """
-
-    __metaclass__ = Singleton
 
     def declare_interface(self, name, interface):
         """
@@ -106,10 +117,9 @@ class IInterfaceMetaClass(type):
 # Defaults interfaces
 
 
-class IInterface(object):
+class IInterface(six.with_metaclass(IInterfaceMetaClass, object)):
 
     """ Abstract base class for all interfaces """
-    __metaclass__ = IInterfaceMetaClass
     __pytype__ = None
     __color__ = None
 
@@ -135,7 +145,7 @@ class IStr(IInterface):
 
     """ String interface """
 
-    __pytype__ = types.StringType
+    __pytype__ = StringType
     __color__ = color_palette.maroon
     __label__ = u'Short Text'
 
@@ -148,7 +158,7 @@ class ISlice(IInterface):
 
     """ String interface """
 
-    __pytype__ = types.SliceType
+    __pytype__ = SliceType
     __color__ = color_palette.maroon
     __label__ = u'Slice'
 
@@ -197,7 +207,7 @@ class IFloat(IInterface):
 
     """ Float interface """
 
-    __pytype__ = types.FloatType
+    __pytype__ = FloatType
     __color__ = color_palette.blue
     __label__ = u'Float'
 
@@ -227,7 +237,7 @@ class IFloat(IInterface):
 class IInt(IInterface):
 
     """ Int interface """
-    __pytype__ = types.IntType
+    __pytype__ = IntType
     __color__ = color_palette.blue
     __label__ = u'Integer ℤ'
 
@@ -261,7 +271,7 @@ class IBool(IInterface):
 
     """ Bool interface """
 
-    __pytype__ = types.BooleanType
+    __pytype__ = BooleanType
     __color__ = color_palette.aqua
     __label__ = 'Boolean (True/False)'
 
@@ -315,7 +325,7 @@ class ITuple(IInterface):
 
     """ Tuple """
     __label__ = 'Tuple'
-    __pytype__ = types.TupleType
+    __pytype__ = TupleType
     __color__ = color_palette.fuchsia
 
 
@@ -329,7 +339,7 @@ class IFunction(IInterface):
 class ISequence(IInterface):
 
     """ Sequence interface (list, tuple, ...) """
-    __pytype__ = types.ListType
+    __pytype__ = ListType
     __color__ = color_palette.green
     __label__ = 'Sequence'
 
@@ -341,7 +351,7 @@ class ISequence(IInterface):
 class IDict(IInterface):
 
     """ Dictionary interface """
-    __pytype__ = types.DictType
+    __pytype__ = DictType
     __color__ = color_palette.olive
     __label__ = 'Mapping key, value (dictionary)'
 
@@ -360,14 +370,12 @@ class IData(IStr):
 # Dictionary to map Interface with corresponding widget
 
 
-class InterfaceWidgetMap(dict):
+class InterfaceWidgetMap(six.with_metaclass(Singleton, dict)):
 
     """
     Singleton class to map Interface with InterfaceWidget
     InterfaceWidgetMap inherits from dict class
     """
-
-    __metaclass__ = Singleton
 
     def __init__(self, *args):
         dict.__init__(self, *args)
@@ -395,11 +403,9 @@ class IWidgetMetaClass(type):
             InterfaceWidgetMap().declare_interface(cls.__interface__, cls)
 
 
-class IInterfaceWidget(AbstractListener):
+class IInterfaceWidget(six.with_metaclass(IWidgetMetaClass, AbstractListener)):
 
     """ Base class for widget associated to an interface """
-
-    __metaclass__ = IWidgetMetaClass
     __interface__ = None
 
     def __init__(self, node, parent, parameter_str, interface):

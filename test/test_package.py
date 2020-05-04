@@ -61,7 +61,7 @@ class TestUserPackage():
         # Test_clone_package
         path = pj(self.tmp_dir, "clonepkg")
         pkg2 = UserPackage("ClonePkg", metainfo, path)
-        print pkg2.wralea_path
+        print(pkg2.wralea_path)
 
         # todo this is not working !!
         # from openalea.core.pkgmanager import PackageManager

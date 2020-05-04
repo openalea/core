@@ -23,15 +23,15 @@ __revision__ = " $Id$ "
 
 
 from threading import Thread
-from Queue import Queue
+from six.moves.queue import Queue
 
 from openalea.core.singleton import Singleton
+from six.moves import range
+import six
 
 
-class ThreadManager(object):
+class ThreadManager(six.with_metaclass(Singleton, object)):
     """ ThreadManager provides thread on demand """
-
-    __metaclass__ = Singleton
 
     NUM_THREAD = 4 # Default number of threads
 
@@ -43,7 +43,7 @@ class ThreadManager(object):
         self.thread_list = []
 
 
-        for i in xrange(num_thread):
+        for i in range(num_thread):
             t = Thread(target=worker, args=(self.queue, ))
             t.setDaemon(True)
             t.start()
@@ -71,5 +71,5 @@ def worker(queue):
 
     while True:
         (func, args) = queue.get()
-        apply(func, args)
+        func(*args)
         queue.task_done()

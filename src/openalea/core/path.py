@@ -43,7 +43,14 @@ path.py requires Python 2.5 or later.
 """
 
 from __future__ import with_statement
-
+import six
+from io import open
+try:
+    # Python 2: "unicode" is built-in
+    unicode
+except NameError:
+    unicode = str
+    
 import sys
 import warnings
 import os
@@ -111,7 +118,7 @@ class path(unicode):
     """
 
     def __init__(self, other):
-        if not isinstance(other, basestring):
+        if not isinstance(other, six.string_types):
             raise TypeError("path must be a string")
 
     module = os.path
@@ -146,7 +153,7 @@ class path(unicode):
             return NotImplemented
 
     def __radd__(self, other):
-        if not isinstance(other, basestring):
+        if not isinstance(other, six.string_types):
             return NotImplemented
         return self._next_class(other.__add__(self))
 
@@ -966,26 +973,26 @@ class path(unicode):
     #
     # --- Create/delete operations on directories
 
-    def mkdir(self, mode=0777):
+    def mkdir(self, mode=0o777):
         os.mkdir(self, mode)
         return self
 
-    def mkdir_p(self, mode=0777):
+    def mkdir_p(self, mode=0o777):
         try:
             self.mkdir(mode)
-        except OSError, e:
+        except OSError as e:
             if e.errno != errno.EEXIST:
                 raise
         return self
 
-    def makedirs(self, mode=0777):
+    def makedirs(self, mode=0o777):
         os.makedirs(self, mode)
         return self
 
-    def makedirs_p(self, mode=0777):
+    def makedirs_p(self, mode=0o777):
         try:
             self.makedirs(mode)
-        except OSError, e:
+        except OSError as e:
             if e.errno != errno.EEXIST:
                 raise
         return self
@@ -997,7 +1004,7 @@ class path(unicode):
     def rmdir_p(self):
         try:
             self.rmdir()
-        except OSError, e:
+        except OSError as e:
             if e.errno != errno.ENOTEMPTY and e.errno != errno.EEXIST:
                 raise
         return self
@@ -1009,7 +1016,7 @@ class path(unicode):
     def removedirs_p(self):
         try:
             self.removedirs()
-        except OSError, e:
+        except OSError as e:
             if e.errno != errno.ENOTEMPTY and e.errno != errno.EEXIST:
                 raise
         return self
@@ -1020,7 +1027,7 @@ class path(unicode):
         """ Set the access/modified times of this file to the current time.
         Create the file if it does not exist.
         """
-        fd = os.open(self, os.O_WRONLY | os.O_CREAT, 0666)
+        fd = os.open(self, os.O_WRONLY | os.O_CREAT, 0o666)
         os.close(fd)
         os.utime(self, None)
         return self
@@ -1032,7 +1039,7 @@ class path(unicode):
     def remove_p(self):
         try:
             self.unlink()
-        except OSError, e:
+        except OSError as e:
             if e.errno != errno.ENOENT:
                 raise
         return self
@@ -1094,7 +1101,7 @@ class path(unicode):
     def rmtree_p(self):
         try:
             self.rmtree()
-        except OSError, e:
+        except OSError as e:
             if e.errno != errno.ENOENT:
                 raise
         return self

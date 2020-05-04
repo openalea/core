@@ -60,7 +60,7 @@ def test_search():
     assert 'Test' in pkgman
 
     res = pkgman.search_node("sum")
-    print res
+    print(res)
     assert "sum" in res[0].name
 
 

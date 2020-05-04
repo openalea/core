@@ -20,6 +20,8 @@
 
 """Data management classes"""
 
+from __future__ import print_function
+from io import open
 __license__ = "Cecill-C"
 __revision__ = " $Id$ "
 
@@ -202,7 +204,7 @@ class DataNode(Node):
             self.watch.addPath(filename)
 
         except:
-            print "File monitoring is not available"
+            print("File monitoring is not available")
 
     def changed(self, path):
         """ Call listeners """
