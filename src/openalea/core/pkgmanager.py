@@ -20,7 +20,7 @@
 It is able to find installed package and their wralea.py
 It stores the packages and nodes informations
 """
-# python 3 syntax
+# force python 3 syntax
 from __future__ import division
 from __future__ import print_function
 from six.moves import map
@@ -37,6 +37,7 @@ __revision__ = " $Id$ "
 
 import sys
 import os
+from math import pow
 from os.path import join as pj
 from os.path import isdir
 
@@ -889,26 +890,26 @@ class PackageManager(six.with_metaclass(Singleton, Observed)):
                 # -- The scores for each string that is explored.
                 # They are long ints because we make a 96 bits bitshift
                 # to compute the final score --
-                facNameScore = 0L
-                facDescScore = 0L
-                facCateScore = 0L
-                pkgNameScore = 0L
+                facNameScore = 0
+                facDescScore = 0
+                facCateScore = 0
+                pkgNameScore = 0
 
                 fname = factory.name.upper()
                 if search_str in fname:
                     l = float(len(fname))
-                    facNameScore = long(100 * (1 - fname.index(search_str) / l))
+                    facNameScore = int(100 * (1 - fname.index(search_str) / l))
 
-                facDescScore = long(factory.description.upper().count(search_str))
-                facCateScore = long(factory.category.upper().count(search_str))
+                facDescScore = int(factory.description.upper().count(search_str))
+                facCateScore = int(factory.category.upper().count(search_str))
 
                 pname = pkg.name.upper()
                 if search_str in pname:
                     l = float(len(pname))
-                    pkgNameScore = long(100 * (1 - pname.index(search_str) / l))
-
-                score = (facNameScore << (32 * 3) | facDescScore << (32 * 2) | 
-                         facCateScore << (32 * 1) | pkgNameScore << (32))
+                    pkgNameScore = int(100 * (1 - pname.index(search_str) / l))
+                # A left shift by n bits is equivalent to multiplication by pow(2, n)
+                score = (int(facNameScore * pow(2, 32 * 3)) | int(facDescScore * pow(2, 32 * 2)) | 
+                         int(facCateScore * pow(2, 32 * 1)) | pkgNameScore)
                 if score > 0:
                     match.append((score, factory))
 
