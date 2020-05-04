@@ -41,7 +41,13 @@ from .observer import Observed, AbstractListener
 from .actor import IActor
 from .metadatadict import MetaDataDict, HasAdHoc
 from .interface import TypeNameInterfaceMap
+
 from six.moves import range
+try:
+    from types import TypeType, ClassType
+except ImportError:
+    TypeType = type
+    ClassType = type
 
 def cmp(x, y):
     """
@@ -1162,8 +1168,8 @@ class NodeFactory(AbstractFactory):
 
 
             # Check and Instantiate if we have a functor class
-            if((type(classobj) == types.TypeType)
-               or (type(classobj) == types.ClassType)):
+            if((type(classobj) == TypeType)
+               or (type(classobj) == ClassType)):
 
                 _classobj = classobj()
                 if callable(_classobj):
