@@ -21,6 +21,7 @@
 """Data management classes"""
 
 from __future__ import print_function
+from io import open
 __license__ = "Cecill-C"
 __revision__ = " $Id$ "
 

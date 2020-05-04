@@ -10,6 +10,7 @@ from openalea.core.project import Project
 from openalea.core.customexception import ErrorInvalidItem
 from openalea.core.service.data import DataFactory
 from openalea.core.unittest_tools import TestCase, EventTracker
+from io import open
 
 
 def get_data(filename):

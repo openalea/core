@@ -22,6 +22,13 @@
 ###############################################################################
 
 from __future__ import print_function
+try:
+    # Python 2: "unicode" is built-in
+    unicode
+except NameError:
+    unicode = str
+from io import open
+   
 from openalea.core.path import path as Path
 import warnings
 
@@ -124,7 +131,7 @@ class AbstractSaver(object):
 
     def _write(self, lines, file_):
         for line in lines:
-            file_.write(line)
+            file_.write(unicode(line))
         file_.close()
 
     def save(self, obj, path, protocol=None, **kwds):

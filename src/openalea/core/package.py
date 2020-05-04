@@ -21,11 +21,17 @@ and meta informations (authors, license, doc...)
 """
 
 from __future__ import print_function
+from io import open
 try:
     # Python 2: "reload" is built-in
     reload
 except NameError:
     from importlib import reload
+try:
+    # Python 2: "unicode" is built-in
+    unicode
+except NameError:
+    unicode = str
     
 __license__ = "Cecill-C"
 __revision__ = " $Id$ "
@@ -400,7 +406,7 @@ class UserPackage(Package):
         if return_values:
             return_values = ', '.join(return_values) + ','
         # Create the module file
-        my_template = """\
+        my_template = u"""\
 def %s(%s):
     '''\
     %s
@@ -800,7 +806,7 @@ $FACTORY_DECLARATION
             return
 
         handler = open(full_filename, 'w')
-        handler.write(result)
+        handler.write(unicode(result))
         handler.close()
 
         # Recompile

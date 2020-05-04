@@ -22,6 +22,7 @@ __revision__ = " $Id$ "
 
 import os
 import string
+from io import open
 
 
 def export_app(name, filename, cn_factory):

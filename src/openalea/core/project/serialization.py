@@ -25,6 +25,7 @@ from openalea.core.service.interface import interface_name
 from openalea.core.project import Project
 from openalea.core.customexception import ErrorInvalidItem
 import six
+from io import open
 
 
 class ProjectLoader(object):

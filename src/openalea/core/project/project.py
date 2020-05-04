@@ -63,6 +63,7 @@ from openalea.core.service.data import DataFactory
 from openalea.core.service.interface import interface_name
 from openalea.core.service.model import to_model, ModelFactory
 from openalea.core.customexception import CustomException, ErrorInvalidItem, ErrorInvalidItemName
+from io import open
 
 
 class ErrorItemExistsInProject(CustomException):

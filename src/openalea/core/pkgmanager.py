@@ -20,10 +20,18 @@
 It is able to find installed package and their wralea.py
 It stores the packages and nodes informations
 """
+# python 3 syntax
 from __future__ import division
 from __future__ import print_function
 from six.moves import map
 from six.moves import filter
+from io import open
+try:
+    # Python 2: "unicode" is built-in
+    unicode
+except NameError:
+    unicode = str
+    
 __license__ = "Cecill-C"
 __revision__ = " $Id$ "
 
@@ -96,14 +104,14 @@ class Logger(object):
         self.log_file = os.path.join(tempfile.gettempdir(), "openalea.log")
 
         f = open(self.log_file, 'w')
-        f.write("OpenAlea Log\n\n")
+        f.write(u"OpenAlea Log\n\n")
         f.close()
 
     def add(self, msg):
         """ Write to log file """
 
         f = open(self.log_file, 'a')
-        f.write("%i %s\n" % (self.log_index, msg))
+        f.write(unicode("%i %s\n" % (self.log_index, msg)))
         f.close()
         self.log_index += 1
         pmanLogger.debug(msg)

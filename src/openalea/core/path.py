@@ -44,6 +44,7 @@ path.py requires Python 2.5 or later.
 
 from __future__ import with_statement
 import six
+from io import open
 try:
     # Python 2: "unicode" is built-in
     unicode

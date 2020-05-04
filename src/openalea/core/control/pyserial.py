@@ -17,6 +17,7 @@
 #
 ###############################################################################
 
+from io import open
 
 def serialize_controls(controls):
     yield 'from openalea.core.control import Control\n\n'

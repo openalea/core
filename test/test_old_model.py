@@ -2,6 +2,7 @@
 import unittest
 from openalea.core.data import Data
 from openalea.core.path import tempdir, path
+from io import open
 
 
 def debug_parse(self, code):

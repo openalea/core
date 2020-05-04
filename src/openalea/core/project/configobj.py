@@ -24,6 +24,7 @@ import six
 from six.moves import map
 from six.moves import zip
 from six.moves import range
+from io import open
 try:
     # Python 2: "unicode" is built-in
     unicode
