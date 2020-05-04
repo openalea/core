@@ -74,13 +74,12 @@ class PackageDict(dict):
         return self.has_key(key)
 
     def has_key(self, key):
-
         key = lower(key)
-        if (dict.has_key(self, key)):
+        if dict.__contains__(self, key):
             return True
         else:
-            return dict.has_key(self, protected(key))
-
+            return dict.__contains__(self, protected(key))
+            
     def __delitem__(self, key):
 
         # Update nb public key
