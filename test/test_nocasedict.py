@@ -11,7 +11,7 @@ def test_dict():
     d = PackageDict()
     d['AbC'] = 3
     assert d['aBc'] == 3
-    print d
+    print(d)
 
 
 if __name__=="__main__":

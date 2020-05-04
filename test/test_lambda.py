@@ -30,5 +30,5 @@ def _test_lambda():
         n = pm.get_node("TestLambda", t)
         n()
 
-        print n.node(id).get_output(0), res
+        print(n.node(id).get_output(0), res)
         assert n.node(id).get_output(0) == res
