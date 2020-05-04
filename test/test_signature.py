@@ -24,9 +24,9 @@ def test_function():
 
     s = sgn.Signature(func_param)
     assert s.get_name() == 'func_param'
-    assert s.get_parameters() == \
+    assert(s.get_parameters() == 
         [{'interface': None, 'name': 'x', 'value': None},
-         {'interface': None, 'name': 'y', 'value': None}]
+         {'interface': None, 'name': 'y', 'value': None}])
 
     # partial default
 
@@ -35,12 +35,12 @@ def test_function():
 
     s = sgn.Signature(func_param_def1)
     assert s.get_name() == 'func_param_def1'
-    assert s.get_parameters() == \
-        [{'interface': None, 'name': 'w', 'value': None},
-                   {'interface': None, 'name': 'x', 'value': None},
-                   {'interface': IInt, 'name': 'y', 'value': 0},
-                   {'interface': IInt, 'name': 'z', 'value': 0}]
-
+    assert (s.get_parameters() == 
+            [{'interface': None, 'name': 'w', 'value': None},
+             {'interface': None, 'name': 'x', 'value': None},
+             {'interface': IInt, 'name': 'y', 'value': 0},
+             {'interface': IInt, 'name': 'z', 'value': 0}]
+    )
 
     # all default
 

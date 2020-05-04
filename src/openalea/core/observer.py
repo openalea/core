@@ -24,7 +24,6 @@ try:
     import openalea.grapheditor
     graphobserver = True
 except ImportError as e:
-    print("NOT using graph editor observer", e)
     graphobserver = False
 
 ###############################################################################
