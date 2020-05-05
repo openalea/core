@@ -256,7 +256,7 @@ class PackageManager(six.with_metaclass(Singleton, Observed)):
             # Be careful, this lines will import __init__.py and all its predecessor
             # to find the path.
             if DEBUG:
-                print((epoint.module_name))
+                print(epoint.module_name)
                 t1 = time.clock()
 
             try:

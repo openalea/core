@@ -168,9 +168,8 @@ class Settings(six.with_metaclass(ProxySingleton, object)):
         """Overriden method to write the configuration
         to Openalea's default configuration file"""
         settingsLogger.debug("Writing configuration file to " + self.configfile)
-        where = os.open(self.configfile, "w")
-        self.parser.write(where)
-        where.close()
+        with open(self.configfile, "w") as where:
+            self.parser.write(where)
 
     def add_section_update_handler(self, section, handler):
         if section not in self.__sectionHandlers:

@@ -26,6 +26,7 @@ from io import open
 __license__ = "Cecill-C"
 __revision__ = " $Id$ "
 
+import six
 import imp
 import inspect
 import os
@@ -1262,7 +1263,7 @@ class NodeFactory(AbstractFactory):
         LOCAL_IMPORT = False
 
         if not self.nodemodule_name:
-            self.nodemodule_name = '__builtin__'
+            self.nodemodule_name = '__builtin__' if six.PY2 else 'builtins'
 
         # Test if the module is already in sys.modules
         if (self.nodemodule_path and
