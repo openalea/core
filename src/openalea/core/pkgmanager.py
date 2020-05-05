@@ -923,7 +923,7 @@ class PackageManager(six.with_metaclass(Singleton, Observed)):
             return match
 
         match.sort(reverse=True)
-        match = zip(*match)[1]
+        match = list(zip(*match))[1]
 
         return match
 

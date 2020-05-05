@@ -28,6 +28,7 @@ from openalea.core import ScriptLibrary
 from openalea.core.dataflow import SubDataflow
 from openalea.core.interface import IFunction
 from six.moves import zip
+import functools
 
 
 PROVENANCE = False
@@ -280,7 +281,7 @@ class AbstractEvaluation(object):
         # For each connected node
         npids = [(npid, df.vertex(npid), df.actor(df.vertex(npid))) \
                      for npid in df.connected_ports(pid)]
-        npids.sort(cmp=cmp_posx)
+        npids.sort(key=functools.cmp_to_key(cmp_posx))
 
         return npids
 
@@ -385,7 +386,7 @@ class PriorityEvaluation(BrutEvaluation):
         leaves = [(vid, df.actor(vid))
               for vid in df.vertices() if df.nb_out_edges(vid)==0]
 
-        leaves.sort(cmp_priority)
+        leaves.sort(key = functools.cmp_to_key(cmp_priority))
 
         # Excecute
         for vid, actor in leaves:
