@@ -58,7 +58,7 @@ from openalea.core.control import Control
 from openalea.core.data import Data
 from openalea.core.observer import Observed
 from openalea.core.path import path as Path
-from openalea.core.project.configobj import ConfigObj
+from configobj import ConfigObj
 from openalea.core.service.data import DataFactory
 from openalea.core.service.interface import interface_name
 from openalea.core.service.model import to_model, ModelFactory
