@@ -30,7 +30,7 @@ import six
 # Python 3 <-> Python 3 equivalent types
 try:
     from types import (StringType, SliceType, FloatType, IntType, BooleanType, TupleType,
-                      ListType, DictType)
+                      ListType, DictType, InstanceType)
 except ImportError:
     StringType = six.string_types
     SliceType = slice
@@ -40,6 +40,7 @@ except ImportError:
     TupleType = tuple
     ListType = list
     DictType = dict
+    InstanceType = object
 
 
 # Dictionary to map Interface with corresponding python type
