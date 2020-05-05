@@ -1149,7 +1149,7 @@ class PseudoGroup(PackageDict):
             remain = None
 
         # Create sub dict if necessary
-        if not dict.has_key(self, key.lower()):
+        if not dict.__contains__(self, key.lower()):
             self[key] = self.new(key)
 
         try:
