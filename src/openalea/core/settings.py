@@ -24,6 +24,7 @@ __revision__ = " $Id$ "
 import os
 import sys
 import platform
+import atexit
 from six.moves.configparser import SafeConfigParser, NoSectionError, NoOptionError
 from openalea.core.singleton import Singleton, ProxySingleton
 from openalea.core import logger
@@ -154,8 +155,11 @@ class Settings(six.with_metaclass(ProxySingleton, object)):
         # the following must be deleted
         if not self.parser.has_section("AutoAddedConfItems"):
             self.parser.add_section("AutoAddedConfItems")
+            
+        # replace del mechanism called after open being removed from builtins
+        atexit.register(self.cleanup)
 
-    def __del__(self):
+    def cleanup(self):
         self.write()
 
     def read(self):
