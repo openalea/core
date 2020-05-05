@@ -1,4 +1,6 @@
+from __future__ import absolute_import
 from openalea.core import logger
+from six.moves import range
 
 
 def test1():

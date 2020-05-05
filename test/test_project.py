@@ -1,5 +1,6 @@
 
 
+from __future__ import absolute_import
 import platform
 import subprocess
 
@@ -294,7 +295,7 @@ class TestProject(TestCase):
     def test_get_attr(self):
         model1 = self.project.add("model", filename="1.py", content="blablabla")
         model2 = self.project.model
-        model2 = model2.values()[0]
+        model2 = list(model2.values())[0]
         assert model1.read() == model2.read()
 
     def test_repr(self):

@@ -1,9 +1,11 @@
+from __future__ import absolute_import
 from nose.tools import with_setup
 
 from openalea.core.pkgmanager import PackageManager
 from openalea.core.compositenode import CompositeNodeFactory, CompositeNode
 
 from .small_tools import ensure_created, rmdir
+from six.moves import range
 
 tmp_dir = 'toto_persistence'
 
@@ -21,8 +23,8 @@ def test_compositenodewriter():
     pm = PackageManager()
     pm.init()
 
-    sg = CompositeNode(inputs=[dict(name="%d" % i) for i in xrange(3)],
-                       outputs=[dict(name="%d" % i) for i in xrange(4)],
+    sg = CompositeNode(inputs=[dict(name="%d" % i) for i in range(3)],
+                       outputs=[dict(name="%d" % i) for i in range(4)],
                        )
 
     # build the compositenode factory

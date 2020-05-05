@@ -1,9 +1,11 @@
 # force py3 syntax
+from __future__ import absolute_import
+import six
 try:
     # Python 2: "unicode" is built-in
-    unicode
+    six.text_type
 except NameError:
-    unicode = str
+    six.text_type = str
 from io import open
 
 from nose import with_setup
@@ -35,7 +37,7 @@ class MyNode:
 """
 
     with open(pj(tmp_dir, "mymodule.py"), 'w') as f:
-        f.write(unicode(modsrc))
+        f.write(six.text_type(modsrc))
 
     wraleasrc = \
         """
@@ -60,7 +62,7 @@ def register_packages(pkgmanager):
 """
 
     with open(pj(tmp_dir, "my_wralea.py"), 'w') as f:
-        f.write(unicode(wraleasrc))
+        f.write(six.text_type(wraleasrc))
 
 
 def teardown():

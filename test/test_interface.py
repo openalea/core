@@ -1,5 +1,6 @@
 """ Core interface test"""
 
+from __future__ import absolute_import
 __license__ = "Cecill-C"
 __revision__ = " $Id$ "
 

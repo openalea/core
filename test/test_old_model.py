@@ -1,4 +1,5 @@
 
+from __future__ import absolute_import
 import unittest
 from openalea.core.data import Data
 from openalea.core.path import tempdir, path
@@ -124,11 +125,11 @@ class TestProject(unittest.TestCase):
 
         # False: One on disk other in memory, same filename, same content different path
         # MUST RETURN FALSE
-        d1 = Data(path=self.tmpdir / 'model.py', content="print 'hello world'\n")
+        d1 = Data(path=self.tmpdir / 'model.py', content="print('hello world')\n")
         d2 = Data(path=get_data('model.py'))
         assert(d1.is_same_data(d2) is False)
         assert(d2.is_same_data(d1) is False)
         # need to use strip to avoid \n vs \r\n problems
-        self.assertEqual(d1.read().strip(), "print 'hello world'")
-        self.assertEqual(d2.read().strip(), "print 'hello world'")
+        self.assertEqual(d1.read().strip(), "print('hello world')")
+        self.assertEqual(d2.read().strip(), "print('hello world')")
         self.assertEqual(d1.filename, d2.filename)

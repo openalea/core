@@ -1,10 +1,12 @@
 
+from __future__ import absolute_import
 import unittest
 
 from openalea.core.service.control import create_control
 from openalea.core.control import Control
 from openalea.core.control.serialization import (ControlSaver, ControlLoader, ControlSerializer, ControlDeserializer)
 from openalea.core.path import tempdir
+from six.moves import range
 
 
 class TestControls(unittest.TestCase):

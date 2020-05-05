@@ -1,5 +1,7 @@
 """Node tests"""
 
+from __future__ import absolute_import
+from __future__ import print_function
 __license__ = "Cecill-C"
 __revision__ = " $Id$ "
 
@@ -23,7 +25,7 @@ def test_funcnode():
     # Test IO and acess by key or index
     n.set_input(0, 1)
     n.eval()
-    print(n.get_output('y'))
+    print((n.get_output('y')))
     assert n.get_output('y') == (1, 0)
 
     n.set_input('a', 'BB')
@@ -76,7 +78,7 @@ def test_factory():
                  )
 
     n = f1.instantiate()
-    print(n.get_nb_input())
+    print((n.get_nb_input()))
     assert n.get_nb_input() == 0
 
     f2 = Factory(name = "MyFactory2",

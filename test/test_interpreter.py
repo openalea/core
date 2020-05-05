@@ -27,6 +27,7 @@
 #
 ###############################################################################
 
+from __future__ import absolute_import
 import unittest
 
 from openalea.core.service.ipython import interpreter
