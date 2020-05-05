@@ -110,7 +110,7 @@ class TestProject(TestCase):
             self.project.add('data')
 
         msg = "path or filename required"
-        self.assertEqual(cm.exception.message, msg)
+        self.assertEqual(cm.exception.args[0], msg)
         assert(len(self.project.data) == 0)
 
         # Case user give an existing path and a content
@@ -118,7 +118,7 @@ class TestProject(TestCase):
             self.project.add('data', path=get_data('image.jpg'), content=b'')
 
         msg = "got multiple values for content (parameter and 'image.jpg')"
-        self.assertEqual(cm.exception.message, msg)
+        self.assertEqual(cm.exception.args[0], msg)
         assert(len(self.project.data) == 0)
 
         # Add an object twice
@@ -127,7 +127,7 @@ class TestProject(TestCase):
             self.project.add('data', filename='image.png')
 
         msg = "data 'image.png' already exists in project 'test'"
-        self.assertEqual(cm.exception.message, msg)
+        self.assertEqual(cm.exception.args[0], msg)
 
     def test_add_model(self):
 
@@ -215,7 +215,7 @@ class TestProject(TestCase):
             model = self.project.get_model('1')
 
         msg = "2 model have basename '1': '1.py', '1.lpy'"
-        self.assertEqual(cm.exception.message, msg)
+        self.assertEqual(cm.exception.args[0], msg)
 
         model = self.project.get_model('1.py')
         assert model.filename == '1.py'
@@ -249,19 +249,19 @@ class TestProject(TestCase):
 
         with self.assertRaises(ValueError) as cm:
             self.project.rename_item("model", self.project.path / "model" / "1.py", "2.py")
-        self.assertEqual(cm.exception.message, msg)
+        self.assertEqual(cm.exception.args[0], msg)
 
         with self.assertRaises(ValueError) as cm:
             self.project.rename_item("model", "1.py", self.project.path / "model" / "2.py")
-        self.assertEqual(cm.exception.message, msg)
+        self.assertEqual(cm.exception.args[0], msg)
 
         with self.assertRaises(ValueError) as cm:
             self.project.rename_item("model", "model/1.py", "2.py")
-        self.assertEqual(cm.exception.message, msg)
+        self.assertEqual(cm.exception.args[0], msg)
 
         with self.assertRaises(ValueError) as cm:
             self.project.rename_item("model", "1.py", "model/2.py")
-        self.assertEqual(cm.exception.message, msg)
+        self.assertEqual(cm.exception.args[0], msg)
 
     def test_move_project(self):
         self.project.add("model", filename="1.py", content="blablabla")
@@ -290,7 +290,7 @@ class TestProject(TestCase):
             self.project.model = dict()
 
         msg = "cannot change 'model' attribute"
-        self.assertEqual(cm.exception.message, msg)
+        self.assertEqual(cm.exception.args[0], msg)
 
     def test_get_attr(self):
         model1 = self.project.add("model", filename="1.py", content="blablabla")

@@ -46,7 +46,7 @@ class TestProject(unittest.TestCase):
         with self.assertRaises(ValueError) as cm:
             d3 = DataFactory(path=get_data('image.tiff'), default_content=b'')
         msg = "got multiple values for content (parameter and 'image.tiff')"
-        self.assertEqual(cm.exception.message, msg)
+        self.assertEqual(cm.exception.args[0], msg)
 
         # Path is a directory and not a file
         empty_dir = self.tmpdir / "empty"
@@ -55,7 +55,7 @@ class TestProject(unittest.TestCase):
         with self.assertRaises(ValueError) as cm:
             d4 = DataFactory(path=empty_dir, default_content=b'')
         msg = "'%s' exists but is not a file" % empty_dir
-        self.assertEqual(cm.exception.message, msg)
+        self.assertEqual(cm.exception.args[0], msg)
 
         d5 = DataFactory(path=self.tmpdir / "doesnotexist" / "image.tiff", default_content=default_content)
         assert d5.exists() == False
@@ -83,7 +83,7 @@ class TestProject(unittest.TestCase):
         with self.assertRaises(ValueError) as cm:
             DataFactory(self.tmpdir / 'model.py', mimetype='image/tiff', dtype='Python')
         msg = "dtype 'Python' (text/x-python) and mimetype 'image/tiff' are not compatible"
-        self.assertEqual(cm.exception.message, msg)
+        self.assertEqual(cm.exception.args[0], msg)
 
         # Case file do not exists on disk ...
         # Only dtype is available
