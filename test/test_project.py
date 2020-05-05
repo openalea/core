@@ -198,7 +198,7 @@ class TestProject(TestCase):
         # assert proj2.control["my_float"] == 3.14
         self.assertEqual(proj2.model["plop.py"].read(), "print 'plop world'")
         # added strip to avoid trouble with end of lines on windows
-        self.assertEqual(proj2.model["model.py"].read().strip(), "print 'hello world'")
+        self.assertEqual(proj2.model["model.py"].read().strip(), "print('hello world')")
 
     def test_get_model(self):
         self.project.add("model", filename="1.py",)

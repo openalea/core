@@ -179,7 +179,7 @@ class Settings(six.with_metaclass(ProxySingleton, object)):
 
     def add_option(self, section, option, value=__notset__):
         option = option.lower().replace(" ", "_")
-        self.aarser.set(section, option, value)
+        self.parser.set(section, option, value)
 
     def get(self, section, option):
         option = option.lower().replace(" ", "_")
