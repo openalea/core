@@ -20,6 +20,8 @@ to store data exchanged between nodes of a dataflow.
 __license__ = "Cecill-C"
 __revision__ = " $Id$ "
 
+import functools
+
 def cmp(x, y):
     """
     Replacement for built-in function cmp that was removed in Python 3
@@ -143,7 +145,7 @@ class DataflowState(object):
             elif len(npids) == 1:
                 return self.get_data(npids[0])
             else:
-                npids.sort(self.cmp_port_priority)
+                npids.sort(key = functools.cmp_to_key(self.cmp_port_priority))
                 return [self.get_data(pid) for pid in npids]
 
     def set_data(self, pid, data):
