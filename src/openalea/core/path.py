@@ -591,7 +591,7 @@ class path(unicode):
     #
     # --- Reading or writing an entire file at once.
 
-    def open(self, mode='r'):
+    def open(self, mode='rt'):
         """ Open this file.  Return a file object. """
         return open(self, mode)
 
@@ -634,7 +634,7 @@ class path(unicode):
                 return f.read()
         else:
             # Unicode
-            with codecs.open(self, 'r', encoding, errors) as f:
+            with codecs.open(self, 'rt', encoding, errors) as f:
                 # (Note - Can't use 'U' mode here, since codecs.open
                 # doesn't support 'U' mode.)
                 t = f.read()

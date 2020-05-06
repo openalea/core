@@ -131,22 +131,22 @@ class TestProject(TestCase):
 
     def test_add_model(self):
 
-        m1 = self.project.add('model', filename='model_1.py', datatype='python', content='print 1')
-        self.assertEqual(m1.read(), 'print 1')
+        m1 = self.project.add('model', filename='model_1.py', datatype='python', content=b'print 1')
+        self.assertEqual(m1.read(), b'print 1')
         assert str(m1.filename) == 'model_1.py'
         assert m1.path == self.project.path / 'model' / 'model_1.py'
         events = self.ev.events
         self.check_events(events, ['data_added', 'project_changed'])
 
-        m2 = self.project.add('model', filename='model_2.py', content='print 2')
-        assert m2.read() == 'print 2'
+        m2 = self.project.add('model', filename='model_2.py', content=b'print 2')
+        assert m2.read() == b'print 2'
         assert str(m2.filename) == 'model_2.py'
         assert m2.path == self.project.path / 'model' / 'model_2.py'
         events = self.ev.events
         self.check_events(events, ['data_added', 'project_changed'])
 
         sample = get_data('model.py')
-        f = open(sample)
+        f = open(sample, 'rb')
         code = f.read()
         f.close()
 
@@ -154,12 +154,13 @@ class TestProject(TestCase):
         assert str(m3.filename) == 'model.py'
         assert m3.path == self.project.path / 'model' / 'model.py'
         # added strip to avoid problems with end of lines on windows
-        self.assertEqual(m3.read().strip(), code.strip())
+        pcode = m3.read()
+        self.assertEqual(pcode.strip(), code.strip())
         events = self.ev.events
         self.check_events(events, ['data_added', 'project_changed'])
 
-        m4 = self.project.add('model', filename='model_4.py', datatype='py', content='print 4')
-        assert m4.read() == 'print 4'
+        m4 = self.project.add('model', filename='model_4.py', datatype='py', content=b'print 4')
+        assert m4.read() == b'print 4'
         assert str(m4.filename) == 'model_4.py'
         assert m4.path == self.project.path / 'model' / 'model_4.py'
         events = self.ev.events
@@ -196,9 +197,9 @@ class TestProject(TestCase):
         # assert len(proj2.control) == 2
         # assert proj2.control["my_integer"] == 42
         # assert proj2.control["my_float"] == 3.14
-        self.assertEqual(proj2.model["plop.py"].read(), "print 'plop world'")
+        self.assertEqual(proj2.model["plop.py"].read(), b"print 'plop world'")
         # added strip to avoid trouble with end of lines on windows
-        self.assertEqual(proj2.model["model.py"].read().strip(), "print('hello world')")
+        self.assertEqual(proj2.model["model.py"].read().strip(), b"print('hello world')")
 
     def test_get_model(self):
         self.project.add("model", filename="1.py",)
