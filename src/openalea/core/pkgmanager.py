@@ -42,6 +42,7 @@ from os.path import join as pj
 from os.path import isdir
 
 import tempfile
+import importlib
 import six.moves.urllib.parse
 from openalea.core.path import path
 from fnmatch import fnmatch
@@ -260,7 +261,8 @@ class PackageManager(six.with_metaclass(Singleton, Observed)):
                 t1 = time.clock()
 
             try:
-                m = __import__(epoint.module_name, fromlist=epoint.module_name)
+                m = importlib.import_module(epoint.module_name)
+                #m = __import__(epoint.module_name, fromlist=epoint.module_name)
             except ImportError as e:
                 logger.error("Cannot load %s : %s" % (epoint.module_name, e))
                 # self.log.add("Cannot load %s : %s"%(epoint.module_name, e))

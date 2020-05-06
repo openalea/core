@@ -27,6 +27,7 @@ __revision__ = " $Id$ "
 import string
 import pprint
 import copy
+import importlib 
 
 from openalea.core.node import AbstractFactory, AbstractPort, Node
 from openalea.core.node import RecursionError
@@ -509,8 +510,9 @@ class CompositeNode(Node, DataFlow):
 
 
             # import module
-            baseimp = "algo.dataflow_evaluation"
-            module = __import__(baseimp, globals(), locals(), [algo_str])
+            baseimp = "openalea.core.algo.dataflow_evaluation"
+            module = importlib.import_module(baseimp)
+            #module = __import__(baseimp, globals(), locals(), [algo_str])
             classobj = module.__dict__[algo_str]
             return classobj(self)
 

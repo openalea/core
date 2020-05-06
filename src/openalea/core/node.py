@@ -29,6 +29,7 @@ __revision__ = " $Id$ "
 import six
 import imp
 import inspect
+import importlib
 import os
 import sys
 import string
@@ -1282,7 +1283,8 @@ class NodeFactory(AbstractFactory):
             if LOCAL_IMPORT:
                 if self.nodemodule_name in sys.modules:
                     del sys.modules[self.nodemodule_name]
-            __import__(self.nodemodule_name)
+            importlib.import_module(self.nodemodule_name)
+            #__import__(self.nodemodule_name)
             nodemodule = sys.modules[self.nodemodule_name]
             try:
                 self.nodemodule_path = inspect.getsourcefile(nodemodule)

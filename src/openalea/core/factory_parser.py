@@ -4,7 +4,8 @@
 #
 #       Copyright 2006-2009 INRIA - CIRAD - INRA
 #
-#       File author(s): Julien Diener  <julien.diener@inria.fr>
+#       File author(s): Christophe Pradal
+#                       Julien Diener  <julien.diener@inria.fr>
 #                       Julien Coste   <julien.coste@inria.fr>
 #                       Guillaume baty <guillaume.baty@inria.fr>
 #
@@ -27,6 +28,7 @@ TODO:
   
 """
 import sys
+import importlib
 from openalea.core.package   import DynamicPackage
 from openalea.core.node      import Factory
 from openalea.core.signature import Signature
@@ -98,8 +100,9 @@ def import_module(module_name, search_path=[]):
     if len(search_path)>0:
         syspath  = sys.path
         sys.path = search_path + sys.path
-        
-    module = __import__(module_name,globals(),{}, [''], -1)
+    
+    module = importlib.import_module(module_name)
+    #module = __import__(module_name,globals(),{}, [''], -1)
     
     if len(search_path)>0:
         sys.path = syspath
