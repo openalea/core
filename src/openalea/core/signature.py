@@ -26,6 +26,7 @@ import re
 import traceback
 import copy
 from openalea.core.interface import TypeInterfaceMap
+import six
 from six.moves import zip
 
 
@@ -156,6 +157,7 @@ class Signature(object):
         For Python defined callables, uses the "inspect" module. For builtins, tries
         some regexp parsing of the docstring.
         """
+        # different behavior in Python 3
         isMethod = inspect.ismethod(function)
         if isMethod or inspect.isfunction(function):
             argspec  = inspect.getargspec(function)
@@ -176,12 +178,20 @@ class Signature(object):
 
         elif inspect.isclass(function) and "__call__" in function.__dict__:
             func = function.__call__
-            return Signature.get_callable_arguments(func)
-
-        elif isinstance(function, types.InstanceType) and "__call__" in function.__dict__:
-            func = function.__call__
-            return Signature.get_callable_arguments(func)
+            # fix different behaior in Python 3
+            results = list(Signature.get_callable_arguments(func))
+            if results[-1] != -1:
+                results[-1] = True
+            return results
         else:
+            if (six.PY2 and "__call__" in function.__dict__ and 
+                isinstance(function, types.InstanceType)) :
+                func = function.__call__
+                # fix different behaior in Python 3
+                results = list(Signature.get_callable_arguments(func))
+                results[-1]=True
+                return results
+
             return -1,-1,-1,-1,-1
 
     @staticmethod

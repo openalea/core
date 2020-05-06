@@ -117,10 +117,10 @@ def test_functor():
 
     s = sgn.Signature(functor1)
     assert s.get_name() == 'functor1'
-    assert s.get_parameters() == \
+    assert (s.get_parameters() == 
         [{'interface': None, 'name': 'x', 'value': None},
         {'interface': IInt, 'name': 'y', 'value': 0}]
-
+    )
     class functor2:
 
         def __call__(self):

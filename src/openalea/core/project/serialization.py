@@ -111,7 +111,7 @@ class ProjectSaver(AbstractSaver):
                 path.makedirs()
             self._save_metadata(obj, config_path)
             lines = self._save_controls(obj)
-            with open(path / 'control.py', 'w') as f:
+            with open(path / 'control.py', 'wb') as f:
                 for line in lines:
                     f.write(line)
         elif mode == 'metadata':
