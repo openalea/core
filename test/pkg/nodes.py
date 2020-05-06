@@ -18,7 +18,6 @@ __revision__ = " $Id: data.py 2445 2010-05-12 09:11:00Z pradal $ "
 
 from os.path import join
 from openalea.core import Node
-from six.moves import range
 
 class Float(Node):
     def __init__(self, ins, outs):
@@ -55,6 +54,6 @@ def pymap(func, seq):
     """ map(func, seq) """
 
     if func is not None and seq is not None and len(seq):
-        return ( list(map(func, seq)), )
+        return ( [func(x) for x in seq], )
     else:
         return ( [], )

@@ -18,6 +18,41 @@ from __future__ import absolute_import
 __license__ = "Cecill-C"
 __revision__ = " $Id$ "
 
+from os.path import join
+from os import getcwd
+
+from openalea.core import pkgmanager
+from openalea.core import compositenode
+
+def test_py():
+    pm = pkgmanager.PackageManager()
+    pm.add_wralea_path(join(getcwd(), "pkg"), pm.user_wralea_path)
+    pm.init()
+
+    pkg = pm["pkg_test"]
+    rangeFac = pm["pkg_test"]["range"]
+    listFac  = pm["pkg_test"]["list"]
+    mapFac   = pm["pkg_test"]["map"]
+    addFac   = pm["pkg_test"]["+"]
+    xFac     = pm["openalea.flow control"]["X"]
+
+    ran = rangeFac.instantiate()
+    ma = mapFac.instantiate()
+    add1 = addFac.instantiate()
+    add2 = addFac.instantiate()
+    x = xFac.instantiate()
+    l1 = listFac.instantiate()
+    l2 = listFac.instantiate()
+    
+    e1 = lambda x: add1((x, x))
+    e2, = ran((0,10))
+    e3, = ma((e1, e2))
+    e4, = l1((e3,))
+    e5, = l1((e3,))
+    e6 = add2((e4,e5))
+
+    return e6
+
 def test_diamond_after_map():
     """ Tests that a diamond after a map evaluates only onces the map node.
 
@@ -27,10 +62,6 @@ def test_diamond_after_map():
          \   /
            +    #evaluation of + should only trigger one evaluation of Map.
     """
-
-    from openalea.core import pkgmanager
-    from os.path import join
-    from os import getcwd
 
     pm = pkgmanager.PackageManager()
     pm.add_wralea_path(join(getcwd(), "pkg"), pm.user_wralea_path)
@@ -45,7 +76,6 @@ def test_diamond_after_map():
     xFac     = pm["openalea.flow control"]["X"]
 
     # -- build our df --
-    from openalea.core import compositenode
 
     df       = compositenode.CompositeNode()
     range_   = rangeFac.instantiate()
@@ -76,6 +106,6 @@ def test_diamond_after_map():
     df.connect(lrId, 0, faId, 1)
 
     df.eval_as_expression(faId)
-
+    return df
 
 #see test_compositenode.py
