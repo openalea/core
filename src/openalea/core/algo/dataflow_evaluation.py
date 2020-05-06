@@ -21,7 +21,12 @@ __license__ = "Cecill-C"
 __revision__ = " $Id$ "
 
 import sys
-from time import clock
+import six
+try: # PY2
+    from time import clock
+except ImportError: #PY3
+    from time import process_time as clock
+
 import traceback as tb
 from openalea.core import ScriptLibrary
 
@@ -265,7 +270,7 @@ class AbstractEvaluation(object):
             # When an exception is raised, a flag is set.
             node.raise_exception = True
             node.notify_listeners(('data_modified', None, None))
-            raise EvaluationException(vid, node, e, \
+            raise EvaluationException(vid, node, e,
                 tb.format_tb(sys.exc_info()[2]))
 
 
@@ -279,7 +284,7 @@ class AbstractEvaluation(object):
         df = self._dataflow
 
         # For each connected node
-        npids = [(npid, df.vertex(npid), df.actor(df.vertex(npid))) \
+        npids = [(npid, df.vertex(npid), df.actor(df.vertex(npid)))
                      for npid in df.connected_ports(pid)]
         npids.sort(key=functools.cmp_to_key(cmp_posx))
 

@@ -64,7 +64,11 @@ from six.moves.configparser import NoSectionError, NoOptionError
 # Exceptions
 ###########################################################################
 
-import time
+try: # PY2
+    from time import clock
+except ImportError: #PY3
+    from time import process_time as clock
+
 DEBUG = False
 SEARCH_OUTSIDE_ENTRY_POINTS = True
 
@@ -258,7 +262,7 @@ class PackageManager(six.with_metaclass(Singleton, Observed)):
             # to find the path.
             if DEBUG:
                 print(epoint.module_name)
-                t1 = time.clock()
+                t1 = clock()
 
             try:
                 m = importlib.import_module(epoint.module_name)
@@ -270,7 +274,7 @@ class PackageManager(six.with_metaclass(Singleton, Observed)):
 
             if DEBUG:
                 print((epoint.module_name))
-                tn = time.clock() - t1
+                tn = clock() - t1
                 res[tn] = epoint.module_name
 
 
@@ -520,7 +524,7 @@ class PackageManager(six.with_metaclass(Singleton, Observed)):
         """
 
         if DEBUG:
-            t0 = time.clock()
+            t0 = clock()
 
         wralea_files = set()
         if(not os.path.isdir(directory)):
@@ -542,14 +546,14 @@ class PackageManager(six.with_metaclass(Singleton, Observed)):
             # self.log.add("Package Manager : found %s" % f)
 
         if DEBUG:
-            t1 = time.clock()
+            t1 = clock()
             dt = t1 - t0
             print('search wralea files takes %f sec' % dt)
 
         readers = list(map(self.get_pkgreader, wralea_files))
 
         if DEBUG:
-            t2 = time.clock()
+            t2 = clock()
             dt1 = t2 - t1
             print('readers takes %f sec: ' % (dt1,))
 
@@ -574,13 +578,13 @@ class PackageManager(six.with_metaclass(Singleton, Observed)):
             # No cache : search recursively on the disk
 
         if DEBUG:
-            # t1 = time.clock()
+            # t1 = clock()
             pass 
 
         directories = self.get_wralea_path()
         if DEBUG:
             # print '      ~~~~~~~~~~'
-            # t2 = time.clock()
+            # t2 = clock()
             # print '      get_wralea_path %f sec'%(t2-t1)
             # print '\n'.join(directories)
             pass
@@ -588,7 +592,7 @@ class PackageManager(six.with_metaclass(Singleton, Observed)):
         recursive = True
 
         for wp in directories:
-            #if DEBUG: t0 = time.clock()
+            #if DEBUG: t0 = clock()
 
             ret = self.find_wralea_dir(wp, recursive)
             if(ret):
@@ -596,13 +600,13 @@ class PackageManager(six.with_metaclass(Singleton, Observed)):
 
             if DEBUG:
                 # print '      ~~~~~~~~~~'
-                # t1 = time.clock()
+                # t1 = clock()
                 # print '      find_wralea %s %f sec'%(wp, t1-t0)
                 pass
 
         if DEBUG:
             # print '      ~~~~~~~~~~'
-            # t3 = time.clock()
+            # t3 = clock()
             # print '      find_wralea_dir %f sec'%(t3-t2)
             pass
 
@@ -656,7 +660,7 @@ class PackageManager(six.with_metaclass(Singleton, Observed)):
         self.set_sys_wralea_path()
         self.set_user_wralea_path()
         if DEBUG:
-            t1 = time.clock()
+            t1 = clock()
 
         wralea_files = self.find_all_wralea()
         readerlist = self.create_readers(wralea_files)
@@ -664,7 +668,7 @@ class PackageManager(six.with_metaclass(Singleton, Observed)):
         # readerlist = self.find_wralea_files()
 
         if DEBUG:
-            t2 = time.clock()
+            t2 = clock()
             print('-------------------')
             print('find_wralea_files takes %f seconds' % (t2 - t1))
 
@@ -672,14 +676,14 @@ class PackageManager(six.with_metaclass(Singleton, Observed)):
             res = {}
         for x in readerlist:
             if DEBUG:
-                tn = time.clock()
+                tn = clock()
             x.register_packages(self)
             if DEBUG:
-                tt = time.clock() - tn
-                print('register package ', x.get_pkg_name(), 'in ', time.clock() - tn)
+                tt = clock() - tn
+                print('register package ', x.get_pkg_name(), 'in ', clock() - tn)
                 res[x.filename]=tt
         if DEBUG:
-            t3 = time.clock()
+            t3 = clock()
             print('-------------------')
             print('register_packages takes %f seconds' % (t3 - t2))
 #        self.save_cache()
