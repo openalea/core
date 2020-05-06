@@ -1,5 +1,6 @@
 from __future__ import absolute_import
 from openalea.core import logger
+import six
 from six.moves import range
 
 # Bug in Python 3 with nosetests
