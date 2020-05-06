@@ -113,6 +113,8 @@ class ProjectSaver(AbstractSaver):
             lines = self._save_controls(obj)
             with open(path / 'control.py', 'wb') as f:
                 for line in lines:
+                    if six.PY3 and isinstance(line, str):
+                        line = bytes(line, 'utf-8')
                     f.write(line)
         elif mode == 'metadata':
             if path.exists():
