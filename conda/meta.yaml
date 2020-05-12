@@ -10,15 +10,19 @@ source:
 build:
   preserve_egg_dir: True
   number: 1
-  script: python setup.py install --prefix=$PREFIX
+  script: "{{ PYTHON }} setup.py install"
 
 requirements:
-  build:
-    - openalea.deploy #==2.0.0
+  host:
+    - python
+    - setuptools
+    - openalea.deploy
+    - six
   run:
     - python
     - ipykernel
     - configobj
+    - six
 
 test:
   imports:
