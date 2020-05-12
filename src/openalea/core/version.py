@@ -16,3 +16,5 @@ POST = 2
 
 __version__ = ".".join([str(s) for s in (MAJOR, MINOR, POST)])
 # #}
+
+__version__ = "2.1.0"
