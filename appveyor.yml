@@ -6,8 +6,10 @@ environment:
   matrix:
     - CONDA_RECIPE: conda
       CONDA_VERSION: 2
+      PYTHON_VERSION: 2.7
     - CONDA_RECIPE: conda
       CONDA_VERSION: 3
+      PYTHON_VERSION: 3.7
 
 
 install:
