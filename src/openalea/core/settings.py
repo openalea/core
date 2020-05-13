@@ -185,6 +185,15 @@ class Settings(six.with_metaclass(ProxySingleton, object)):
         option = option.lower().replace(" ", "_")
         self.parser.set(section, option, value)
 
+    def add_section(self, section):
+        self.parser.add_section(section)
+
+    def sections(self):
+        return self.parser.sections()
+
+    def has_section(self, section):
+        return self.parser.has_section(section)
+
     def get(self, section, option):
         option = option.lower().replace(" ", "_")
         return self.parser.get(section, option)
