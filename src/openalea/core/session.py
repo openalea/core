@@ -163,7 +163,8 @@ class Session(Observed):
         for k in sys.modules.keys():
             m = sys.modules[k]
             if hasattr(m, '__file__'):
-                modules_path.append((m.__name__, os.path.abspath(m.__file__)))
+                if m.__file__ is not None:
+                    modules_path.append((m.__name__, os.path.abspath(m.__file__)))
 
         d['__modules__'] = modules_path
         d.sync()
