@@ -1,3 +1,4 @@
+from __future__ import absolute_import
 import copy
 
 from openalea.core.model import Model

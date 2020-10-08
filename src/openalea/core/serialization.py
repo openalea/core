@@ -21,6 +21,14 @@
 #
 ###############################################################################
 
+from __future__ import print_function
+try:
+    # Python 2: "unicode" is built-in
+    unicode
+except NameError:
+    unicode = str
+from io import open
+   
 from openalea.core.path import path as Path
 import warnings
 
@@ -109,7 +117,7 @@ class AbstractSaver(object):
     def _open_file(self, path):
         filename = Path(path)
         if filename.isdir():
-            print 'BUG: filename is a dir'
+            print('BUG: filename is a dir')
             return
 
         try:
@@ -123,7 +131,7 @@ class AbstractSaver(object):
 
     def _write(self, lines, file_):
         for line in lines:
-            file_.write(line)
+            file_.write(unicode(line))
         file_.close()
 
     def save(self, obj, path, protocol=None, **kwds):
@@ -204,8 +212,8 @@ class CPickleSaver(AbstractSaver):
         """
         file_ = self._open_file(path)
         try:
-            import cPickle
-            cPickle.dumps(obj, file_)
+            import six.moves.cPickle
+            six.moves.cPickle.dumps(obj, file_)
         except ImportError:
             warnings.warn("You must install cPickle.")
 
@@ -230,8 +238,8 @@ class BGEOMSaver(object):
             return sc.save(str(filename), "BGEOM")
         except ImportError:
             warnings.warn("You must install PlantGL if you want to load a BGEOM object.")
-        except Exception, e:
-            print e
+        except Exception as e:
+            print(e)
             warnings.warn("Impossible to save the scene for object %s into %s" % (obj, filename))
 
 
@@ -303,19 +311,19 @@ class CPickleLoader(AbstractLoader):
         if filename.exists():
             cpik = "False"
             try:
-                import cPickle
+                import six.moves.cPickle
                 cpik = "True"
             except ImportError:
                 warnings.warn("You must install cPickle.")
             if cpik:
                 try:
                     file_ = open(filename, "r")
-                    ret = cPickle.load(file_)
+                    ret = six.moves.cPickle.load(file_)
                     file_.close()
                     return ret
-                except Exception, e:
-                    print "Can't load file " + filename + " with loader CPickleLoader. "
-                    print e
+                except Exception as e:
+                    print("Can't load file " + filename + " with loader CPickleLoader. ")
+                    print(e)
 
 
 class BGEOMLoader(AbstractLoader):
@@ -341,6 +349,6 @@ class BGEOMLoader(AbstractLoader):
                 return sc
             except ImportError:
                 warnings.warn("You must install PlantGL if you want to load a BGEOM object.")
-            except Exception, e:
-                print e
+            except Exception as e:
+                print(e)
                 warnings.warn("Impossible to load the scene")

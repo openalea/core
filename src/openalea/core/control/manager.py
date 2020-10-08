@@ -23,6 +23,7 @@ import copy
 from openalea.core.observer import Observed, AbstractListener, lock_notify
 from openalea.core.singleton import Singleton
 from .control import Control
+import six
 
 
 class Follower(AbstractListener):
@@ -237,8 +238,8 @@ class ControlContainer(Observed, AbstractListener):
             self.unregister_follower(follower_name)
 
 
-class ControlManager(ControlContainer):
-    __metaclass__ = Singleton
+class ControlManager(six.with_metaclass(Singleton, ControlContainer)):
+    pass
 
 
 def control_dict():

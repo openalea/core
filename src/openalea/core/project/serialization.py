@@ -24,6 +24,8 @@ from configobj import ConfigObj
 from openalea.core.service.interface import interface_name
 from openalea.core.project import Project
 from openalea.core.customexception import ErrorInvalidItem
+import six
+from io import open
 
 
 class ProjectLoader(object):
@@ -55,7 +57,7 @@ class ProjectLoader(object):
                 else:
                     value = config['metadata'][info]
                 if interface_name(default_metadata[info].interface) == 'ISequence':
-                    if isinstance(value, basestring):
+                    if isinstance(value, six.string_types):
                         value = value.split(',')
                 setattr(project, info, value)
 
@@ -109,8 +111,10 @@ class ProjectSaver(AbstractSaver):
                 path.makedirs()
             self._save_metadata(obj, config_path)
             lines = self._save_controls(obj)
-            with open(path / 'control.py', 'w') as f:
+            with open(path / 'control.py', 'wb') as f:
                 for line in lines:
+                    if six.PY3 and isinstance(line, str):
+                        line = bytes(line, 'utf-8')
                     f.write(line)
         elif mode == 'metadata':
             if path.exists():
@@ -120,7 +124,6 @@ class ProjectSaver(AbstractSaver):
 
     def _save_metadata(self, obj, path):
         path.touch()
-        from configobj import ConfigObj
         config = ConfigObj()
         if not path.isfile():
             return

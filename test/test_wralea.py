@@ -1,3 +1,4 @@
+from __future__ import absolute_import
 __license__ = "Cecill-C"
 __revision__ = " $Id$ "
 
@@ -53,13 +54,13 @@ def test_register():
 
     register_packages(pkgmanager)
 
-    assert "test" in pkgmanager.keys()
+    assert "test" in list(pkgmanager.keys())
 
     pkg = pkgmanager["Test"]
 
-    assert "sum" in pkg.keys()
-    assert "userclass" in pkg.keys()
-    assert "userfunc" in pkg.keys()
+    assert "sum" in list(pkg.keys())
+    assert "userclass" in list(pkg.keys())
+    assert "userfunc" in list(pkg.keys())
 
     fact = pkg["sum"]
     node = fact.instantiate()

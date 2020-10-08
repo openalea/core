@@ -21,6 +21,7 @@ dist
 build
 build-scons
 eggs
+.eggs
 parts
 bin
 var
@@ -31,6 +32,7 @@ lib
 lib64
 __pycache__
 *.pth
+*.bak
 
 # Installer logs
 pip-log.txt
@@ -65,3 +67,5 @@ nosetests.xml
 # temporary files
 *._icon.png
 
+# Mac dirs
+.DS_Store

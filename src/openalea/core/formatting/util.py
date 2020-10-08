@@ -18,6 +18,7 @@
 ###############################################################################
 from openalea.deploy.shared_data import shared_data
 from openalea.core.path import path as Path
+import six
 
 
 def pretty_print(obj):
@@ -33,7 +34,7 @@ def pretty_print(obj):
 
 
 def icon_path(filepath, default=None, paths=None, packages=None):
-    if filepath is None or isinstance(filepath, basestring) and filepath.startswith(':/'):
+    if filepath is None or isinstance(filepath, six.string_types) and filepath.startswith(':/'):
         return None
     if paths is None:
         paths = []

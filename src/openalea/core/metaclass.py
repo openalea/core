@@ -75,7 +75,10 @@ __license__ = "Cecill-C"
 __revision__ = " $Id$ "
 
 import inspect
-import types
+try:
+    from types import ClassType
+except ImportError:
+       ClassType = type
 
  ############## preliminary: two utility functions #####################
 
@@ -92,7 +95,7 @@ def skip_redundant(iterable, skipset=None):
 
 def remove_redundant(metaclasses):
     """todo"""
-    skipset = set([types.ClassType])
+    skipset = set([ClassType])
     for meta in metaclasses: # determines the metaclasses to be skipped
         skipset.update(inspect.getmro(meta)[1:])
     return tuple(skip_redundant(metaclasses, skipset))

@@ -1,4 +1,4 @@
-{% set version = "2.0.1" %}
+{% set version = "2.1.0" %}
 
 package:
   name: openalea.core
@@ -10,14 +10,19 @@ source:
 build:
   preserve_egg_dir: True
   number: 1
-  script: python setup.py install --prefix=$PREFIX
+  script: {{ PYTHON }} setup.py install --single-version-externally-managed --record=record.txt
 
 requirements:
-  build:
-    - openalea.deploy #==2.0.0
+  host:
+    - python
+    - setuptools
+    - openalea.deploy
+    - six
   run:
     - python
     - ipykernel
+    - configobj
+    - six
 
 test:
   imports:

@@ -137,6 +137,8 @@ from logging import DEBUG, INFO, WARNING, ERROR, CRITICAL, NOTSET
 import logging.handlers
 from logging.handlers import TimedRotatingFileHandler
 from openalea.core.singleton import Singleton
+from six.moves import map
+import six
 
 
 #: List of default handler names:
@@ -250,18 +252,11 @@ def default_init(level=logging.ERROR, handlers=defaultHandlerNames[:]):
 ############################
 # Openalea Logging Central #
 ############################
-class LoggerOffice(object):
+class LoggerOffice(six.with_metaclass(Singleton, object)):
     """ This class behaves as the central registry of loggers
     and handlers for Openalea. This way, the application can
     query information about them.
     """
-
-    ##################################################################
-    # As the top level function (public API) simply redirect to this #
-    # singleton, see the documentation of the former.                #
-    ##################################################################
-
-    __metaclass__ = Singleton
 
     def __init__(self, level=DEBUG):
         logging.info("Logger started")
@@ -304,7 +299,7 @@ class LoggerOffice(object):
         return handler
 
     def get_handler_names(self):
-        return list(self.__handlers.iterkeys())
+        return list(self.__handlers.keys())
 
     def get_handler(self, name):
         handler =  self.__handlers.get(name)
@@ -313,7 +308,7 @@ class LoggerOffice(object):
         return handler
 
     def iter_handlers(self):
-        return self.__handlers.itervalues()
+        return self.__handlers.values()
 
     ###########
     # LOGGERS #
@@ -328,7 +323,7 @@ class LoggerOffice(object):
         return logger
 
     def get_logger_names(self):
-        return list(self.__pyLoggers.iterkeys())
+        return list(self.__pyLoggers.keys())
 
     def get_logger(self, name):
         logger = self.__pyLoggers.get(name)
@@ -337,7 +332,7 @@ class LoggerOffice(object):
         return logger
 
     def iter_loggers(self):
-        return self.__pyLoggers.itervalues()
+        return self.__pyLoggers.values()
 
     #################################
     # Logger to handler connections #
@@ -510,7 +505,7 @@ if QT_LOGGING_MODEL_AVAILABLE:
                 self.removeRow(0)
 
             vals = self.format(record).split(" - ")
-            items = map(QtGui.QStandardItem, vals )
+            items = list(map(QtGui.QStandardItem, vals ))
 
             # -- optionnal colouring --
             if self.messageTypeIndex is not None:

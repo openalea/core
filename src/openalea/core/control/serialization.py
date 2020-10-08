@@ -18,7 +18,7 @@ class ControlDeserializer(AbstractDeserializer):
         ns = {}
         for l in lines:
             try:
-                exec l in ns
+                exec(l, ns)
             except:
                 pass
         controls = ns.get('controls', [])

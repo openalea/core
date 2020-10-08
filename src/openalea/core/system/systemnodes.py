@@ -16,11 +16,13 @@
 ###############################################################################
 """System Nodes"""
 
+from __future__ import print_function
 __license__ = "Cecill-C"
 __revision__ = " $Id$ "
 
 from openalea.core.node import AbstractNode, Node, Annotation
 from openalea.core.dataflow import SubDataflow
+from six.moves import zip
 
 DEBUG = False
 
@@ -68,16 +70,16 @@ class IterNode(Node):
             if(hasattr(self, "nextval")):
                 self.outputs[0] = self.nextval
             else:
-                self.outputs[0] = self.iterable.next()
+                self.outputs[0] = next(self.iterable)
 
-            self.nextval = self.iterable.next()
+            self.nextval = next(self.iterable)
             return True
 
-        except TypeError, e:
+        except TypeError as e:
             self.outputs[0] = self.inputs[0]
             return False
 
-        except StopIteration, e:
+        except StopIteration as e:
             self.iterable = "Empty"
             if(hasattr(self, "nextval")):
                 del self.nextval
@@ -98,16 +100,16 @@ class IterWithDelayNode(IterNode):
             if(hasattr(self, "nextval")):
                 self.outputs[0] = self.nextval
             else:
-                self.outputs[0] = self.iterable.next()
+                self.outputs[0] = next(self.iterable)
 
-            self.nextval = self.iterable.next()
+            self.nextval = next(self.iterable)
             return self.inputs[1]
 
-        except TypeError, e:
+        except TypeError as e:
             self.outputs[0] = self.inputs[0]
             return False
 
-        except StopIteration, e:
+        except StopIteration as e:
             self.iterable = "Empty"
             if(hasattr(self, "nextval")):
                 del self.nextval
@@ -310,7 +312,7 @@ class AccuList(Node):
             varname = "AccuList_%i" % (id(self))
 
         # Create datapool variable if necessary
-        if(not self.pool.has_key(varname) or
+        if(varname not in self.pool or
            not isinstance(self.pool[varname], list)):
             l = list()
             self.pool[varname] = l
@@ -346,7 +348,7 @@ class AccuFloat(Node):
             varname = "AccuFloat_%i" % (id(self))
 
         # Create datapool variable if necessary
-        if(not self.pool.has_key(varname) or
+        if(varname not in self.pool or
            not isinstance(self.pool[varname], float)):
             self.pool[varname] = 0.
 
@@ -420,7 +422,7 @@ class WhileUniVar(Node):
             else:
                 value = newvalue
             if DEBUG:
-                print value
+                print(value)
 
         return (value, )
 
@@ -457,7 +459,7 @@ class WhileMultiVar(Node):
                 values = newvals
 
             if DEBUG:
-                print values
+                print(values)
 
         return values
 
@@ -475,7 +477,7 @@ def while_multi2(values, test, function):
             else:
                 values = newvals
 
-            print values
+            print(values)
 
         return values
 
@@ -536,4 +538,4 @@ def get_data(pattern='*.*', pkg_name=None, as_paths=False):
         node.eval()
     names = [x.name for x in result]
     filenames = [node.get_output(0) for node in nodes]
-    return dict(zip(names, filenames))
+    return dict(list(zip(names, filenames)))
