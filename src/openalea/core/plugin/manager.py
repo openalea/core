@@ -24,6 +24,8 @@ See :meth:`PluginManager.set_proxy` and "plugin_proxy" parameter in :meth:`Plugi
 
 import inspect
 from warnings import warn
+import importlib
+from pkg_resources import iter_entry_points
 
 from openalea.core import logger
 from openalea.core.manager import GenericManager
@@ -31,7 +33,6 @@ from openalea.core.plugin.plugin import PluginDef
 from openalea.core.service.introspection import name
 from openalea.core.util import camel_case_to_lower
 
-from pkg_resources import iter_entry_points
 
 __all__ = ['PluginManager']
 
@@ -55,7 +56,8 @@ def get_implementation(plugin):
     if hasattr(plugin, 'modulename') and hasattr(plugin, 'objectname'):
         modulename = plugin.modulename
         objectname = plugin.objectname
-        module = __import__(modulename, fromlist=[objectname])
+        module = importlib.import_module(modulename)
+        #module = __import__(modulename, fromlist=[objectname])
         return getattr(module, objectname)
     else:
         return plugin()

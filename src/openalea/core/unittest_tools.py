@@ -1,4 +1,5 @@
 
+from __future__ import print_function
 import unittest
 from openalea.core.observer import AbstractListener
 
@@ -12,7 +13,7 @@ class EventTracker(AbstractListener):
 
     def notify(self, sender, event=None):
         if self.debug:
-            print sender, event
+            print(sender, event)
         self._events.append((sender, event))
 
     @property

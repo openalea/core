@@ -20,7 +20,7 @@ __license__ = "Cecill-C"
 __revision__ = "$Id$"
 
 
-class PackageManagerCategory():
+class PackageManagerCategory(object):
     """
     The PackageManagerCategory provides a Dictionary of keywords and categories.
 

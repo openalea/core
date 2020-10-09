@@ -1,3 +1,5 @@
+from __future__ import absolute_import
+from __future__ import print_function
 from openalea.core.pkgmanager import PackageManager
 
 from .small_tools import test_dir
@@ -60,7 +62,7 @@ def test_search():
     assert 'Test' in pkgman
 
     res = pkgman.search_node("sum")
-    print res
+    print(res)
     assert "sum" in res[0].name
 
 

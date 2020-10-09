@@ -16,6 +16,7 @@
 """Test the session"""
 
 
+from __future__ import absolute_import
 __license__ = "Cecill-C"
 __revision__ = " $Id$ "
 
@@ -43,7 +44,7 @@ def teardown():
 def add_user_class(datapool):
     """ Add an user class to datapool """
 
-    import moduletest
+    from . import moduletest
     datapool['j'] = moduletest.test_data()
 
 

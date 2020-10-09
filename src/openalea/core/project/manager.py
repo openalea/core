@@ -16,10 +16,11 @@
 #
 ###############################################################################
 
+from __future__ import print_function
 from openalea.core.manager import GenericManager, UnknownItemError
 
 
-from ConfigParser import NoSectionError, NoOptionError
+from six.moves.configparser import NoSectionError, NoOptionError
 import os
 import sys
 
@@ -30,11 +31,12 @@ from openalea.core.project.project import Project
 from openalea.core.service.ipython import interpreter
 from openalea.core.service.plugin import plugins
 from openalea.core.settings import get_openalea_tmp_dir
+from six.moves import map
 
 
 def get_criteria(project):
     criteria = {}
-    for criterion in Project.DEFAULT_METADATA.keys() + ['path']:
+    for criterion in list(Project.DEFAULT_METADATA.keys()) + ['path']:
         criteria[criterion] = getattr(project, criterion)
     return criteria
 
@@ -158,7 +160,7 @@ class ProjectManager(GenericManager):
     def write_settings(self):
         """ Add a new path to the settings. """
         lst = list(set(self.repositories))
-        lst = map(str, lst)
+        lst = list(map(str, lst))
         config = settings.Settings()
         config.set("ProjectManager", "Path", str(lst))
 
@@ -262,7 +264,7 @@ You can rename/move this project thanks to the button "Save As" in menu.
             if full_path.exists():
                 project = Project(full_path)
             else:
-                print 'Project %s in repository %s does not exist' % (name, projectdir)
+                print('Project %s in repository %s does not exist' % (name, projectdir))
 
         if project:
             self.cproject = project
@@ -338,7 +340,7 @@ You can rename/move this project thanks to the button "Save As" in menu.
         if project is None:
             return
         sys.path = self.old_syspath
-        for k in project.ns.keys() + ['world', 'data', 'project']:
+        for k in list(project.ns.keys()) + ['world', 'data', 'project']:
             if k in interpreter.user_ns:
                 del interpreter.user_ns[k]
         from openalea.core.world import World

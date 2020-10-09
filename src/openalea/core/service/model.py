@@ -1,4 +1,5 @@
 
+from __future__ import absolute_import
 from openalea.core.path import path as Path
 from openalea.core.service.plugin import plugins
 from openalea.core.model import Model

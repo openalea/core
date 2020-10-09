@@ -1,3 +1,4 @@
+
 # -*- python -*-
 #
 #       OpenAlea.Core
@@ -14,10 +15,12 @@
 #
 ############################################################################
 """doc todo"""
+from __future__ import division
 
+from __future__ import print_function
+from io import open
 __license__ = "Cecill-C"
 __revision__ = " $Id$ "
-
 
 import os
 import sys
@@ -78,7 +81,7 @@ class VlabObject(object):
 
     def __init__(self, directory, pkgmanager):
         self.dir = directory
-        print "Import into OpenAlea the %s directory"%self.dir.basename()
+        print("Import into OpenAlea the %s directory"%self.dir.basename())
         self._programs = []
         self._files = {}
         self._text = {}
@@ -104,7 +107,7 @@ class VlabObject(object):
         d = self.dir
         search_name(d)
         _pkgname = 'vlab.'+'.'.join(names)
-        print _pkgname
+        print(_pkgname)
         return 'vlab.'+'.'.join(names)
 
     def get_package(self):
@@ -199,7 +202,7 @@ class VlabObject(object):
         elif prog in self.text:
             self.process_text(name, command)
         else:
-            print 'Do not know how to process this command: %s' % cmd
+            print('Do not know how to process this command: %s' % cmd)
 
     def process_program(self, name, command):
         """ Build a process node from the command.
@@ -217,8 +220,8 @@ class VlabObject(object):
         fn = ''
         if len(command) > 1:
             fn = command[-1]
-            if fn not in self._files.keys():
-                print "WARNING: the file %s used by the editor %s in not in the specification file." %(fn, cmd)
+            if fn not in list(self._files.keys()):
+                print("WARNING: the file %s used by the editor %s in not in the specification file." %(fn, cmd))
                 return
                 #self._files[fn] = []
 
@@ -244,7 +247,7 @@ class VlabObject(object):
     def process_files(self):
         from openalea.core.data import DataFactory
         deps = self._files
-        files = deps.keys()
+        files = list(deps.keys())
         for f in files:
             fn = self.dir/f
             if fn.ext in ['.map', '.txt', '.s', '.e', '.rgb']:
@@ -267,7 +270,7 @@ class VlabObject(object):
         Specify connections between nodes.
         """
         prog_deps = []
-        files = self._files.keys()
+        files = list(self._files.keys())
         for p in self._programs:
             cmd = self.sg.node(p).inputs[1].split()
             fdeps = [f for f in files if f in cmd]
@@ -279,13 +282,13 @@ class VlabObject(object):
                 depnode = self._filenodes[fdep]
                 node = self._filenodes[f]
                 self.sg.connect(depnode, 0, node, 0)
-        for f, nodes in self._editors.iteritems():
+        for f, nodes in self._editors.items():
             if not f: # an editor can act withouot a file
                 continue
             fnode = self._filenodes[f]
             for node in nodes:
                 self.sg.connect(node, 0, fnode, 0)
-        for f, nodes in self._text.iteritems():
+        for f, nodes in self._text.items():
             fnode = self._filenodes[f]
             for node in nodes:
                 self.sg.connect(fnode, 0, node, 0)
@@ -325,7 +328,7 @@ def layout(obj):
     y = 250
     progs = obj._programs
     n = len(progs)+1
-    dx = x = size / n
+    dx = x = size // n
     dx = max(min_dx, dx)
     for vid in progs:
         data = sg.node(vid).internal_data
@@ -333,16 +336,16 @@ def layout(obj):
         data['posy'] = y
         x+= dx
 
-    size = size/n
+    size = size//n
     for vid in obj._programs:
         l = list(sg.in_neighbors(vid))
         if not l:
             continue
         n1 = sg.node(vid)
         x0, y0 = n1.internal_data['posx'], n1.internal_data['posy']
-        dx1 = max(min_dx, size/(2*len(l)+1))
+        dx1 = max(min_dx, size//(2*len(l)+1))
         y1 = y0 - dy
-        x1 = x0 - size/2
+        x1 = x0 - size//2
         for node_id in l:
             data = sg.node(node_id).internal_data
             data['posx'] = x1
@@ -367,8 +370,8 @@ def compute_layout(sg, vid, x, dx, y, dy):
     l = list(sg.in_neighbors(vid))
     if not l:
         return
-    x = x - dx/2
-    dx /= len(l)
+    x = x - dx//2
+    dx = dx//len(l)
     dx = max(min_dx, dx)
     y -= dy
     for node_id in l:
@@ -408,7 +411,7 @@ class VlabObject2(VlabObject):
         if len(command) > 1:
             fn = command[-1]
             if fn not in self._files.keys():
-                print "WARNING: the file %s used by the editor %s in not in the specification file." %(fn, cmd)
+                print("WARNING: the file %s used by the editor %s in not in the specification file." %(fn, cmd))
 
         prog = command[0]
         if prog.lower() != 'edit':
@@ -424,8 +427,8 @@ class VlabObject2(VlabObject):
         from openalea.core.data import DataFactory
 
         deps = self._files
-        files = deps.keys()
-        for f, vf in deps.iteritems():
+        files = list(deps.keys())
+        for f, vf in deps.items():
             assert f[-1] != ':'
             fn = self.dir/f
             if fn.ext in ['.map', '.txt', '.s', '.e', '.rgb']:
@@ -435,7 +438,7 @@ class VlabObject2(VlabObject):
         # create the data here
         # Create vlab data rather than simple data
         self._filenodes = {}
-        for vf in deps.itervalues():
+        for vf in deps.values():
             factory = DataFactory(vf.name, editors=vf.editors)
             self._package.add_factory(factory)
             self.factories.append(factory)
@@ -453,7 +456,7 @@ class VlabObject2(VlabObject):
         Specify connections between nodes.
         """
         prog_deps = []
-        files = self._files.keys()
+        files = list(self._files.keys())
         for p in self._programs:
             cmd = self.sg.node(p).inputs[1].split()
             fdeps = [f for f in files if f in cmd]

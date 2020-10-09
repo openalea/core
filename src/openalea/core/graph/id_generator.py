@@ -1,3 +1,4 @@
+from six.moves import range
 # -*- python -*-
 #
 #       OpenAlea.Core
@@ -39,7 +40,7 @@ class IdGenerator(object):
                 return self._id_list.pop()
         else:
             if id>=self._id_max:
-                self._id_list.extend(range(self._id_max, id))
+                self._id_list.extend(list(range(self._id_max, id)))
                 self._id_max=id+1
                 return id
             else:

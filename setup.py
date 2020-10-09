@@ -5,6 +5,7 @@
 # format setup arguments
 
 from setuptools import setup, find_packages
+from io import open
 
 
 short_descr = "OpenAlea.Core is able to discover and manage packages and logical components, build and evaluate dataflows and Generate final applications"

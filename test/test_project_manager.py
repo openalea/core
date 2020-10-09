@@ -1,3 +1,4 @@
+from __future__ import absolute_import
 import shutil
 import sys
 
@@ -75,7 +76,7 @@ class TestProjectManager(TestCase):
 
     def test_discover(self):
         pm.discover()
-        self.assertEqual(pm.items(), [])
+        self.assertEqual(list(pm.items()), [])
 
         self.create_projects()
         pm.discover()
@@ -104,7 +105,7 @@ class TestProjectManager(TestCase):
         pm.repositories.append(self.tmpdir)
         pm.discover()
 
-        assert len(pm.items()) == 2
+        assert len(list(pm.items())) == 2
 
     def test_search(self):
         self.create_projects()
@@ -116,7 +117,7 @@ class TestProjectManager(TestCase):
         p1b = self.tmpdir2 / 'p1'
         p3b = self.tmpdir2 / 'p3'
 
-        assert len(pm.items()) == 4
+        assert len(list(pm.items())) == 4
         proj_p1 = pm.item('p1')
         #name_p1 = sorted([str(project.path) for project in proj_p1])
 
@@ -169,7 +170,7 @@ class TestProjectManager(TestCase):
 
         assert 'world' in user_ns
         w = user_ns['world']
-        assert w.keys() == []
+        assert list(w.keys()) == []
 
         code = "world.add(1, name='i');a=1"
         model = Model()
@@ -177,9 +178,9 @@ class TestProjectManager(TestCase):
         model.set_code(code)
         model.run(**proj.ns)
 
-        assert w.keys() == ['i']
+        assert list(w.keys()) == ['i']
         assert w['i'].obj == 1
 
         pm.cproject = None
         assert 'world' not in user_ns
-        assert w.keys() == []
+        assert list(w.keys()) == []

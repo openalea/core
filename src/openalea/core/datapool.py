@@ -21,6 +21,7 @@ __revision__ = "$Id$"
 
 from openalea.core.singleton import Singleton
 from openalea.core.observer import Observed
+import six
 
 
 # Decorator to add notification to function
@@ -37,10 +38,8 @@ def notify_decorator(f):
     return wrapped
 
 
-class DataPool(Observed, dict):
+class DataPool(six.with_metaclass(Singleton, Observed, dict)):
     """ Dictionnary of session data """
-
-    __metaclass__ = Singleton
 
     def __init__(self):
 

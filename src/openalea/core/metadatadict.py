@@ -14,6 +14,7 @@
 #
 ###############################################################################
 
+from __future__ import print_function
 __license__ = "Cecill-C"
 __revision__ = " $Id$ "
 
@@ -44,7 +45,7 @@ class MetaDataDict(observer.Observed):
             if( isinstance(values, self.__class__) ):
                 self.update(values)
             else:
-                for name, value in values.iteritems():
+                for name, value in values.items():
                     typ = val = None
                     if (isinstance(value, tuple) or isinstance(value, list)) and \
                         len(value) == 2  and isinstance(value[0], type):
@@ -67,7 +68,7 @@ class MetaDataDict(observer.Observed):
         self._metaTypes.update(other._metaTypes.copy())
 
     def set_slots(self, slots, useSlotDefaults=True):
-        for name, value in slots.iteritems():
+        for name, value in slots.items():
             typ, val = value
             self._metaTypes[name] = typ
             if useSlotDefaults :
@@ -118,9 +119,9 @@ class MetaDataDict(observer.Observed):
 
         valType = self._metaTypes[key]
         if self.__doTypeChecking and type(value) != valType :
-            print self.__class__, "set_metadata : Unexpected value type", key, \
+            print(self.__class__, "set_metadata : Unexpected value type", key, \
                   " : ", type(value), "instead of", valType, \
-                  " assuming duck-typing"
+                  " assuming duck-typing")
 
         self._metaValues[key] = value
         if(notify):
@@ -153,7 +154,7 @@ class MetaDataDict(observer.Observed):
         self.__doTypeChecking = val
 
     def keys(self):
-        return self._metaTypes.keys()
+        return list(self._metaTypes.keys())
 
     def __str__(self):
         return self.__repr__()
