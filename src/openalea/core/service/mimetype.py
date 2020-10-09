@@ -1,3 +1,10 @@
+try:
+    # Python 2: "unicode" is built-in
+    unicode
+except NameError:
+    unicode = str
+
+
 __all__ = [
     'decode',
     'encode',

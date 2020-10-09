@@ -18,6 +18,7 @@
 #
 ###############################################################################
 
+from __future__ import absolute_import
 import types
 from ipykernel.inprocess.ipkernel import InProcessKernel
 from IPython.core.error import UsageError

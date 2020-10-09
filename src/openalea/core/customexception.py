@@ -15,6 +15,7 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with pyLot.  If not, see <http://www.gnu.org/licenses/>.
 
+from __future__ import print_function
 __author__ = u'Pierre Puiseux, Guillaume Baty'
 __copyright__ = u"Copyright 2011-2012 (C) andheo, Université de Pau et des Pays de l'Adour"
 __credits__ = [u'Pierre Puiseux', u'Guillaume Baty']
@@ -40,18 +41,18 @@ def display_error_color(e):
     if not isinstance(e, CustomException):
         e = cast_error(e, CustomException)
 
-    print '-' * len(e.getTitle())
-    print e.getTitle()
-    print '-' * len(e.getTitle())
-    print
-    print e.getMessage()
+    print('-' * len(e.getTitle()))
+    print(e.getTitle())
+    print('-' * len(e.getTitle()))
+    print()
+    print(e.getMessage())
     desc = e.getDesc()
     if desc:
         part = u'Details:'
-        print
-        print part
-        print '-' * len(part)
-        print desc
+        print()
+        print(part)
+        print('-' * len(part))
+        print(desc)
 
 
 class CustomException(Exception):

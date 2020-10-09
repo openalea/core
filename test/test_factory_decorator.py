@@ -1,4 +1,5 @@
-import modulesample1
+from __future__ import absolute_import
+from . import modulesample1
     
 def test_module_info():
     assert modulesample1.__doc__ == 'Module documentation'

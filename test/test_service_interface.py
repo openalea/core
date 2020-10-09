@@ -1,4 +1,5 @@
 
+from __future__ import absolute_import
 import unittest
 
 from openalea.core.service.interface import interface_class, guess_interface

@@ -20,6 +20,19 @@ A Package is a deplyment unit and contains a factories (Node generator)
 and meta informations (authors, license, doc...)
 """
 
+from __future__ import print_function
+from io import open
+try:
+    # Python 2: "reload" is built-in
+    reload
+except NameError:
+    from importlib import reload
+try:
+    # Python 2: "unicode" is built-in
+    unicode
+except NameError:
+    unicode = str
+    
 __license__ = "Cecill-C"
 __revision__ = " $Id$ "
 
@@ -184,7 +197,7 @@ class Package(PackageDict):
                 if (modulefile in s):
                     module.oa_invalidate = True
                     reload(module)
-                    print "Reloaded ", module.__name__
+                    print("Reloaded ", module.__name__)
             except:
                 pass
 
@@ -245,7 +258,7 @@ class Package(PackageDict):
         try:
             factory.is_valid()
 
-        except Exception, e:
+        except Exception as e:
             factory.package = None
             del(self[factory.name])
             raise e
@@ -264,7 +277,7 @@ class Package(PackageDict):
     def get_names(self):
         """ Return all the factory names in a list """
 
-        return self.keys()
+        return list(self.keys())
 
     def get_factory(self, id):
         """ Return the factory associated with id """
@@ -321,7 +334,7 @@ class UserPackage(Package):
             shutil.copyfile(src, dst)
 
         # Copy deeply all the factory
-        for k, v in pkg.iteritems():
+        for k, v in pkg.items():
             self[k] = v.copy(replace_pkg=(pkg, self),
                              path=self.path)
 
@@ -336,7 +349,7 @@ class UserPackage(Package):
         if (not os.path.isdir(self.path)):
             os.mkdir(self.path)
 
-        print "Writing", self.wralea_path
+        print("Writing", self.wralea_path)
 
         writer.write_wralea(self.wralea_path)
 
@@ -393,7 +406,7 @@ class UserPackage(Package):
         if return_values:
             return_values = ', '.join(return_values) + ','
         # Create the module file
-        my_template = """\
+        my_template = u"""\
 def %s(%s):
     '''\
     %s
@@ -438,7 +451,7 @@ def %s(%s):
         """
         # Avoid cyclic import:
         # composite node factory import package...
-        from compositenode import CompositeNodeFactory
+        from .compositenode import CompositeNodeFactory
 
         newfactory = CompositeNodeFactory(name=name,
                                           description=description,
@@ -579,11 +592,11 @@ class PyPackageReader(AbstractPackageReader):
             wraleamodule = imp.load_module(modulename, file, pathname, desc)
             pkg = self.build_package(wraleamodule, pkgmanager)
 
-        except Exception, e:
+        except Exception as e:
             try:
                 pkgmanager.log.add('%s is invalid : %s' % (self.filename, e))
-            except Exception, e:
-                print '%s is invalid : %s' % (self.filename, e)
+            except Exception as e:
+                print('%s is invalid : %s' % (self.filename, e))
                 pass
 
         except:  # Treat all exception
@@ -632,7 +645,7 @@ class PyPackageReaderWralea(PyPackageReader):
             icon='',
             alias=[], )
 
-        for k, v in wraleamodule.__dict__.iteritems():
+        for k, v in wraleamodule.__dict__.items():
 
             if not (k.startswith('__') and k.endswith('__')):
                 continue
@@ -658,7 +671,7 @@ class PyPackageReaderWralea(PyPackageReader):
             try:
                 if (f):
                     p.add_factory(f)
-            except Exception, e:
+            except Exception as e:
                 pkgmanager.log.add(str(e))
 
         pkgmanager.add_package(p)
@@ -668,7 +681,7 @@ class PyPackageReaderWralea(PyPackageReader):
         for name in palias:
             if protected(name) in pkgmanager:
                 alias_pkg = pkgmanager[protected(name)]
-                for name_factory, factory in p.iteritems():
+                for name_factory, factory in p.items():
                     if (name_factory not in alias_pkg and
                        (alias_pkg.name + '.' + name_factory) not in pkgmanager):
                         alias_pkg[name_factory] = factory
@@ -747,9 +760,9 @@ $FACTORY_DECLARATION
 
         fdict = self.get_factories_str()
 
-        all = fdict.keys()
+        all = list(fdict.keys())
 
-        fstr = '\n'.join(fdict.values())
+        fstr = '\n'.join(list(fdict.values()))
 
         pstr = string.Template(self.pkg_template)
 
@@ -757,7 +770,7 @@ $FACTORY_DECLARATION
 
         metainfo = '__editable__ = %s\n' % (repr(editable))
 
-        for (k, v) in self.package.metainfo.iteritems():
+        for (k, v) in self.package.metainfo.items():
             key = "__%s__" % (k)
             val = repr(v)
             metainfo += "%s = %s\n" % (key, val)
@@ -787,13 +800,13 @@ $FACTORY_DECLARATION
 
         try:
             result = self.get_str()
-        except Exception, e:
-            print e
-            print "FILE HAS NOT BEEN SAVED !!"
+        except Exception as e:
+            print(e)
+            print("FILE HAS NOT BEEN SAVED !!")
             return
 
         handler = open(full_filename, 'w')
-        handler.write(result)
+        handler.write(unicode(result))
         handler.close()
 
         # Recompile

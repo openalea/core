@@ -75,7 +75,7 @@ class GenericManager(Observed, AbstractListener):
         return item
 
     def add_items(self, items, group):
-        for group, item in items.iteritems():
+        for group, item in items.items():
             self.add(item, group)
 
     def item(self, identifier, group=None):

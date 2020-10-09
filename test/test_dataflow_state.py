@@ -1,3 +1,4 @@
+from __future__ import absolute_import
 from nose.tools import assert_raises
 
 from openalea.core.dataflow import DataFlow

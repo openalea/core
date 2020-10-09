@@ -14,6 +14,13 @@
 #
 ###############################################################################
 
+from __future__ import print_function
+try:
+    # Python 2: "unicode" is built-in
+    unicode
+except NameError:
+    unicode = str
+    
 from openalea.core.plugin.plugin import plugin_name
 
 
@@ -119,13 +126,13 @@ def list_plugins(lst, verbose=False):
         if match:
             eps = [ep for ep in pkg_resources.iter_entry_points(group)]
             if lst == 'summary':
-                print '\n\033[91m%s\033[0m (%d plugins)' % (group, len(eps))
+                print('\n\033[91m%s\033[0m (%d plugins)' % (group, len(eps)))
                 for ep in eps:
                     parts = [str(s) for s in (ep.module_name, ep.name)]
                     identifier = ':'.join(parts)
-                    print '  - %s \033[90m%s (%s)\033[0m' % (ep.name, identifier, ep.dist.egg_name())
+                    print('  - %s \033[90m%s (%s)\033[0m' % (ep.name, identifier, ep.dist.egg_name()))
             else:
-                print '\033[44m%s\033[0m' % group
+                print('\033[44m%s\033[0m' % group)
                 UNDEF = 'Not defined'
                 plugin_groups = {UNDEF: []}
                 for plugin in pm.items(group):
@@ -137,25 +144,25 @@ def list_plugins(lst, verbose=False):
                 for group, plugins in plugin_groups.items():
                     if not plugins:
                         continue
-                    print '  implements: \033[91m%s\033[0m' % group
+                    print('  implements: \033[91m%s\033[0m' % group)
                     plugin_names = {}
                     for plugin in plugins:
                         plugin_names[plugin.name] = plugin
                     for pl_name in sorted(plugin_names):
                         plugin = plugin_names[pl_name]
                         p_class = plugin.__class__
-                        print '    - \033[93m%s \033[90m%s:%s\033[0m' % (plugin_name(plugin), p_class.__module__, p_class.__name__)
+                        print('    - \033[93m%s \033[90m%s:%s\033[0m' % (plugin_name(plugin), p_class.__module__, p_class.__name__))
                         if verbose:
-                            print '        tags: %s' % ', '.join(plugin.tags)
-                            print '        plugin: %s, egg: %s\n        path: %s' % (
-                                ep.name, ep.dist.egg_name(), ep.dist.location)
-                            print '        criteria:'
+                            print('        tags: %s' % ', '.join(plugin.tags))
+                            print('        plugin: %s, egg: %s\n        path: %s' % (
+                                ep.name, ep.dist.egg_name(), ep.dist.location))
+                            print('        criteria:')
                             for crit_name in sorted(dir(plugin)):
                                 if crit_name in ('implementation', '__call__'):
                                     continue
                                 crit = getattr(plugin, crit_name)
                                 if can_display_criterion(crit_name, crit):
-                                    print format_criterion(crit_name, crit, 10)
+                                    print(format_criterion(crit_name, crit, 10))
 
-                print
-                print
+                print()
+                print()

@@ -17,6 +17,7 @@
 """Session regroups all the data which can be stored between different 
 executions of the system."""
 
+from __future__ import print_function
 __license__ = "Cecill-C"
 __revision__ = " $Id$ "
 
@@ -81,7 +82,7 @@ class Session(Observed):
     ws = property(get_current_workspace)
 
     def get_graph_views(self):
-        return self.graphViews.keys()
+        return list(self.graphViews.keys())
 
     def add_graph_view(self, view):
         self.graphViews[view] = None
@@ -123,7 +124,7 @@ class Session(Observed):
         self.pkgmanager.find_and_register_packages()
 
         # Create user package if needed
-        if (not self.pkgmanager.has_key(self.USR_PKG_NAME)):
+        if (self.USR_PKG_NAME not in self.pkgmanager):
             try:
                 self.pkgmanager.create_user_package(self.USR_PKG_NAME, {})
             except:
@@ -162,7 +163,8 @@ class Session(Observed):
         for k in sys.modules.keys():
             m = sys.modules[k]
             if hasattr(m, '__file__'):
-                modules_path.append((m.__name__, os.path.abspath(m.__file__)))
+                if m.__file__ is not None:
+                    modules_path.append((m.__name__, os.path.abspath(m.__file__)))
 
         d['__modules__'] = modules_path
         d.sync()
@@ -174,9 +176,9 @@ class Session(Observed):
             try:
                 d['datapool'][key] = self.datapool[key]
                 d.sync()
-            except Exception, e:
-                print e
-                print "Unable to save %s in the datapool..." % str(key)
+            except Exception as e:
+                print(e)
+                print("Unable to save %s in the datapool..." % str(key))
                 del d['datapool'][key]
 
         # workspaces
@@ -185,10 +187,10 @@ class Session(Observed):
             try:
                 d['workspaces'].append(ws)
                 d.sync()
-            except Exception, e:
-                print e
-                print "Unable to save workspace %i. Skip this." % (cpt, )
-                print " WARNING: Your session is not saved. Please save your dataflow as a composite node !!!!!"
+            except Exception as e:
+                print(e)
+                print("Unable to save workspace %i. Skip this." % (cpt, ))
+                print(" WARNING: Your session is not saved. Please save your dataflow as a composite node !!!!!")
                 d['workspaces'].pop()
 
         d.close()
@@ -222,7 +224,7 @@ class Session(Observed):
     def load_module(self, name, path):
 
         import imp
-        if (name in sys.modules.keys()):
+        if (name in list(sys.modules.keys())):
             return
         lastname = name.rsplit('.', 1)[-1]
         if (not os.path.isdir(path)):
@@ -231,5 +233,5 @@ class Session(Observed):
         try:
             (file, filename, desc) = imp.find_module(lastname, [path])
             imp.load_module(name, file, filename, desc)
-        except Exception, e:
+        except Exception as e:
             pass

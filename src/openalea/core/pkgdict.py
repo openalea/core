@@ -14,6 +14,7 @@
 #
 ###############################################################################
 """Special Dict with case insensitive key and protected field"""
+from six.moves import filter
 
 __license__ = "Cecill-C"
 __revision__ = " $Id$ "
@@ -73,13 +74,12 @@ class PackageDict(dict):
         return self.has_key(key)
 
     def has_key(self, key):
-
         key = lower(key)
-        if (dict.has_key(self, key)):
+        if dict.__contains__(self, key):
             return True
         else:
-            return dict.has_key(self, protected(key))
-
+            return dict.__contains__(self, protected(key))
+            
     def __delitem__(self, key):
 
         # Update nb public key
@@ -94,7 +94,7 @@ class PackageDict(dict):
     def iter_public_values(self):
         """ Iterate througth dictionnary value (remove protected value)  """
 
-        for k, v in self.iteritems():
+        for k, v in self.items():
             if (not is_protected(k)):
                 yield v
 
@@ -103,7 +103,7 @@ class PackageDict(dict):
 
         if (self.nb_public is None):
             l = lambda x: not is_protected(x)
-            ks = filter(l, self.iterkeys())
+            ks = filter(l, self.keys())
             self.nb_public = len(ks)
 
         return self.nb_public

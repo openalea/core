@@ -89,7 +89,7 @@ def signature(obj):
     if isinstance(obj, functools.partial):
         sig = signature(obj.func)
 
-        new_params = OrderedDict(sig.parameters.items())
+        new_params = OrderedDict(list(sig.parameters.items()))
 
         partial_args = obj.args or ()
         partial_keywords = obj.keywords or {}
@@ -126,7 +126,7 @@ def signature(obj):
                             not param._partial_kwarg):
                 new_params.pop(arg_name)
 
-        return sig.replace(parameters=new_params.values())
+        return sig.replace(parameters=list(new_params.values()))
 
     sig = None
     if isinstance(obj, type):
@@ -580,7 +580,7 @@ class Signature(object):
         try:
             return types.MappingProxyType(self._parameters)
         except AttributeError:
-            return OrderedDict(self._parameters.items())
+            return OrderedDict(list(self._parameters.items()))
 
     @property
     def return_annotation(self):
@@ -593,7 +593,7 @@ class Signature(object):
         '''
 
         if parameters is _void:
-            parameters = self.parameters.values()
+            parameters = list(self.parameters.values())
 
         if return_annotation is _void:
             return_annotation = self._return_annotation

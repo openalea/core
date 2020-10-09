@@ -15,6 +15,7 @@
 ###############################################################################
 """ a script to run alea dataflow and scripts"""
 
+from __future__ import print_function
 __license__ = "Cecill-C"
 __revision__ = "$Id$"
 
@@ -87,19 +88,19 @@ def get_node(component, inputs, pm=None):
 
     try:
         factory = pm[pkg_id][node_id]
-    except Exception, e:
-        print "Cannot run node %s:%s" % (pkg_id, node_id)
+    except Exception as e:
+        print("Cannot run node %s:%s" % (pkg_id, node_id))
         query(component, pm)
         raise e
 
     node = factory.instantiate()
 
     if (inputs):
-        for k, v in inputs.iteritems():
+        for k, v in inputs.items():
             try:
                 node.set_input(k, v)
-            except KeyError, e:
-                print "Unknown input %s" % (k, )
+            except KeyError as e:
+                print("Unknown input %s" % (k, ))
                 query(component, pm)
                 raise e
 
@@ -123,10 +124,10 @@ def run_and_display(component, inputs, gui=False, pm=None):
 
         try:
             node.eval()
-            print _outputs(node)
-        except Exception, error:
-            print "Error while executing component : ", error
-            print "Try with -g flag"
+            print(_outputs(node))
+        except Exception as error:
+            print("Error while executing component : ", error)
+            print("Try with -g flag")
         return
 
     else:
@@ -158,40 +159,40 @@ def query(component, pm=None):
         pm = load_package_manager()
 
     # package not found
-    if (not pkg_id or not pm.has_key(pkg_id)):
+    if (not pkg_id or pkg_id not in pm):
 
-        print "Package '%s' not found." % (pkg_id)
-        print "\nAvailable packages are :"
+        print("Package '%s' not found." % (pkg_id))
+        print("\nAvailable packages are :")
 
-        keys = pm.keys()
+        keys = list(pm.keys())
         keys.sort()
 
         for p in keys:
-            print "   ", p
+            print("   ", p)
 
         return
 
     pkg = pm[pkg_id]
 
-    if(not pkg.has_key(node_id)):
-        print "Unknown node '%s'" % (node_id, )
+    if(node_id not in pkg):
+        print("Unknown node '%s'" % (node_id, ))
         node_id = None
 
     # query package
-    print "\nPackage"
-    print "-------"
-    print "name : ", pkg.name
+    print("\nPackage")
+    print("-------")
+    print("name : ", pkg.name)
 
-    for key, info in pkg.metainfo.iteritems():
-        print "%s : %s" % (key, info)
+    for key, info in pkg.metainfo.items():
+        print("%s : %s" % (key, info))
 
     if(not node_id):
-        keys = pkg.keys()
+        keys = list(pkg.keys())
         keys.sort()
 
-        print "\nAvailable nodes are:"
+        print("\nAvailable nodes are:")
         for k in keys:
-            print "   ", pkg[k].get_id()
+            print("   ", pkg[k].get_id())
 
     # query node
     else:
@@ -206,17 +207,17 @@ def query(component, pm=None):
         else:
             doc = factory.description
 
-        print "\nComponent"
-        print "---------"
-        print "Name : %s" % (factory.name)
-        print "Documentation : %s" % (doc, )
-        print "Inputs:"
-        for i in xrange(node.get_nb_input()):
+        print("\nComponent")
+        print("---------")
+        print("Name : %s" % (factory.name))
+        print("Documentation : %s" % (doc, ))
+        print("Inputs:")
+        for i in range(node.get_nb_input()):
             port = node.get_input_port(i)
-            print "  ", port.get_tip()
-        print "Outputs:"
+            print("  ", port.get_tip())
+        print("Outputs:")
         for port in node.output_desc:
-            print "  ", port.get_tip()
+            print("  ", port.get_tip())
 
 
 def parse_component(name):
@@ -262,7 +263,7 @@ def get_intput_callback(option, opt_str, value, parser):
             del rargs[0]
 
 
-    for k, v in value.iteritems():
+    for k, v in value.items():
         try:
             v = eval(v)
             value[k] = v
@@ -281,7 +282,7 @@ def function(factory):
     def f(*args, **kwds):
         for i, v in enumerate(args):
             node.set_input(i,v)
-        for k, v in kwds.iteritems():
+        for k, v in kwds.items():
             node.set_input(k,v)
 
         node.eval()
@@ -333,9 +334,9 @@ or
 
     try:
         (options, args)= parser.parse_args()
-    except Exception, error:
+    except Exception as error:
         parser.print_usage()
-        print "Error while parsing args:", error
+        print("Error while parsing args:", error)
         return
 
     if(len(args) < 1):

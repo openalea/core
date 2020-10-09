@@ -20,12 +20,14 @@ instances. Different instances of the same factory can coexist and can be
 modified in a dataflow.
 """
 
+from __future__ import print_function
 __license__ = "Cecill-C"
 __revision__ = " $Id$ "
 
 import string
 import pprint
 import copy
+import importlib 
 
 from openalea.core.node import AbstractFactory, AbstractPort, Node
 from openalea.core.node import RecursionError
@@ -34,7 +36,7 @@ from openalea.core.package import UnknownNodeError
 from openalea.core.dataflow import DataFlow, InvalidEdge, PortError
 from openalea.core.settings import Settings
 from openalea.core.metadatadict import MetaDataDict
-import logger
+from . import logger
 
 quantify = False
 
@@ -117,7 +119,7 @@ class CompositeNodeFactory(AbstractFactory):
         # Replace old pkg name to new pkg name
         (old_pkg, new_pkg) = args['replace_pkg']
 
-        for k, v in ret.elt_factory.iteritems():
+        for k, v in list(ret.elt_factory.items()):
             pkg_id, factory_id = v
 
             if(pkg_id == old_pkg.get_id()):
@@ -166,9 +168,9 @@ class CompositeNodeFactory(AbstractFactory):
 
             except (UnknownNodeError, UnknownPackageError):
 
-                print "WARNING : The graph is not fully operational "
+                print("WARNING : The graph is not fully operational ")
                 (pkg, fact) = self.elt_factory[vid]
-                print "-> Cannot find '%s:%s'" % (pkg, fact)
+                print("-> Cannot find '%s:%s'" % (pkg, fact))
                 node = self.create_fake_node(vid)
                 node.raise_exception = True
                 node.notify_listeners(('data_modified', None, None ))
@@ -187,7 +189,7 @@ class CompositeNodeFactory(AbstractFactory):
             pass
 
         # Create the connections
-        for eid, link in self.connections.iteritems():
+        for eid, link in list(self.connections.items()):
             (source_vid, source_port, target_vid, target_port) = link
 
             # Replace id for in and out nodes
@@ -219,7 +221,7 @@ class CompositeNodeFactory(AbstractFactory):
         ins = 0
         outs = 0
 
-        for eid, link in self.connections.iteritems():
+        for eid, link in self.connections.items():
             (source_vid, source_port, target_vid, target_port) = link
 
             if(source_vid == vid):
@@ -296,7 +298,7 @@ class CompositeNodeFactory(AbstractFactory):
             idmap[vid] = newid
 
         # Create the connections
-        for eid, link in self.connections.iteritems():
+        for eid, link in list(self.connections.items()):
             (source_vid, source_port, target_vid, target_port) = link
 
             # convert id
@@ -305,7 +307,7 @@ class CompositeNodeFactory(AbstractFactory):
 
             cnode.connect(source_vid, source_port, target_vid, target_port)
 
-        return idmap.values()
+        return list(idmap.values())
 
     def load_ad_hoc_data(self, node, elt_data, elt_ad_hoc=None):
         if elt_ad_hoc and len(elt_ad_hoc):
@@ -320,7 +322,7 @@ class CompositeNodeFactory(AbstractFactory):
             #These dictionnaries are used to extend ad_hoc_dict of a node with the
             #data that views expect. See node.initialise_standard_metadata() for an example.
             if hasattr(node, "__ad_hoc_from_old_map__"):
-                for newKey, oldKeys in node.__ad_hoc_from_old_map__.iteritems():
+                for newKey, oldKeys in list(node.__ad_hoc_from_old_map__.items()):
                     data = [] #list that stores the new values
                     _type, default = node.__ad_hoc_slots__.get(newKey)
                     for key in oldKeys:
@@ -347,7 +349,7 @@ class CompositeNodeFactory(AbstractFactory):
         pkg = pkgmanager[package_id]
         try:
             factory = pkg.get_factory(factory_id)
-        except UnknownNodeError, e:
+        except UnknownNodeError as e:
             # Bug when both package_id and protected(package_id) exist
             pkg = pkgmanager[protected(package_id)]
             factory = pkg.get_factory(factory_id)
@@ -508,12 +510,13 @@ class CompositeNode(Node, DataFlow):
 
 
             # import module
-            baseimp = "algo.dataflow_evaluation"
-            module = __import__(baseimp, globals(), locals(), [algo_str])
+            baseimp = "openalea.core.algo.dataflow_evaluation"
+            module = importlib.import_module(baseimp)
+            #module = __import__(baseimp, globals(), locals(), [algo_str])
             classobj = module.__dict__[algo_str]
             return classobj(self)
 
-        except Exception, e:
+        except Exception as e:
             from  openalea.core.algo.dataflow_evaluation import DefaultEvaluation
             return DefaultEvaluation(self)
 
@@ -541,7 +544,7 @@ class CompositeNode(Node, DataFlow):
         t1 = time.time()
         if quantify:
             logger.info('Evaluation time: %s'%(t1-t0))
-            print 'Evaluation time: %s'%(t1-t0)
+            print('Evaluation time: %s'%(t1-t0))
     # Functions used by the node evaluator
 
     def eval(self, *args, **kwds):
@@ -572,7 +575,7 @@ class CompositeNode(Node, DataFlow):
     def to_script (self) :
         """Translate the dataflow into a python script.
         """
-        from algo.dataflow_evaluation import ToScriptEvaluation
+        from .algo.dataflow_evaluation import ToScriptEvaluation
         algo = ToScriptEvaluation(self)
         return algo.eval()
 
@@ -821,7 +824,7 @@ class CompositeNode(Node, DataFlow):
             # Forward compatibility for versions earlier than 0.8.0
             # We do the exact opposite than in load_ad_hoc_data, have a look there.
             if hasattr(node, "__ad_hoc_from_old_map__"):
-                for newKey, oldKeys in node.__ad_hoc_from_old_map__.iteritems():
+                for newKey, oldKeys in node.__ad_hoc_from_old_map__.items():
                     if len(oldKeys)==0: continue
                     data = node.get_ad_hoc_dict().get_metadata(newKey)
                     for pos, newKey in enumerate(oldKeys):
@@ -832,7 +835,7 @@ class CompositeNode(Node, DataFlow):
 
             # Copy value
             sgfactory.elt_value[vid] = []
-            for port in xrange(node.get_nb_input()):
+            for port in range(node.get_nb_input()):
                 if node.input_states[port] is not "connected":
                     val = node.get_input(port)
                     if "pyqt" in repr(val).lower():
@@ -861,10 +864,10 @@ class CompositeNode(Node, DataFlow):
         node.set_compositenode(self)
 
         node.set_id(vid)
-        for local_pid in xrange(node.get_nb_input()):
+        for local_pid in range(node.get_nb_input()):
             self.add_in_port(vid, local_pid)
 
-        for local_pid in xrange(node.get_nb_output()):
+        for local_pid in range(node.get_nb_output()):
             self.add_out_port(vid, local_pid)
 
         self.set_actor(vid, node)
@@ -880,7 +883,7 @@ class CompositeNode(Node, DataFlow):
     def notify_vertex_addition(self, vertex, vid=None):
         vtype = "vertex"
         doNotify = True
-        if(vertex.__class__.__dict__.has_key("__graphitem__")): vtype = "annotation"
+        if("__graphitem__" in vertex.__class__.__dict__): vtype = "annotation"
         elif isinstance(vertex, CompositeNodeOutput):
             vtype = "outNode"
             doNotify = True if len(vertex.input_desc) else False
@@ -894,7 +897,7 @@ class CompositeNode(Node, DataFlow):
     def notify_vertex_removal(self, vertex):
         vtype = "vertex"
         doNotify = True
-        if(vertex.__class__.__dict__.has_key("__graphitem__")): vtype = "annotation"
+        if("__graphitem__" in vertex.__class__.__dict__): vtype = "annotation"
         elif isinstance(vertex, CompositeNodeOutput): vtype = "outNode"
         elif isinstance(vertex, CompositeNodeInput) : vtype = "inNode"
         else: pass
@@ -1209,12 +1212,12 @@ class JSONCNFactoryWriter(PyCNFactoryWriter):
     def __repr__(self):
         f = self.factory
 
-        minx = min(f.elt_ad_hoc.itervalues(), key=lambda x: x["position"][0])["position"][0]
-        miny = min(f.elt_ad_hoc.itervalues(), key=lambda x: x["position"][1])["position"][1]
+        minx = min(f.elt_ad_hoc.values(), key=lambda x: x["position"][0])["position"][0]
+        miny = min(f.elt_ad_hoc.values(), key=lambda x: x["position"][1])["position"][1]
 
-        print minx, miny
+        print(minx, miny)
 
-        for elt in f.elt_ad_hoc.itervalues():
+        for elt in f.elt_ad_hoc.values():
             elt["position"][0] -= minx
             elt["position"][1] -= miny
 
@@ -1226,7 +1229,7 @@ class JSONCNFactoryWriter(PyCNFactoryWriter):
                  #inputs=f.inputs,
                  #outputs=f.outputs,
                  #elt_factory=f.elt_factory,
-                 elt_connections=list(f.connections.itervalues()),
+                 elt_connections=list(f.connections.values()),
                  #elt_data=f.elt_data,
                  #elt_value=f.elt_value,
                  elt_ad_hoc=f.elt_ad_hoc,

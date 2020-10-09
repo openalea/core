@@ -32,7 +32,7 @@ def active_project():
 
 def projects():
     PM.discover()
-    return PM.items()
+    return list(PM.items())
 
 
 def project_item(project_name, category, name):

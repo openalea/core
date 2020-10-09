@@ -1,5 +1,6 @@
 
 
+from __future__ import absolute_import
 import platform
 import subprocess
 
@@ -10,6 +11,7 @@ from openalea.core.project import Project
 from openalea.core.customexception import ErrorInvalidItem
 from openalea.core.service.data import DataFactory
 from openalea.core.unittest_tools import TestCase, EventTracker
+from io import open
 
 
 def get_data(filename):
@@ -108,7 +110,7 @@ class TestProject(TestCase):
             self.project.add('data')
 
         msg = "path or filename required"
-        self.assertEqual(cm.exception.message, msg)
+        self.assertEqual(cm.exception.args[0], msg)
         assert(len(self.project.data) == 0)
 
         # Case user give an existing path and a content
@@ -116,7 +118,7 @@ class TestProject(TestCase):
             self.project.add('data', path=get_data('image.jpg'), content=b'')
 
         msg = "got multiple values for content (parameter and 'image.jpg')"
-        self.assertEqual(cm.exception.message, msg)
+        self.assertEqual(cm.exception.args[0], msg)
         assert(len(self.project.data) == 0)
 
         # Add an object twice
@@ -125,26 +127,26 @@ class TestProject(TestCase):
             self.project.add('data', filename='image.png')
 
         msg = "data 'image.png' already exists in project 'test'"
-        self.assertEqual(cm.exception.message, msg)
+        self.assertEqual(cm.exception.args[0], msg)
 
     def test_add_model(self):
 
-        m1 = self.project.add('model', filename='model_1.py', datatype='python', content='print 1')
-        self.assertEqual(m1.read(), 'print 1')
+        m1 = self.project.add('model', filename='model_1.py', datatype='python', content=b'print 1')
+        self.assertEqual(m1.read(), b'print 1')
         assert str(m1.filename) == 'model_1.py'
         assert m1.path == self.project.path / 'model' / 'model_1.py'
         events = self.ev.events
         self.check_events(events, ['data_added', 'project_changed'])
 
-        m2 = self.project.add('model', filename='model_2.py', content='print 2')
-        assert m2.read() == 'print 2'
+        m2 = self.project.add('model', filename='model_2.py', content=b'print 2')
+        assert m2.read() == b'print 2'
         assert str(m2.filename) == 'model_2.py'
         assert m2.path == self.project.path / 'model' / 'model_2.py'
         events = self.ev.events
         self.check_events(events, ['data_added', 'project_changed'])
 
         sample = get_data('model.py')
-        f = open(sample)
+        f = open(sample, 'rb')
         code = f.read()
         f.close()
 
@@ -152,12 +154,13 @@ class TestProject(TestCase):
         assert str(m3.filename) == 'model.py'
         assert m3.path == self.project.path / 'model' / 'model.py'
         # added strip to avoid problems with end of lines on windows
-        self.assertEqual(m3.read().strip(), code.strip())
+        pcode = m3.read()
+        self.assertEqual(pcode.strip(), code.strip())
         events = self.ev.events
         self.check_events(events, ['data_added', 'project_changed'])
 
-        m4 = self.project.add('model', filename='model_4.py', datatype='py', content='print 4')
-        assert m4.read() == 'print 4'
+        m4 = self.project.add('model', filename='model_4.py', datatype='py', content=b'print 4')
+        assert m4.read() == b'print 4'
         assert str(m4.filename) == 'model_4.py'
         assert m4.path == self.project.path / 'model' / 'model_4.py'
         events = self.ev.events
@@ -194,9 +197,9 @@ class TestProject(TestCase):
         # assert len(proj2.control) == 2
         # assert proj2.control["my_integer"] == 42
         # assert proj2.control["my_float"] == 3.14
-        self.assertEqual(proj2.model["plop.py"].read(), "print 'plop world'")
+        self.assertEqual(proj2.model["plop.py"].read(), b"print 'plop world'")
         # added strip to avoid trouble with end of lines on windows
-        self.assertEqual(proj2.model["model.py"].read().strip(), "print 'hello world'")
+        self.assertEqual(proj2.model["model.py"].read().strip(), b"print('hello world')")
 
     def test_get_model(self):
         self.project.add("model", filename="1.py",)
@@ -213,7 +216,7 @@ class TestProject(TestCase):
             model = self.project.get_model('1')
 
         msg = "2 model have basename '1': '1.py', '1.lpy'"
-        self.assertEqual(cm.exception.message, msg)
+        self.assertEqual(cm.exception.args[0], msg)
 
         model = self.project.get_model('1.py')
         assert model.filename == '1.py'
@@ -247,19 +250,19 @@ class TestProject(TestCase):
 
         with self.assertRaises(ValueError) as cm:
             self.project.rename_item("model", self.project.path / "model" / "1.py", "2.py")
-        self.assertEqual(cm.exception.message, msg)
+        self.assertEqual(cm.exception.args[0], msg)
 
         with self.assertRaises(ValueError) as cm:
             self.project.rename_item("model", "1.py", self.project.path / "model" / "2.py")
-        self.assertEqual(cm.exception.message, msg)
+        self.assertEqual(cm.exception.args[0], msg)
 
         with self.assertRaises(ValueError) as cm:
             self.project.rename_item("model", "model/1.py", "2.py")
-        self.assertEqual(cm.exception.message, msg)
+        self.assertEqual(cm.exception.args[0], msg)
 
         with self.assertRaises(ValueError) as cm:
             self.project.rename_item("model", "1.py", "model/2.py")
-        self.assertEqual(cm.exception.message, msg)
+        self.assertEqual(cm.exception.args[0], msg)
 
     def test_move_project(self):
         self.project.add("model", filename="1.py", content="blablabla")
@@ -288,12 +291,12 @@ class TestProject(TestCase):
             self.project.model = dict()
 
         msg = "cannot change 'model' attribute"
-        self.assertEqual(cm.exception.message, msg)
+        self.assertEqual(cm.exception.args[0], msg)
 
     def test_get_attr(self):
         model1 = self.project.add("model", filename="1.py", content="blablabla")
         model2 = self.project.model
-        model2 = model2.values()[0]
+        model2 = list(model2.values())[0]
         assert model1.read() == model2.read()
 
     def test_repr(self):

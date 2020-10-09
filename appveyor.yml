@@ -6,22 +6,18 @@ environment:
   matrix:
     - CONDA_RECIPE: conda
       CONDA_VERSION: 2
+      PYTHON_VERSION: 2.7
     - CONDA_RECIPE: conda
       CONDA_VERSION: 3
+      PYTHON_VERSION: 3.7
 
-# matrix:
-#   allow_failures:
-#     - platform: x86
-#       CONDA_RECIPE: conda
-#       CONDA_VERSION: 3
-#     - platform: x64
-#       CONDA_RECIPE: conda
-#       CONDA_VERSION: 3
 
 install:
-  - git clone https://github.com/OpenAlea/appveyor-ci.git
+  - git clone https://github.com/openalea/appveyor-ci.git
   - cd appveyor-ci
   - call install.bat
+  - conda config --prepend channels conda-forge
+  - conda install -y conda-verify
 
 before_build:
   - call before_build.bat
