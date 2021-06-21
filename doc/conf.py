@@ -316,7 +316,7 @@ texinfo_documents = [
 import os
 from os import path
 
-from sphinx.apidoc import main
+from sphinx-apidoc import main
 
 
 rootpath = path.abspath(path.join(project_root, "src"))
