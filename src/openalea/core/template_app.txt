@@ -21,7 +21,7 @@ def test_system():
 
     # QT
     try:
-        from PyQt4 import QtGui, QtCore
+        from PyQt5 import QtGui, QtCore
         version = int(QtCore.QT_VERSION_STR.replace('.', ''))
         if(version < 420):
             raise ImporError
@@ -37,7 +37,7 @@ test_system()
 
 from openalea.core import *
 from openalea.core.pkgmanager import PackageManager
-from PyQt4 import QtGui, QtCore
+from PyQt5 import QtGui, QtCore
 
 
 $FACTORY_CODE

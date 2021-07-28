@@ -35,7 +35,7 @@ There are more default loggers available::
 
 This line will make logs go to rotating files in ~/.openalea/.
 
-If you're running PyQt4::
+If you're running PyQt5::
 
     logger.default_init(level=logger.DEBUG, handlers=["qt"])
 
@@ -146,12 +146,12 @@ defaultHandlerNames = ["file",  #TimedRotatingFileHandler
                        "stream", #Output to stream
                        ]
 
-#: The QLogHandlerItemModel class is only created if PyQt4 is already loaded
+#: The QLogHandlerItemModel class is only created if PyQt5 is already loaded
 # otherwise ties core with PyQt and could prevent UI-less usage of core.
 
-if "PyQt4.QtCore" in sys.modules and "PyQt4.QtGui" in sys.modules:
-    QtCore = sys.modules["PyQt4.QtCore"]
-    QtGui  = sys.modules["PyQt4.QtGui"]
+if "PyQt5.QtCore" in sys.modules and "PyQt5.QtGui" in sys.modules:
+    QtCore = sys.modules["PyQt5.QtCore"]
+    QtGui  = sys.modules["PyQt5.QtGui"]
     QT_LOGGING_MODEL_AVAILABLE=True
     defaultHandlerNames.append("qt") #log to a QStandardItemModel
 else:
@@ -235,7 +235,7 @@ def default_init(level=logging.ERROR, handlers=defaultHandlerNames[:]):
     and handlers named in `handlers`. The latter is a list of strings
     from "qt", "file", "stream".
 
-    - "qt" is only available if PyQt4 is installed. Logs will go to a QStandardItemModel.
+    - "qt" is only available if PyQt5 is installed. Logs will go to a QStandardItemModel.
     - "file" creates a rotating file handler. Logs are stored in "~/.openalea/log.log.X" files
       X get incremented every day. Beyond 20 days olds files get deleted.
     - "stream" logs to stderr.
