@@ -430,39 +430,43 @@ class LoggerOffice(six.with_metaclass(Singleton, object)):
         return logger
 
 
+# The following code is from logger.__init__.py and is correcting something 
+# in Python 2 that is corrected in Python 3, giving out an error. If it may
+# be nesserary with Python 2, it makes errors appear in Python 3. 
+# I will maybe add a if version=Python2 or smth later.
 
-# Copied and hacked out of logging.__init__.py
-# _srcfile is used when walking the stack to check when we've got the first
-# caller stack frame that is not from this file
-if __file__[-4:].lower() in ['.pyc', '.pyo']:
-    _srcfile = __file__[:-4] + '.py'
-else:
-    _srcfile = __file__
-_srcfile = os.path.normcase(_srcfile)
+# # Copied and hacked out of logging.__init__.py
+# # _srcfile is used when walking the stack to check when we've got the first
+# # caller stack frame that is not from this file
+# if __file__[-4:].lower() in ['.pyc', '.pyo']:
+#     _srcfile = __file__[:-4] + '.py'
+# else:
+#     _srcfile = __file__
+# _srcfile = os.path.normcase(_srcfile)
 
-class PatchedPyLogger(logging.Logger):
-    """Patched Logger that identifies correctly the origin of the logger relative
-    to this module"""
-    def findCaller(self):
-        """
-        Find the stack frame of the caller so that we can note the source
-        file name, line number and function name.
-        """
-        f = sys._getframe()
-        rv = "(unknown file)", 0, "(unknown function)"
-        while hasattr(f, "f_code"):
-            co = f.f_code
-            filename = os.path.normcase(co.co_filename)
-            if filename in [_srcfile, logging._srcfile]:
-                f = f.f_back
-                continue
-            rv = (filename, f.f_lineno, co.co_name)
-            break
-        return rv
+# class PatchedPyLogger(logging.Logger):
+#     """Patched Logger that identifies correctly the origin of the logger relative
+#     to this module"""
+#     def findCaller(self):
+#         """
+#         Find the stack frame of the caller so that we can note the source
+#         file name, line number and function name.
+#         """
+#         f = sys._getframe()
+#         rv = "(unknown file)", 0, "(unknown function)"
+#         while hasattr(f, "f_code"):
+#             co = f.f_code
+#             filename = os.path.normcase(co.co_filename)
+#             if filename in [_srcfile, logging._srcfile]:
+#                 f = f.f_back
+#                 continue
+#             rv = (filename, f.f_lineno, co.co_name)
+#             break
+#         return rv
 
 
-logging.setLoggerClass(PatchedPyLogger)
-default_init(level=logging.ERROR, handlers=["stream"])
+# logging.setLoggerClass(PatchedPyLogger)
+# default_init(level=logging.ERROR, handlers=["stream"])
 
 
 

@@ -25,17 +25,15 @@ import os
 import sys
 import platform
 import atexit
+import six
 from six.moves.configparser import SafeConfigParser, NoSectionError, NoOptionError
 from openalea.core.singleton import Singleton, ProxySingleton
 from openalea.core import logger
-import six
-
 # [pkgmanager]
 # path = '.', '/home/user/directory'
 
 
 settingsLogger = logger.get_logger(__name__)
-
 
 ##############################################################################
 # Directories functions
