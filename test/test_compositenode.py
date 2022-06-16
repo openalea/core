@@ -16,7 +16,7 @@ def compile_file(filename):
         return compile(f.read(), filename, 'exec')
 
 class TestClass:
-    def setUp(self):
+    def setup_method(self, testfun):
         d = {}
         exec(compile_file(pj(test_dir(), 'catalog.py')), globals(), d)
         self.pkg = d['pkg']
