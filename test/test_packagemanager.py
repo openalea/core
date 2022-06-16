@@ -63,7 +63,7 @@ def test_search():
 
     res = pkgman.search_node("sum")
     print(res)
-    assert "sum" in res[0].name
+    assert "sum" in res[0].name.lower()
 
 
     # comment these 3 lines because system.command is not part
