@@ -1,31 +1,29 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-# {# pkglts, pysetup.kwds
 # format setup arguments
 
 from setuptools import setup, find_packages
 from io import open
 
 
-short_descr = "OpenAlea.Core is able to discover and manage packages and logical components, build and evaluate dataflows and Generate final applications"
+short_descr = "OpenAlea.Core is able to discover and manage packages and logical components, build and evaluate dataflows and generate final applications"
 readme = open('README.rst').read()
 history = open('HISTORY.rst').read()
 
 
 # find version number in src/openalea/core/version.py
-version = {}
+_version = {}
 with open("src/openalea/core/version.py") as fp:
-    exec(fp.read(), version)
+    exec(fp.read(), _version)
+    version = _version["__version__"]
 
 # find packages
 pkgs = find_packages('src')
 
-
-
 setup_kwds = dict(
     name='openalea.core',
-    version=version["__version__"],
+    version=version,
     description=short_descr,
     long_description=readme + '\n\n' + history,
     author="Christophe Pradal",
@@ -35,25 +33,11 @@ setup_kwds = dict(
     zip_safe=False,
 
     packages=pkgs,
-    namespace_packages=['openalea'],
+    #namespace_packages=['openalea'],
     package_dir={'': 'src'},
-    setup_requires=[
-        "pytest-runner",
-        ],
-    install_requires=[
-        ],
-    tests_require=[
-        "coverage",
-        "pytest",
-        "pytest-cov",
-        "pytest-mock",
-        "sphinx",
-        ],
     entry_points={},
     keywords='openalea',
     )
-# #}
-# change setup_kwds below before the next pkglts tag
 
 setup_kwds['setup_requires'] = ['openalea.deploy']
 setup_kwds['share_dirs'] = {'share': 'share'}
@@ -63,7 +47,4 @@ setup_kwds['entry_points']['openalea.core'] = [
             'openalea.core/openalea = openalea.core.plugin.builtin',
         ]
 
-# do not change things below
-# {# pkglts, pysetup.call
 setup(**setup_kwds)
-# #}
