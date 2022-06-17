@@ -23,13 +23,13 @@ def test_package():
 
 
 class TestUserPackage():
-    def setUp(self):
+    def setup_method(self, testfun):
         self.tmp_dir = "toto_test_package"
         ensure_created(self.tmp_dir)
         ensure_created(pj(self.tmp_dir, "tstpkg"))
 
-    def tearDown(self):
-        rmdir("toto_test_package")
+    def teardown_method(self, testfun):
+        rmdir(self.tmp_dir)
 
     def test_case_1(self):
         metainfo = {'version': '0.0.1',

@@ -1,25 +1,26 @@
-{% set version = "2.1.0" %}
+{% set data = load_setup_py_data() %}
 
 package:
   name: openalea.core
-  version: {{ version }}
+  version: {{ data.get('version') }}
 
 source:
   path: ..
 
 build:
+  noarch: python
   preserve_egg_dir: True
-  number: 1
-  script: {{ PYTHON }} setup.py install --single-version-externally-managed --record=record.txt
+  number: 0
+  script: {{PYTHON}} setup.py install 
 
 requirements:
-  host:
-    - python
+  build:
+    - python {{PY_VER}}
     - setuptools
     - openalea.deploy
     - six
   run:
-    - python
+    - python >=3.6
     - ipykernel
     - configobj
     - six
@@ -28,16 +29,17 @@ test:
   imports:
     - openalea.core
   requires:
-    - nose
+    - pytest
   source_files:
     - test/
     - test/*.py
 
   commands:
-    - nosetests -v -I test_compositenode.py -I test_alias.py -I test_data.py -I test_eval.py -I test_package.py
+    - cd test
+    - pytest -v --ignore=test_compositenode.py --ignore=test_alias.py --ignore=test_data.py --ignore=test_eval.py --ignore=test_package.py
 
 about:
-  home: http://github.com/openalea/core
+  home: {{ data.get('url') }}
   license: Cecill-c License
-  summary: OpenAlea Core component and Scientific Workflow platform.
+  summary: {{ data.get('description') }}
 

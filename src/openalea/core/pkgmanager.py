@@ -928,7 +928,7 @@ class PackageManager(six.with_metaclass(Singleton, Observed)):
         if not len(match):
             return match
 
-        match.sort(reverse=True)
+        match.sort(key=lambda score:score[0], reverse=True)
         match = list(zip(*match))[1]
 
         return match

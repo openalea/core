@@ -20,7 +20,7 @@ from __future__ import absolute_import
 __license__ = "Cecill-C"
 __revision__ = " $Id$ "
 
-from nose.tools import with_setup
+#from nose.tools import with_setup
 import os
 
 from openalea.core.session import Session
@@ -33,11 +33,11 @@ from .small_tools import ensure_created, rmdir
 tmp_dir = 'toto_session'
 
 
-def setup():
+def setup_function(fun):
     ensure_created(tmp_dir)
 
 
-def teardown():
+def teardown_function(fun):
     rmdir(tmp_dir)
 
 
@@ -48,7 +48,6 @@ def add_user_class(datapool):
     datapool['j'] = moduletest.test_data()
 
 
-@with_setup(setup, teardown)
 def test_save_datapool():
 
     asession = Session()
@@ -72,7 +71,6 @@ def test_save_datapool():
             pass
 
 # Remove this test: TODO investigate
-@with_setup(setup, teardown)
 def no_save_workspace():
     pm = PackageManager()
     pm.init()

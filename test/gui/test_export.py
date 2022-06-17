@@ -12,7 +12,10 @@ from io import open
 def test_export():
     """test export"""
     d= {}
-    execfile('catalog.py', globals(), d)
+    with open("catalog.py") as f:
+        code = compile(f.read(), "catalog.py", 'exec')
+        exec(code, globals(), d)
+    #execfile('catalog.py', globals(), d)
     pkg = d['pkg']
     plus_node= pkg['plus'].instantiate()
     float_node= pkg['float'].instantiate()

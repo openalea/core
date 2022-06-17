@@ -1,5 +1,5 @@
 from __future__ import absolute_import
-from nose.tools import assert_raises
+from pytest import raises 
 
 from openalea.core.dataflow import DataFlow
 from openalea.core.dataflow_state import DataflowState
@@ -62,7 +62,7 @@ def test_dataflow_state_reinit():
     dfs.reinit()
     assert dfs.is_ready_for_evaluation()
     for pid in (pid11, pid21, pid33):
-        assert_raises(KeyError, lambda: dfs.get_data(pid))
+        raises(KeyError, lambda: dfs.get_data(pid))
 
 
 def test_dataflow_state_is_ready_for_evaluation():
@@ -162,12 +162,12 @@ def test_dataflow_state_get_data():
     dfs = DataflowState(df)
 
     for pid in df.ports():
-        assert_raises(KeyError, lambda: dfs.get_data(pid))
+        raises(KeyError, lambda: dfs.get_data(pid))
 
     for i, pid in enumerate([pid11, pid21, pid33, pid51]):
         dfs.set_data(pid, i)
 
-    assert_raises(KeyError, lambda: dfs.get_data(pid10))
+    raises(KeyError, lambda: dfs.get_data(pid10))
 
     dfs.set_data(pid10, 'a')
     assert dfs.get_data(pid10) == 'a'
