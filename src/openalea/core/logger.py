@@ -132,7 +132,7 @@ import weakref
 import sys
 import os
 import os.path
-import collections
+from collections.abc import MutableSequence
 from logging import DEBUG, INFO, WARNING, ERROR, CRITICAL, NOTSET
 import logging.handlers
 from logging.handlers import TimedRotatingFileHandler
@@ -363,7 +363,7 @@ class LoggerOffice(six.with_metaclass(Singleton, object)):
                 logger.removeHandler(handler)
 
     def __iterable_check(self, value):
-        return value if issubclass(type(value), collections.MutableSequence) else [value]
+        return value if issubclass(type(value), MutableSequence) else [value]
 
     #########################
     # LOGGING LEVEL CONTROL #

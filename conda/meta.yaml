@@ -36,7 +36,7 @@ test:
 
   commands:
     - cd test
-    - pytest -v --ignore=test_compositenode.py --ignore=test_alias.py --ignore=test_data.py --ignore=test_eval.py --ignore=test_package.py
+    - pytest -v test_*.py
 
 about:
   home: {{ data.get('url') }}
