@@ -29,8 +29,14 @@ from openalea.core.interface import TypeInterfaceMap
 import six
 from six.moves import zip
 
+# Fix Error in 3.11
+INSPECT_FULL=False
+if not hasattr(inspect, 'getargspec'):
+    inspect.getargspec = inspect.getfullargspec
+    INSPECT_FULL=True
 
-class Signature(object):
+
+class Signature:
     """Object to represent the signature of a function/method.
 
     :param f: a function object containing __name__ variable
@@ -168,7 +174,13 @@ class Signature(object):
             else:
                 args     = argspec.args
                 defaults = []
-            return args, defaults, argspec.varargs, argspec.keywords, isMethod
+
+            if not INSPECT_FULL:
+                keywords = argspec.keywords
+            else:
+                keywords = argspec.varkw
+
+            return args, defaults, argspec.varargs, keywords, isMethod
 
         elif inspect.isbuiltin(function):
             # builtins have no argument description
