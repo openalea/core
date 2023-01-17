@@ -149,9 +149,15 @@ defaultHandlerNames = ["file",  #TimedRotatingFileHandler
 #: The QLogHandlerItemModel class is only created if PyQt4 is already loaded
 # otherwise ties core with PyQt and could prevent UI-less usage of core.
 
+# TODO : Make the code portable (qt4, 5, 6 and PySide
 if "PyQt4.QtCore" in sys.modules and "PyQt4.QtGui" in sys.modules:
     QtCore = sys.modules["PyQt4.QtCore"]
     QtGui  = sys.modules["PyQt4.QtGui"]
+    QT_LOGGING_MODEL_AVAILABLE=True
+    defaultHandlerNames.append("qt") #log to a QStandardItemModel
+elif "PyQt5.QtCore" in sys.modules and "PyQt5.QtGui" in sys.modules:
+    QtCore = sys.modules["PyQt5.QtCore"]
+    QtGui  = sys.modules["PyQt5.QtGui"]
     QT_LOGGING_MODEL_AVAILABLE=True
     defaultHandlerNames.append("qt") #log to a QStandardItemModel
 else:
@@ -235,7 +241,7 @@ def default_init(level=logging.ERROR, handlers=defaultHandlerNames[:]):
     and handlers named in `handlers`. The latter is a list of strings
     from "qt", "file", "stream".
 
-    - "qt" is only available if PyQt4 is installed. Logs will go to a QStandardItemModel.
+    - "qt" is only available if PyQt4 or PyQt5 is installed. Logs will go to a QStandardItemModel.
     - "file" creates a rotating file handler. Logs are stored in "~/.openalea/log.log.X" files
       X get incremented every day. Beyond 20 days olds files get deleted.
     - "stream" logs to stderr.
@@ -431,9 +437,7 @@ class LoggerOffice(six.with_metaclass(Singleton, object)):
 
 
 # The following code is from logger.__init__.py and is correcting something 
-# in Python 2 that is corrected in Python 3, giving out an error. If it may
-# be nesserary with Python 2, it makes errors appear in Python 3. 
-# I will maybe add a if version=Python2 or smth later.
+# in Python 2 that is corrected in Python 3, giving out an error. 
 
 # # Copied and hacked out of logging.__init__.py
 # # _srcfile is used when walking the stack to check when we've got the first
@@ -466,7 +470,7 @@ class LoggerOffice(six.with_metaclass(Singleton, object)):
 
 
 # logging.setLoggerClass(PatchedPyLogger)
-# default_init(level=logging.ERROR, handlers=["stream"])
+default_init(level=logging.ERROR, handlers=["stream"])
 
 
 
