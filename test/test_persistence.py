@@ -1,5 +1,5 @@
 from __future__ import absolute_import
-from nose.tools import with_setup
+#from nose.tools import with_setup
 
 from openalea.core.pkgmanager import PackageManager
 from openalea.core.compositenode import CompositeNodeFactory, CompositeNode
@@ -10,15 +10,15 @@ from six.moves import range
 tmp_dir = 'toto_persistence'
 
 
-def setup():
+def setup_function(fun):
     ensure_created(tmp_dir)
 
 
-def teardown():
+def teardown_function():
     rmdir(tmp_dir)
 
 
-@with_setup(setup, teardown)
+#@with_setup(setup, teardown)
 def test_compositenodewriter():
     pm = PackageManager()
     pm.init()
@@ -69,7 +69,7 @@ def test_compositenodewriter():
     assert len(newsg) == 6
 
 
-@with_setup(setup, teardown)
+#@with_setup(setup, teardown)
 def test_nodewriter():
     """test node writer"""
     pm = PackageManager()

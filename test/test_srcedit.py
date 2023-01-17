@@ -6,9 +6,9 @@ try:
     six.text_type
 except NameError:
     six.text_type = str
+
 from io import open
 
-from nose import with_setup
 from os.path import join as pj
 
 from openalea.core.pkgmanager import PackageManager
@@ -20,7 +20,7 @@ from .small_tools import ensure_created, rmdir
 tmp_dir = 'toto_srcedit'
 
 
-def setup():
+def setup_function(fun):
     ensure_created(tmp_dir)
     modsrc = \
         """
@@ -65,11 +65,10 @@ def register_packages(pkgmanager):
         f.write(six.text_type(wraleasrc))
 
 
-def teardown():
+def teardown_function(function):
     rmdir(tmp_dir)
 
 
-@with_setup(setup, teardown)
 def test_srcedit():
     """ Test src edition """
 

@@ -26,7 +26,7 @@ import sys
 import platform
 import atexit
 import six
-from six.moves.configparser import SafeConfigParser, NoSectionError, NoOptionError
+from configparser import ConfigParser, NoSectionError, NoOptionError
 from openalea.core.singleton import Singleton, ProxySingleton
 from openalea.core import logger
 # [pkgmanager]
@@ -140,7 +140,7 @@ class Settings(six.with_metaclass(ProxySingleton, object)):
 
     def __init__(self):
         object.__init__(self)
-        self.parser = SafeConfigParser()
+        self.parser = ConfigParser()
 
         self.__sectionHandlers = {}
 

@@ -44,6 +44,7 @@ import string
 import imp
 import time
 import shutil
+import py_compile
 
 from openalea.core.pkgdict import PackageDict, protected
 from openalea.core.path import path as _path
@@ -810,5 +811,8 @@ $FACTORY_DECLARATION
         handler.close()
 
         # Recompile
-        import py_compile
-        py_compile.compile(full_filename)
+        try:
+            py_compile.compile(full_filename, 
+                               invalidation_mode=py_compile.PycInvalidationMode.UNCHECKED_HASH)
+        except ValueError:
+            print('Unable to compile: ', full_filename)

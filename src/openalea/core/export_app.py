@@ -63,7 +63,7 @@ def export_app(name, filename, cn_factory):
 
     # Replace value
     result = template_str.safe_substitute(
-        OPENALEA_VERSION=versionmodule.version,
+        OPENALEA_VERSION=versionmodule.__version__,
         DATE=time.asctime(time.localtime()),
         NAME=name,
         AUTHOR=authors,
