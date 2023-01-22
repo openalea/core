@@ -475,7 +475,7 @@ class GeneratorEvaluation(AbstractEvaluation):
             leafs = [(vid, df.actor(vid))
                 for vid in df.vertices() if df.nb_out_edges(vid)==0]
 
-        leafs.sort(cmp_priority)
+        leafs.sort(key = functools.cmp_to_key(cmp_priority))
 
         # Execute
         for vid, actor in leafs:
@@ -1044,7 +1044,7 @@ class DiscreteTimeEvaluation(AbstractEvaluation):
             leafs = [(vid, df.actor(vid))
                 for vid in df.vertices() if df.nb_out_edges(vid)==0]
 
-        leafs.sort(cmp_priority)
+        leafs.sort(key=functools.cmp_to_key(cmp_priority))
 
         # Execute
         for vid, actor in leafs:
@@ -1201,7 +1201,7 @@ class SciFlowareEvaluation(AbstractEvaluation):
             leafs = [(vid, df.actor(vid))
                 for vid in df.vertices() if df.nb_out_edges(vid)==0]
 
-        leafs.sort(cmp_priority)
+        leafs.sort(key=functools.cmp_to_key(cmp_priority))
 
         # Execute
         for vid, actor in leafs:
