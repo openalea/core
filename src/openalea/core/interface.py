@@ -455,7 +455,7 @@ class IInterfaceWidget(six.with_metaclass(IWidgetMetaClass, AbstractListener)):
 
     def internal_data(self):
         "return a dict: minimal"
-        return self.node.internal_data()
+        return self.node.internal_data
 
     @classmethod
     def get_label(cls, node, parameter_str):
