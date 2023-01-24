@@ -60,7 +60,7 @@ def cmp(x, y):
     and strictly positive if x > y.
     """
     if x is None or y is None:
-        return 0
+        return 1
     return (x > y) - (x < y)
 
 # Exceptions
