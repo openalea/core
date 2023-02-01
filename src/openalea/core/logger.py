@@ -155,9 +155,9 @@ if "PyQt4.QtCore" in sys.modules and "PyQt4.QtGui" in sys.modules:
     QtGui  = sys.modules["PyQt4.QtGui"]
     QT_LOGGING_MODEL_AVAILABLE=True
     defaultHandlerNames.append("qt") #log to a QStandardItemModel
-elif "PyQt5.QtCore" in sys.modules and "PyQt5.QtGui" in sys.modules:
-    QtCore = sys.modules["PyQt5.QtCore"]
-    QtGui  = sys.modules["PyQt5.QtGui"]
+elif "PyQt5" in sys.modules:
+    # there were no sys.modules["PyQt5.QtGui"]
+    from PyQt5 import QtCore, QtGui
     QT_LOGGING_MODEL_AVAILABLE=True
     defaultHandlerNames.append("qt") #log to a QStandardItemModel
 else:
