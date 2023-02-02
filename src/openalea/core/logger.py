@@ -139,7 +139,7 @@ from logging.handlers import TimedRotatingFileHandler
 from openalea.core.singleton import Singleton
 from six.moves import map
 import six
-
+import qtpy
 
 #: List of default handler names:
 defaultHandlerNames = ["file",  #TimedRotatingFileHandler
@@ -149,21 +149,41 @@ defaultHandlerNames = ["file",  #TimedRotatingFileHandler
 #: The QLogHandlerItemModel class is only created if PyQt4 is already loaded
 # otherwise ties core with PyQt and could prevent UI-less usage of core.
 
-# TODO : Make the code portable (qt4, 5, 6 and PySide
-if "PyQt4.QtCore" in sys.modules and "PyQt4.QtGui" in sys.modules:
-    QtCore = sys.modules["PyQt4.QtCore"]
-    QtGui  = sys.modules["PyQt4.QtGui"]
-    QT_LOGGING_MODEL_AVAILABLE=True
-    defaultHandlerNames.append("qt") #log to a QStandardItemModel
-elif "PyQt5" in sys.modules:
-    # there were no sys.modules["PyQt5.QtGui"]
+# # TODO : Make the code portable (qt4, 5, 6 and PySide
+# if "PyQt4.QtCore" in sys.modules and "PyQt4.QtGui" in sys.modules:
+#     QtCore = sys.modules["PyQt4.QtCore"]
+#     QtGui  = sys.modules["PyQt4.QtGui"]
+#     QT_LOGGING_MODEL_AVAILABLE=True
+#     defaultHandlerNames.append("qt") #log to a QStandardItemModel
+# elif "PyQt5" in sys.modules:
+#     # there were no sys.modules["PyQt5.QtGui"]
+#     from PyQt5 import QtCore, QtGui
+#     QT_LOGGING_MODEL_AVAILABLE=True
+#     defaultHandlerNames.append("qt") #log to a QStandardItemModel
+# else:
+#     #print __name__+".QLogHandlerItemModel won't be available"
+#     QT_LOGGING_MODEL_AVAILABLE=False
+
+QT_API_ORDER = list(qtpy.API_NAMES.keys())
+
+if 'pyqt5' in QT_API_ORDER:
     from PyQt5 import QtCore, QtGui
     QT_LOGGING_MODEL_AVAILABLE=True
     defaultHandlerNames.append("qt") #log to a QStandardItemModel
+elif 'pyqt6' in QT_API_ORDER:
+    from PyQt6 import QtCore, QtGui
+    QT_LOGGING_MODEL_AVAILABLE=True
+    defaultHandlerNames.append("qt") #log to a QStandardItemModel
+elif 'pyside2' in QT_API_ORDER:
+    from PySide2 import QtCore, QtGui
+    QT_LOGGING_MODEL_AVAILABLE=True
+    defaultHandlerNames.append("qt") #log to a QStandardItemModel
+elif 'pyside6' in QT_API_ORDER:
+    from PySide6 import QtCore, QtGui
+    QT_LOGGING_MODEL_AVAILABLE=True
+    defaultHandlerNames.append("qt") #log to a QStandardItemModel
 else:
-    #print __name__+".QLogHandlerItemModel won't be available"
     QT_LOGGING_MODEL_AVAILABLE=False
-
 
 #######################
 # TOP LEVEL FUNCTIONS #
