@@ -59,7 +59,8 @@ def cmp(x, y):
     the outcome. The return value is negative if x < y, zero if x == y
     and strictly positive if x > y.
     """
-
+    if x is None or y is None:
+        return 1
     return (x > y) - (x < y)
 
 # Exceptions
