@@ -164,21 +164,21 @@ defaultHandlerNames = ["file",  #TimedRotatingFileHandler
 #     #print __name__+".QLogHandlerItemModel won't be available"
 #     QT_LOGGING_MODEL_AVAILABLE=False
 
-QT_API_ORDER = list(qtpy.API_NAMES.keys())
+qt_api = os.environ['QT_API'].lower()
 
-if 'pyqt5' in QT_API_ORDER:
+if qt_api in 'pyqt5':
     from PyQt5 import QtCore, QtGui
     QT_LOGGING_MODEL_AVAILABLE=True
     defaultHandlerNames.append("qt") #log to a QStandardItemModel
-elif 'pyqt6' in QT_API_ORDER:
+elif qt_api in  'pyqt6':
     from PyQt6 import QtCore, QtGui
     QT_LOGGING_MODEL_AVAILABLE=True
     defaultHandlerNames.append("qt") #log to a QStandardItemModel
-elif 'pyside2' in QT_API_ORDER:
+elif qt_api in  'pyside2':
     from PySide2 import QtCore, QtGui
     QT_LOGGING_MODEL_AVAILABLE=True
     defaultHandlerNames.append("qt") #log to a QStandardItemModel
-elif 'pyside6' in QT_API_ORDER:
+elif qt_api in  'pyside6':
     from PySide6 import QtCore, QtGui
     QT_LOGGING_MODEL_AVAILABLE=True
     defaultHandlerNames.append("qt") #log to a QStandardItemModel
