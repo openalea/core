@@ -139,7 +139,6 @@ from logging.handlers import TimedRotatingFileHandler
 from openalea.core.singleton import Singleton
 from six.moves import map
 import six
-import qtpy
 
 #: List of default handler names:
 defaultHandlerNames = ["file",  #TimedRotatingFileHandler
@@ -164,22 +163,8 @@ defaultHandlerNames = ["file",  #TimedRotatingFileHandler
 #     #print __name__+".QLogHandlerItemModel won't be available"
 #     QT_LOGGING_MODEL_AVAILABLE=False
 
-qt_api = os.environ['QT_API'].lower()
-
-if qt_api in 'pyqt5':
-    from PyQt5 import QtCore, QtGui
-    QT_LOGGING_MODEL_AVAILABLE=True
-    defaultHandlerNames.append("qt") #log to a QStandardItemModel
-elif qt_api in  'pyqt6':
-    from PyQt6 import QtCore, QtGui
-    QT_LOGGING_MODEL_AVAILABLE=True
-    defaultHandlerNames.append("qt") #log to a QStandardItemModel
-elif qt_api in  'pyside2':
-    from PySide2 import QtCore, QtGui
-    QT_LOGGING_MODEL_AVAILABLE=True
-    defaultHandlerNames.append("qt") #log to a QStandardItemModel
-elif qt_api in  'pyside6':
-    from PySide6 import QtCore, QtGui
+if 'qtpy' in sys.modules:    
+    from qtpy import QtCore, QtGui
     QT_LOGGING_MODEL_AVAILABLE=True
     defaultHandlerNames.append("qt") #log to a QStandardItemModel
 else:
