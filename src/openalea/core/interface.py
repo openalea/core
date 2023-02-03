@@ -32,7 +32,7 @@ try:
     from types import (StringType, SliceType, FloatType, IntType, BooleanType, TupleType,
                       ListType, DictType, InstanceType)
 except ImportError:
-    StringType = six.string_types
+    StringType = str #six.string_types gave a tuple
     SliceType = slice
     FloatType = float
     IntType = int

@@ -33,7 +33,7 @@ def start_qt(factory, node):
 
     """
 
-    from openalea.vpltk.qt import QtWidgets, QtCore
+    from qtpy import QtWidgets, QtCore
 
     app = QtWidgets.QApplication(sys.argv)
 
