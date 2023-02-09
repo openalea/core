@@ -44,7 +44,7 @@ def test_export():
     f = open("app.py")
     assert f
 
-    import app
+    from . import app
     # requires X server 
     # app.main(sys.argv)
     f.close()
