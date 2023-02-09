@@ -22,17 +22,9 @@ and meta informations (authors, license, doc...)
 
 from __future__ import print_function
 from io import open
-try:
-    # Python 2: "reload" is built-in
-    reload
-except NameError:
-    from importlib import reload
-try:
-    # Python 2: "unicode" is built-in
-    unicode
-except NameError:
-    unicode = str
-    
+
+unicode = str
+
 __license__ = "Cecill-C"
 __revision__ = " $Id$ "
 
@@ -41,15 +33,15 @@ __revision__ = " $Id$ "
 import os
 import sys
 import string
-import imp
 import time
 import shutil
 import py_compile
 
+from importlib import reload, util, machinery
+
 from openalea.core.pkgdict import PackageDict, protected
 from openalea.core.path import path as _path
 from openalea.core.vlab import vlab_object
-#from openalea.core import logger
 
 # Exceptions
 
@@ -588,10 +580,13 @@ class PyPackageReader(AbstractPackageReader):
         if (modulename in sys.modules):
             del sys.modules[modulename]
 
-        (file, pathname, desc) = imp.find_module(base_modulename, [basedir])
+        # (file, pathname, desc) = imp.find_module(base_modulename, [basedir])
+        spec = machinery.PathFinder.find_spec(base_modulename, [basedir])
+        module = util.module_from_spec(spec)
         try:
-            wraleamodule = imp.load_module(modulename, file, pathname, desc)
-            pkg = self.build_package(wraleamodule, pkgmanager)
+            # wraleamodule = imp.load_module(modulename, file, pathname, desc)
+            spec.loader.exec_module(module)
+            pkg = self.build_package(module, pkgmanager)
 
         except Exception as e:
             try:
@@ -603,8 +598,8 @@ class PyPackageReader(AbstractPackageReader):
         except:  # Treat all exception
             pkgmanager.add('%s is invalid :' % (self.filename, ))
 
-        if (file):
-            file.close()
+        # if (file):
+        #     file.close()
 
         # Recover sys.path
         sys.path.pop()

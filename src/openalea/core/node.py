@@ -27,7 +27,7 @@ __license__ = "Cecill-C"
 __revision__ = " $Id$ "
 
 import six
-import imp
+# import imp
 import inspect
 import importlib
 import os
@@ -38,6 +38,7 @@ from copy import copy, deepcopy
 from weakref import ref, proxy
 
 # from signature import get_parameters
+from importlib import util, machinery
 from . import signature as sgn
 from .observer import Observed, AbstractListener
 from .actor import IActor
@@ -1239,15 +1240,19 @@ class NodeFactory(AbstractFactory):
 
         else:
             # load module
-            (file, pathname, desc) = imp.find_module(modulename,
-                self.search_path + sys.path)
+            # (file, pathname, desc) = imp.find_module(modulename,
+            #     self.search_path + sys.path)
+            spec = machinery.PathFinder.find_spec(modulename, self.search_path + sys.path)
+            pathname = spec.origin
+            module = util.module_from_spec(spec)
 
             sys.path.append(os.path.dirname(pathname))
-            module = imp.load_module(modulename, file, pathname, desc)
+            spec.loader.exec_module(module)
+            # module = imp.load_module(modulename, file, pathname, desc)
             sys.path.pop()
 
-            if(file):
-                file.close()
+            # if(file):
+            #     file.close()
 
             widgetclass = module.__dict__[self.widgetclass_name]
             return widgetclass(node, parent)
