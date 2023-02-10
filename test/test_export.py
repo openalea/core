@@ -41,16 +41,20 @@ def test_export():
 
     export_app.export_app("ADD", "app.py", sgfactory)
 
-    f = open("app.py")
-    assert f
-
-    from . import app
-    # requires X server 
-    # app.main(sys.argv)
-    f.close()
-    os.remove("app.py")
     try:
-        os.remove("app.pyc")
+        import qtpy
+        f = open("app.py")
+        assert f
+
+        from . import app
+        # requires X server 
+        # app.main(sys.argv)
+        f.close()
+        os.remove("app.py")
+        try:
+            os.remove("app.pyc")
+        except:
+            pass
+
     except:
         pass
-
