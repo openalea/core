@@ -118,7 +118,7 @@ def DataFactory(path, mimetype=None, **kwargs):
         except IOError:
             content = default_content
         else:
-            f.write(default_content)
+            f.write(default_content.encode())
             f.close()
             content = None
 

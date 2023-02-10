@@ -918,9 +918,11 @@ class CompositeNode(Node, DataFlow):
         self.graph_modified = True
 
     def remove_edge(self, eid):
-        target = self.target(eid)
+        # target = self.target(eid)
+        target_port = self._edge_property['_target_port'][eid]
         try:
-            port = self.port(target)
+            # port = self.port(target)
+            port = self.port(target_port)
         except PortError:
             port = None
         DataFlow.remove_edge(self, eid)
