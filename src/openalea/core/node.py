@@ -1270,7 +1270,7 @@ class NodeFactory(AbstractFactory):
         LOCAL_IMPORT = False
 
         if not self.nodemodule_name:
-            self.nodemodule_name = '__builtin__' if six.PY2 else 'builtins'
+            self.nodemodule_name = 'builtins'
 
         # Test if the module is already in sys.modules
         if (self.nodemodule_path and

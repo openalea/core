@@ -419,12 +419,14 @@ def %s(%s):
 
         from openalea.core.node import NodeFactory
 
+        pkg_name = self.name.replace(' ', '_')
+        absolute_nodemodule = pkg_name + '.' + classname
         factory = NodeFactory(name=name,
                               category=category,
                               description=description,
                               inputs=inputs,
                               outputs=outputs,
-                              nodemodule=classname,
+                              nodemodule=absolute_nodemodule,
                               nodeclass=classname,
                               authors='',
                               search_path=[localdir])
