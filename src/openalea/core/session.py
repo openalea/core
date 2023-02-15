@@ -46,7 +46,7 @@ class Session(Observed):
     A session can be saved on disk.
     """
 
-    USR_PKG_NAME = "__my package__"
+    USR_PKG_NAME = "__my_package__" # we do not want space in names
 
     def __init__(self):
 

@@ -42,6 +42,7 @@ from importlib import reload, util, machinery
 from openalea.core.pkgdict import PackageDict, protected
 from openalea.core.path import path as _path
 from openalea.core.vlab import vlab_object
+from openalea.core.node import NodeFactory
 
 # Exceptions
 
@@ -668,6 +669,12 @@ class PyPackageReaderWralea(PyPackageReader):
             f = wraleamodule.__dict__.get(fname, None)
             try:
                 if (f):
+                    # if f.mimetype == 'openalea/nodefactory':
+                    if isinstance(f, NodeFactory):
+                        # test if we have a node otherwise there is no f.search_path
+                        _search_path = f.search_path[0]
+                        _search_path = os.path.join(_search_path, '..')
+                        f.search_path += [_search_path]
                     p.add_factory(f)
             except Exception as e:
                 pkgmanager.log.add(str(e))

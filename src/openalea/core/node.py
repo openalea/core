@@ -1280,18 +1280,26 @@ class NodeFactory(AbstractFactory):
 
         sav_path = sys.path
         sys.path = self.search_path + sav_path
+        # sys.path = [os.path.join(self.search_path[0], '..')] + self.search_path + sav_path
         # print 'SEARCH PATH ', self.search_path
         try:
             # load module
 
             # Delete the module from the sys.modules if another local exists and
             # has the same name
-            if LOCAL_IMPORT:
+            if LOCAL_IMPORT: # always False ??
                 if self.nodemodule_name in sys.modules:
                     del sys.modules[self.nodemodule_name]
-            importlib.import_module(self.nodemodule_name)
-            #__import__(self.nodemodule_name)
-            nodemodule = sys.modules[self.nodemodule_name]
+
+            # case where there is a space in the package directory, e.g. "__my package__"
+            _nodemodule_name = self.nodemodule_name
+            if self.package:
+                name_pkgdir = self.package.wralea_path.split('/')[-2]
+                if (name_pkgdir.find(' ') > 0 and self.nodemodule_name.find('.') > 0): # new absolute path
+                    [pkg_name, _nodemodule_name] = self.nodemodule_name.split('.')
+            importlib.import_module(_nodemodule_name)
+            nodemodule = sys.modules[_nodemodule_name]
+
             try:
                 self.nodemodule_path = inspect.getsourcefile(nodemodule)
             except TypeError as type_error:
