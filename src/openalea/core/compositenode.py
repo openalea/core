@@ -836,7 +836,7 @@ class CompositeNode(Node, DataFlow):
             # Copy value
             sgfactory.elt_value[vid] = []
             for port in range(node.get_nb_input()):
-                if node.input_states[port] is not "connected":
+                if node.input_states[port] != "connected":
                     val = node.get_input(port)
                     if "pyqt" in repr(val).lower():
                         val = str(val)
@@ -918,9 +918,11 @@ class CompositeNode(Node, DataFlow):
         self.graph_modified = True
 
     def remove_edge(self, eid):
-        target = self.target(eid)
+        # target = self.target(eid)
+        target_port = self._edge_property['_target_port'][eid]
         try:
-            port = self.port(target)
+            # port = self.port(target)
+            port = self.port(target_port)
         except PortError:
             port = None
         DataFlow.remove_edge(self, eid)

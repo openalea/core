@@ -368,7 +368,7 @@ You can rename/move this project thanks to the button "Save As" in menu.
 
 def main():
     import sys
-    from openalea.vpltk.qt import QtWidgets
+    from qtpy import QtWidgets
     from openalea.core.service.ipython import interpreter
     from openalea.oalab.shell import ShellWidget
 

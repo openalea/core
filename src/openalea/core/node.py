@@ -27,7 +27,7 @@ __license__ = "Cecill-C"
 __revision__ = " $Id$ "
 
 import six
-import imp
+# import imp
 import inspect
 import importlib
 import os
@@ -38,6 +38,7 @@ from copy import copy, deepcopy
 from weakref import ref, proxy
 
 # from signature import get_parameters
+from importlib import util, machinery
 from . import signature as sgn
 from .observer import Observed, AbstractListener
 from .actor import IActor
@@ -1239,15 +1240,19 @@ class NodeFactory(AbstractFactory):
 
         else:
             # load module
-            (file, pathname, desc) = imp.find_module(modulename,
-                self.search_path + sys.path)
+            # (file, pathname, desc) = imp.find_module(modulename,
+            #     self.search_path + sys.path)
+            spec = machinery.PathFinder.find_spec(modulename, self.search_path + sys.path)
+            pathname = spec.origin
+            module = util.module_from_spec(spec)
 
             sys.path.append(os.path.dirname(pathname))
-            module = imp.load_module(modulename, file, pathname, desc)
+            spec.loader.exec_module(module)
+            # module = imp.load_module(modulename, file, pathname, desc)
             sys.path.pop()
 
-            if(file):
-                file.close()
+            # if(file):
+            #     file.close()
 
             widgetclass = module.__dict__[self.widgetclass_name]
             return widgetclass(node, parent)
@@ -1265,7 +1270,7 @@ class NodeFactory(AbstractFactory):
         LOCAL_IMPORT = False
 
         if not self.nodemodule_name:
-            self.nodemodule_name = '__builtin__' if six.PY2 else 'builtins'
+            self.nodemodule_name = 'builtins'
 
         # Test if the module is already in sys.modules
         if (self.nodemodule_path and
@@ -1275,18 +1280,27 @@ class NodeFactory(AbstractFactory):
 
         sav_path = sys.path
         sys.path = self.search_path + sav_path
+        # sys.path = [os.path.join(self.search_path[0], '..')] + self.search_path + sav_path
         # print 'SEARCH PATH ', self.search_path
         try:
             # load module
 
             # Delete the module from the sys.modules if another local exists and
             # has the same name
-            if LOCAL_IMPORT:
+            if LOCAL_IMPORT: # always False ??
                 if self.nodemodule_name in sys.modules:
                     del sys.modules[self.nodemodule_name]
-            importlib.import_module(self.nodemodule_name)
-            #__import__(self.nodemodule_name)
-            nodemodule = sys.modules[self.nodemodule_name]
+
+            # case where there is a space in the package directory, e.g. "__my package__"
+            _nodemodule_name = self.nodemodule_name
+            if self.package:
+                sep = os.sep
+                name_pkgdir = self.package.wralea_path.split(sep)[-2]
+                if ((' ' in name_pkgdir) and ('.' in self.nodemodule_name)): # new absolute path
+                    [pkg_name, _nodemodule_name] = self.nodemodule_name.split('.')
+            importlib.import_module(_nodemodule_name)
+            nodemodule = sys.modules[_nodemodule_name]
+
             try:
                 self.nodemodule_path = inspect.getsourcefile(nodemodule)
             except TypeError as type_error:
