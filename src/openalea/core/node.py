@@ -1294,8 +1294,9 @@ class NodeFactory(AbstractFactory):
             # case where there is a space in the package directory, e.g. "__my package__"
             _nodemodule_name = self.nodemodule_name
             if self.package:
-                name_pkgdir = self.package.wralea_path.split('/')[-2]
-                if (name_pkgdir.find(' ') > 0 and self.nodemodule_name.find('.') > 0): # new absolute path
+                sep = os.sep
+                name_pkgdir = self.package.wralea_path.split(sep)[-2]
+                if ((' ' in name_pkgdir) and ('.' in self.nodemodule_name)): # new absolute path
                     [pkg_name, _nodemodule_name] = self.nodemodule_name.split('.')
             importlib.import_module(_nodemodule_name)
             nodemodule = sys.modules[_nodemodule_name]
