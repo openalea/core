@@ -724,7 +724,7 @@ class PyPackageWriter(object):
     """ Write a wralea python file """
 
     wralea_template = """
-# -*- coding: utf-8 -*-
+# -*- coding: latin-1 -*-
 # This file has been generated at $TIME
 
 from openalea.core import *
