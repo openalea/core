@@ -21,11 +21,15 @@ A Factory build Node from its description. Factories instantiate
 Nodes on demand for the dataflow.
 """
 
+from __future__ import print_function
+from io import open
 __license__ = "Cecill-C"
 __revision__ = " $Id$ "
 
-import imp
+import six
+# import imp
 import inspect
+import importlib
 import os
 import sys
 import string
@@ -34,11 +38,32 @@ from copy import copy, deepcopy
 from weakref import ref, proxy
 
 # from signature import get_parameters
-import signature as sgn
-from observer import Observed, AbstractListener
-from actor import IActor
-from metadatadict import MetaDataDict, HasAdHoc
-from interface import TypeNameInterfaceMap
+from importlib import util, machinery
+from . import signature as sgn
+from .observer import Observed, AbstractListener
+from .actor import IActor
+from .metadatadict import MetaDataDict, HasAdHoc
+from .interface import TypeNameInterfaceMap
+
+from six.moves import range
+try:
+    from types import TypeType, ClassType
+except ImportError:
+    TypeType = type
+    ClassType = type
+
+def cmp(x, y):
+    """
+    Replacement for built-in function cmp that was removed in Python 3
+
+    Compare the two objects x and y and return an integer according to
+    the outcome. The return value is negative if x < y, zero if x == y
+    and strictly positive if x > y.
+    """
+    if x is None or y is None:
+        return 1
+    return (x > y) - (x < y)
+
 # Exceptions
 class RecursionError (Exception):
     """todo"""
@@ -517,7 +542,7 @@ class Node(AbstractNode):
         interface = kargs.get('interface', None)
 
         # default value
-        if(interface and not kargs.has_key('value')):
+        if(interface and 'value' not in kargs):
             if isinstance(interface, str):
                 # Create mapping between interface name and interface class
                 from openalea.core.interface import TypeNameInterfaceMap
@@ -685,7 +710,7 @@ class Node(AbstractNode):
         odict['modified'] = True
 
 
-        outputs = range(len(self.outputs))
+        outputs = list(range(len(self.outputs)))
         for i in range(self.get_nb_output()):
             try:
                 outputs[i] = copy(self.outputs[i])
@@ -693,7 +718,7 @@ class Node(AbstractNode):
                 outputs[i] = None
         odict['outputs'] = outputs
 
-        inputs = range(self.get_nb_input())
+        inputs = list(range(self.get_nb_input()))
         for i in range(self.get_nb_input()):
             try:
                 inputs[i] = copy(self.inputs[i])
@@ -733,7 +758,7 @@ class Node(AbstractNode):
             self.outputs[i] = None
 
         i = self.get_nb_input()
-        for i in xrange(i):
+        for i in range(i):
             # if(not connected or self.input_states[i] is "connected"):
             self.set_input(i, self.input_desc[i].get('value', None))
 
@@ -1084,8 +1109,9 @@ class NodeFactory(AbstractFactory):
         """ Return a python valid name """
 
         module_name = self.nodemodule_name
-        module_name = module_name.replace('.','_')
-        return "%s_%s" % (self.nodemodule_name, self.nodeclass_name)
+        py_name = "%s_%s" % (self.nodemodule_name, self.nodeclass_name)
+        py_name = py_name.replace('.','_')
+        return py_name
 
     def __getstate__(self):
         """ Pickle function """
@@ -1146,8 +1172,8 @@ class NodeFactory(AbstractFactory):
 
 
             # Check and Instantiate if we have a functor class
-            if((type(classobj) == types.TypeType)
-               or (type(classobj) == types.ClassType)):
+            if((type(classobj) == TypeType)
+               or (type(classobj) == ClassType)):
 
                 _classobj = classobj()
                 if callable(_classobj):
@@ -1159,7 +1185,7 @@ class NodeFactory(AbstractFactory):
         else:
             try:
                 node = classobj(self.inputs, self.outputs)
-            except TypeError, e:
+            except TypeError as e:
                 node = classobj()
 
         # Properties
@@ -1189,11 +1215,11 @@ class NodeFactory(AbstractFactory):
             w = get_editor()(parent)
             try:
                 w.edit_module(self.get_node_module(), self.nodeclass_name)
-            except Exception, e:
+            except Exception as e:
                 # Unable to load the module
                 # Try to retrieve the file and open the file in an editor
                 src_path = self.get_node_file()
-                print "instantiate widget exception:", e
+                print("instantiate widget exception:", e)
                 if src_path:
                     w.edit_file(src_path)
             return w
@@ -1214,15 +1240,19 @@ class NodeFactory(AbstractFactory):
 
         else:
             # load module
-            (file, pathname, desc) = imp.find_module(modulename,
-                self.search_path + sys.path)
+            # (file, pathname, desc) = imp.find_module(modulename,
+            #     self.search_path + sys.path)
+            spec = machinery.PathFinder.find_spec(modulename, self.search_path + sys.path)
+            pathname = spec.origin
+            module = util.module_from_spec(spec)
 
             sys.path.append(os.path.dirname(pathname))
-            module = imp.load_module(modulename, file, pathname, desc)
+            spec.loader.exec_module(module)
+            # module = imp.load_module(modulename, file, pathname, desc)
             sys.path.pop()
 
-            if(file):
-                file.close()
+            # if(file):
+            #     file.close()
 
             widgetclass = module.__dict__[self.widgetclass_name]
             return widgetclass(node, parent)
@@ -1240,7 +1270,7 @@ class NodeFactory(AbstractFactory):
         LOCAL_IMPORT = False
 
         if not self.nodemodule_name:
-            self.nodemodule_name = '__builtin__'
+            self.nodemodule_name = 'builtins'
 
         # Test if the module is already in sys.modules
         if (self.nodemodule_path and
@@ -1250,30 +1280,40 @@ class NodeFactory(AbstractFactory):
 
         sav_path = sys.path
         sys.path = self.search_path + sav_path
+        # sys.path = [os.path.join(self.search_path[0], '..')] + self.search_path + sav_path
         # print 'SEARCH PATH ', self.search_path
         try:
             # load module
 
             # Delete the module from the sys.modules if another local exists and
             # has the same name
-            if LOCAL_IMPORT:
+            if LOCAL_IMPORT: # always False ??
                 if self.nodemodule_name in sys.modules:
                     del sys.modules[self.nodemodule_name]
-            __import__(self.nodemodule_name)
-            nodemodule = sys.modules[self.nodemodule_name]
+
+            # case where there is a space in the package directory, e.g. "__my package__"
+            _nodemodule_name = self.nodemodule_name
+            if self.package:
+                sep = os.sep
+                name_pkgdir = self.package.wralea_path.split(sep)[-2]
+                if ((' ' in name_pkgdir) and ('.' in self.nodemodule_name)): # new absolute path
+                    [pkg_name, _nodemodule_name] = self.nodemodule_name.split('.')
+            importlib.import_module(_nodemodule_name)
+            nodemodule = sys.modules[_nodemodule_name]
+
             try:
                 self.nodemodule_path = inspect.getsourcefile(nodemodule)
-            except TypeError, type_error:
+            except TypeError as type_error:
                 self.nodemodule_path = None
-                print type_error
+                print(type_error)
 
             self.module_cache = nodemodule
             sys.path = sav_path
             return nodemodule
 
-        except ImportError, import_error:
+        except ImportError as import_error:
             sys.path = sav_path
-            print self.nodemodule_name
+            print(self.nodemodule_name)
             raise import_error
         else:
             sys.path = sav_path
@@ -1317,7 +1357,7 @@ class NodeFactory(AbstractFactory):
         module = self.get_node_module()
 
         # Run src
-        exec newsrc in module.__dict__
+        exec(newsrc, module.__dict__)
 
         # save the current newsrc
         self.src_cache = newsrc
@@ -1331,7 +1371,7 @@ class NodeFactory(AbstractFactory):
         nodesrc = self.get_node_src(cache=False)
 
         # Run src
-        exec newsrc in module.__dict__
+        exec(newsrc, module.__dict__)
 
         # get the module code
         import inspect
@@ -1391,7 +1431,7 @@ $NAME = Factory(name=$PNAME,
         """ Return the python string representation """
         f = self.factory
         fstr = string.Template(self.nodefactory_template)
-        
+
         name = f.get_python_name()
         name = name.replace('.', '_')
         result = fstr.safe_substitute(NAME=name,

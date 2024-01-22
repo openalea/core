@@ -1,5 +1,7 @@
 """NoCaseDict tests"""
 
+from __future__ import absolute_import
+from __future__ import print_function
 __license__ = "Cecill-C"
 __revision__ = " $Id$ "
 
@@ -11,7 +13,7 @@ def test_dict():
     d = PackageDict()
     d['AbC'] = 3
     assert d['aBc'] == 3
-    print d
+    print(d)
 
 
 if __name__=="__main__":

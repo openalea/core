@@ -1,7 +1,9 @@
 
+from __future__ import absolute_import
 import unittest
 from openalea.core.data import Data
 from openalea.core.path import tempdir, path
+from io import open
 
 
 def debug_parse(self, code):
@@ -26,11 +28,11 @@ class TestProject(unittest.TestCase):
         Model.parsed = False
 
         # Check content is parsed
-        model = Model(content='Hi ho', filename='model.py')
+        model = Model(content=b'Hi ho', filename='model.py')
         assert model.parsed is True
         model.parsed = False
 
-        model = Model(content='Hi ho', filename='model.py')
+        model = Model(content=b'Hi ho', filename='model.py')
 
         # Check content is not parsed because content has not changed
         model.parsed = False
@@ -38,15 +40,15 @@ class TestProject(unittest.TestCase):
         assert model.parsed is False
 
         # Check content is parsed again because content has been explicitly changed
-        model.content = 'captain'
+        model.content = b'captain'
         assert model.parsed is True
 
     def todo_infile_data(self):
         from openalea.core.data import Model
         # Create a python file
         pyfile = self.tmpdir / 'model.py'
-        with open(pyfile, 'w') as f:
-            f.write('data 1')
+        with open(pyfile, 'wb') as f:
+            f.write(b'data 1')
 
         Model.set_code = debug_parse
 
@@ -62,16 +64,16 @@ class TestProject(unittest.TestCase):
         # Check that cache works: file don't have changed, no need to read and parse it again
         content = model.read()
         assert model.parsed is False
-        assert content == "data 1"
+        assert content == b"data 1"
 
         # Simulate a change
-        with open(pyfile, 'w') as f:
-            f.write('new data')
+        with open(pyfile, 'wb') as f:
+            f.write(b'new data')
 
         # pyfile has changed, it need to be read again!
         content = model.read()
         assert model.parsed is True
-        assert content == "new data"
+        assert content == b"new data"
 
         model.parsed = False
         model.set_cache_mode(model.NO_CACHE)
@@ -123,11 +125,11 @@ class TestProject(unittest.TestCase):
 
         # False: One on disk other in memory, same filename, same content different path
         # MUST RETURN FALSE
-        d1 = Data(path=self.tmpdir / 'model.py', content="print 'hello world'\n")
+        d1 = Data(path=self.tmpdir / 'model.py', content=b"print('hello world')\n")
         d2 = Data(path=get_data('model.py'))
         assert(d1.is_same_data(d2) is False)
         assert(d2.is_same_data(d1) is False)
         # need to use strip to avoid \n vs \r\n problems
-        self.assertEqual(d1.read().strip(), "print 'hello world'")
-        self.assertEqual(d2.read().strip(), "print 'hello world'")
+        self.assertEqual(d1.read().strip(), b"print('hello world')")
+        self.assertEqual(d2.read().strip(), b"print('hello world')")
         self.assertEqual(d1.filename, d2.filename)

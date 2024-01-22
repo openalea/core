@@ -1,6 +1,6 @@
 """Lattice Interface"""
 
-class ScaleLattice:
+class ScaleLattice(object):
     """ todo """
     
     def scales(self):
@@ -123,7 +123,7 @@ class MutableScaleLattice(ScaleLattice):
         pass
 
 
-class Container:
+class Container(object):
     """
     Container Interface (tree, graph or other data structure)
     """

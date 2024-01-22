@@ -42,6 +42,7 @@ sys.path.insert(0, os.path.join(project_root, 'src'))
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom ones.
 extensions = [
+    'sphinx.apidoc'
     'sphinx.ext.autodoc',
     'sphinx.ext.autosummary',
     'sphinx.ext.doctest',
@@ -148,7 +149,7 @@ pygments_style = 'sphinx'
 
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
-html_theme = 'default'
+html_theme = 'sphinx_rtd_theme'
 
 # Theme options are theme-specific and customize the look and feel of a
 # theme further.  For a list of options available for each theme, see the
@@ -247,11 +248,7 @@ latex_elements = {
 latex_documents = [
     ('index', 'core.tex',
      u'core Documentation',
-<<<<<<< HEAD
      u'openalea', 'manual'),
-=======
-     u'Christophe Pradal', 'manual'),
->>>>>>> 0fe087c31d10150c3297017c390524ff944d0de8
 ]
 
 # The name of an image file (relative to this directory) to place at
@@ -297,11 +294,7 @@ man_pages = [
 texinfo_documents = [
     ('index', 'core',
      u'core Documentation',
-<<<<<<< HEAD
      u'openalea',
-=======
-     u'Christophe Pradal',
->>>>>>> 0fe087c31d10150c3297017c390524ff944d0de8
      'core',
      'OpenAlea.Core is able to discover and manage packages and logical components, build and evaluate dataflows and Generate final applications',
      'Miscellaneous'),

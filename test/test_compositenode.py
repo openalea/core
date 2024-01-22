@@ -1,3 +1,4 @@
+from __future__ import absolute_import
 from os.path import join as pj
 
 from openalea.core.pkgmanager import PackageManager
@@ -7,11 +8,17 @@ from openalea.core import Package
 
 from .small_tools import test_dir
 
+from io import open
+from six.moves import map
+
+def compile_file(filename):
+    with open(filename, encoding='utf-8') as f:
+        return compile(f.read(), filename, 'exec')
 
 class TestClass:
-    def setUp(self):
+    def setup_method(self, testfun):
         d = {}
-        execfile(pj(test_dir(), 'catalog.py'), globals(), d)
+        exec(compile_file(pj(test_dir(), 'catalog.py')), globals(), d)
         self.pkg = d['pkg']
         self.plus_node = self.pkg['plus'].instantiate()
         self.float_node = self.pkg['float'].instantiate()
@@ -117,7 +124,7 @@ class TestClass:
         sgfactory1 = CompositeNodeFactory("graph1")
         sgfactory2 = CompositeNodeFactory("graph2")
 
-        map(pkg.add_factory, (sgfactory1, sgfactory2))
+        list(map(pkg.add_factory, (sgfactory1, sgfactory2)))
 
         assert len(pkg.get_names()) == 2
 

@@ -132,12 +132,13 @@ import weakref
 import sys
 import os
 import os.path
-import collections
+from collections.abc import MutableSequence
 from logging import DEBUG, INFO, WARNING, ERROR, CRITICAL, NOTSET
 import logging.handlers
 from logging.handlers import TimedRotatingFileHandler
 from openalea.core.singleton import Singleton
-
+from six.moves import map
+import six
 
 #: List of default handler names:
 defaultHandlerNames = ["file",  #TimedRotatingFileHandler
@@ -147,15 +148,27 @@ defaultHandlerNames = ["file",  #TimedRotatingFileHandler
 #: The QLogHandlerItemModel class is only created if PyQt4 is already loaded
 # otherwise ties core with PyQt and could prevent UI-less usage of core.
 
-if "PyQt4.QtCore" in sys.modules and "PyQt4.QtGui" in sys.modules:
-    QtCore = sys.modules["PyQt4.QtCore"]
-    QtGui  = sys.modules["PyQt4.QtGui"]
+# # TODO : Make the code portable (qt4, 5, 6 and PySide
+# if "PyQt4.QtCore" in sys.modules and "PyQt4.QtGui" in sys.modules:
+#     QtCore = sys.modules["PyQt4.QtCore"]
+#     QtGui  = sys.modules["PyQt4.QtGui"]
+#     QT_LOGGING_MODEL_AVAILABLE=True
+#     defaultHandlerNames.append("qt") #log to a QStandardItemModel
+# elif "PyQt5" in sys.modules:
+#     # there were no sys.modules["PyQt5.QtGui"]
+#     from PyQt5 import QtCore, QtGui
+#     QT_LOGGING_MODEL_AVAILABLE=True
+#     defaultHandlerNames.append("qt") #log to a QStandardItemModel
+# else:
+#     #print __name__+".QLogHandlerItemModel won't be available"
+#     QT_LOGGING_MODEL_AVAILABLE=False
+
+if 'qtpy' in sys.modules:    
+    from qtpy import QtCore, QtGui
     QT_LOGGING_MODEL_AVAILABLE=True
     defaultHandlerNames.append("qt") #log to a QStandardItemModel
 else:
-    #print __name__+".QLogHandlerItemModel won't be available"
     QT_LOGGING_MODEL_AVAILABLE=False
-
 
 #######################
 # TOP LEVEL FUNCTIONS #
@@ -233,7 +246,7 @@ def default_init(level=logging.ERROR, handlers=defaultHandlerNames[:]):
     and handlers named in `handlers`. The latter is a list of strings
     from "qt", "file", "stream".
 
-    - "qt" is only available if PyQt4 is installed. Logs will go to a QStandardItemModel.
+    - "qt" is only available if PyQt4 or PyQt5 is installed. Logs will go to a QStandardItemModel.
     - "file" creates a rotating file handler. Logs are stored in "~/.openalea/log.log.X" files
       X get incremented every day. Beyond 20 days olds files get deleted.
     - "stream" logs to stderr.
@@ -250,18 +263,11 @@ def default_init(level=logging.ERROR, handlers=defaultHandlerNames[:]):
 ############################
 # Openalea Logging Central #
 ############################
-class LoggerOffice(object):
+class LoggerOffice(six.with_metaclass(Singleton, object)):
     """ This class behaves as the central registry of loggers
     and handlers for Openalea. This way, the application can
     query information about them.
     """
-
-    ##################################################################
-    # As the top level function (public API) simply redirect to this #
-    # singleton, see the documentation of the former.                #
-    ##################################################################
-
-    __metaclass__ = Singleton
 
     def __init__(self, level=DEBUG):
         logging.info("Logger started")
@@ -304,7 +310,7 @@ class LoggerOffice(object):
         return handler
 
     def get_handler_names(self):
-        return list(self.__handlers.iterkeys())
+        return list(self.__handlers.keys())
 
     def get_handler(self, name):
         handler =  self.__handlers.get(name)
@@ -313,7 +319,7 @@ class LoggerOffice(object):
         return handler
 
     def iter_handlers(self):
-        return self.__handlers.itervalues()
+        return self.__handlers.values()
 
     ###########
     # LOGGERS #
@@ -328,7 +334,7 @@ class LoggerOffice(object):
         return logger
 
     def get_logger_names(self):
-        return list(self.__pyLoggers.iterkeys())
+        return list(self.__pyLoggers.keys())
 
     def get_logger(self, name):
         logger = self.__pyLoggers.get(name)
@@ -337,7 +343,7 @@ class LoggerOffice(object):
         return logger
 
     def iter_loggers(self):
-        return self.__pyLoggers.itervalues()
+        return self.__pyLoggers.values()
 
     #################################
     # Logger to handler connections #
@@ -368,7 +374,7 @@ class LoggerOffice(object):
                 logger.removeHandler(handler)
 
     def __iterable_check(self, value):
-        return value if issubclass(type(value), collections.MutableSequence) else [value]
+        return value if issubclass(type(value), MutableSequence) else [value]
 
     #########################
     # LOGGING LEVEL CONTROL #
@@ -435,38 +441,40 @@ class LoggerOffice(object):
         return logger
 
 
+# The following code is from logger.__init__.py and is correcting something 
+# in Python 2 that is corrected in Python 3, giving out an error. 
 
-# Copied and hacked out of logging.__init__.py
-# _srcfile is used when walking the stack to check when we've got the first
-# caller stack frame that is not from this file
-if __file__[-4:].lower() in ['.pyc', '.pyo']:
-    _srcfile = __file__[:-4] + '.py'
-else:
-    _srcfile = __file__
-_srcfile = os.path.normcase(_srcfile)
+# # Copied and hacked out of logging.__init__.py
+# # _srcfile is used when walking the stack to check when we've got the first
+# # caller stack frame that is not from this file
+# if __file__[-4:].lower() in ['.pyc', '.pyo']:
+#     _srcfile = __file__[:-4] + '.py'
+# else:
+#     _srcfile = __file__
+# _srcfile = os.path.normcase(_srcfile)
 
-class PatchedPyLogger(logging.Logger):
-    """Patched Logger that identifies correctly the origin of the logger relative
-    to this module"""
-    def findCaller(self):
-        """
-        Find the stack frame of the caller so that we can note the source
-        file name, line number and function name.
-        """
-        f = sys._getframe()
-        rv = "(unknown file)", 0, "(unknown function)"
-        while hasattr(f, "f_code"):
-            co = f.f_code
-            filename = os.path.normcase(co.co_filename)
-            if filename in [_srcfile, logging._srcfile]:
-                f = f.f_back
-                continue
-            rv = (filename, f.f_lineno, co.co_name)
-            break
-        return rv
+# class PatchedPyLogger(logging.Logger):
+#     """Patched Logger that identifies correctly the origin of the logger relative
+#     to this module"""
+#     def findCaller(self):
+#         """
+#         Find the stack frame of the caller so that we can note the source
+#         file name, line number and function name.
+#         """
+#         f = sys._getframe()
+#         rv = "(unknown file)", 0, "(unknown function)"
+#         while hasattr(f, "f_code"):
+#             co = f.f_code
+#             filename = os.path.normcase(co.co_filename)
+#             if filename in [_srcfile, logging._srcfile]:
+#                 f = f.f_back
+#                 continue
+#             rv = (filename, f.f_lineno, co.co_name)
+#             break
+#         return rv
 
 
-logging.setLoggerClass(PatchedPyLogger)
+# logging.setLoggerClass(PatchedPyLogger)
 default_init(level=logging.ERROR, handlers=["stream"])
 
 
@@ -510,7 +518,7 @@ if QT_LOGGING_MODEL_AVAILABLE:
                 self.removeRow(0)
 
             vals = self.format(record).split(" - ")
-            items = map(QtGui.QStandardItem, vals )
+            items = list(map(QtGui.QStandardItem, vals ))
 
             # -- optionnal colouring --
             if self.messageTypeIndex is not None:

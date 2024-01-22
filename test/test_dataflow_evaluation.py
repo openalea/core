@@ -1,4 +1,6 @@
-from nose.tools import assert_raises
+from __future__ import print_function
+from __future__ import absolute_import
+from pytest import raises
 import operator
 
 from openalea.core.dataflow import DataFlow
@@ -6,10 +8,6 @@ from openalea.core.dataflow_state import DataflowState
 from openalea.core.dataflow_evaluation import (AbstractEvaluation,
                                                BruteEvaluation)
 from openalea.core.node import Node, FuncNode
-
-
-def print_func(*args):
-    print args
 
 
 def fixed_function():
@@ -44,7 +42,7 @@ def get_dataflow():
     df.set_actor(vid1, FuncNode({}, {}, int))
     df.set_actor(vid2, FuncNode({}, {}, fixed_function))
     df.set_actor(vid3, FuncNode({}, {}, operator.add))
-    df.set_actor(vid4, FuncNode({}, {}, print_func))
+    df.set_actor(vid4, FuncNode({}, {}, print))
 
     return df, (pid10, pid42)
 
@@ -52,7 +50,7 @@ def get_dataflow():
 def test_dataflow_evaluation_init():
     df, (pid_in, pid_out) = get_dataflow()
     algo = AbstractEvaluation(df)
-    assert_raises(NotImplementedError, lambda: algo.eval(0, None))
+    raises(NotImplementedError, lambda: algo.eval(0, None))
 
     algo = BruteEvaluation(df)
     algo.clear()
@@ -66,7 +64,7 @@ def test_dataflow_evaluation_eval_init():
 
     env = 0
     dfs = DataflowState(df)
-    assert_raises(UserWarning, lambda: algo.eval(env, dfs))
+    raises(UserWarning, lambda: algo.eval(env, dfs))
 
 
 def test_dataflow_evaluation_eval():
@@ -146,7 +144,7 @@ def test_dataflow_evaluation_single_input_no_output():
     vid = df.add_vertex()
     pid0 = df.add_in_port(vid, "in")
 
-    df.set_actor(vid, FuncNode({}, {}, print_func))
+    df.set_actor(vid, FuncNode({}, {}, print))
 
     dfs = DataflowState(df)
     env = 0
@@ -161,7 +159,7 @@ def test_dataflow_evaluation_single_input_no_output():
     dfs.reinit()
     algo.clear()
 
-    assert_raises(UserWarning, lambda: algo.eval(env, dfs, vid))
+    raises(UserWarning, lambda: algo.eval(env, dfs, vid))
 
 
 def test_dataflow_evaluation_no_input_two_outputs():
@@ -189,4 +187,4 @@ def test_dataflow_evaluation_no_input_two_outputs():
     algo.clear()
     dfs.reinit()
     pid2 = df.add_out_port(vid, "out3")
-    assert_raises(UserWarning, lambda: algo.eval(env, dfs, vid))
+    raises(UserWarning, lambda: algo.eval(env, dfs, vid))

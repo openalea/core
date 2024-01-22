@@ -1,28 +1,30 @@
-from nose.tools import with_setup
+from __future__ import absolute_import
+#from nose.tools import with_setup
 
 from openalea.core.pkgmanager import PackageManager
 from openalea.core.compositenode import CompositeNodeFactory, CompositeNode
 
 from .small_tools import ensure_created, rmdir
+from six.moves import range
 
 tmp_dir = 'toto_persistence'
 
 
-def setup():
+def setup_function(fun):
     ensure_created(tmp_dir)
 
 
-def teardown():
+def teardown_function():
     rmdir(tmp_dir)
 
 
-@with_setup(setup, teardown)
+#@with_setup(setup, teardown)
 def test_compositenodewriter():
     pm = PackageManager()
     pm.init()
 
-    sg = CompositeNode(inputs=[dict(name="%d" % i) for i in xrange(3)],
-                       outputs=[dict(name="%d" % i) for i in xrange(4)],
+    sg = CompositeNode(inputs=[dict(name="%d" % i) for i in range(3)],
+                       outputs=[dict(name="%d" % i) for i in range(4)],
                        )
 
     # build the compositenode factory
@@ -67,7 +69,7 @@ def test_compositenodewriter():
     assert len(newsg) == 6
 
 
-@with_setup(setup, teardown)
+#@with_setup(setup, teardown)
 def test_nodewriter():
     """test node writer"""
     pm = PackageManager()
@@ -80,7 +82,7 @@ def test_nodewriter():
                 'authors': 'OpenAlea Consortium',
                 'institutes': 'INRIA/CIRAD',
                 'description': 'Base library.',
-                'url': 'http://openalea.gforge.inria.fr'}
+                'url': 'http://openalea.rtfd.io'}
 
     package1 = pm.create_user_package("MyTestPackage",
                                       metainfo, tmp_dir)

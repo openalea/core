@@ -26,9 +26,17 @@ import re
 import traceback
 import copy
 from openalea.core.interface import TypeInterfaceMap
+import six
+from six.moves import zip
+
+# Fix Error in 3.11
+INSPECT_FULL=False
+if not hasattr(inspect, 'getargspec'):
+    inspect.getargspec = inspect.getfullargspec
+    INSPECT_FULL=True
 
 
-class Signature(object):
+class Signature:
     """Object to represent the signature of a function/method.
 
     :param f: a function object containing __name__ variable
@@ -74,7 +82,7 @@ class Signature(object):
                     return
 
                 # -- create a set out of the default arg names for later reference
-                defaultArgNames = [] if len(defaults)==0 else set(zip(*defaults)[0])
+                defaultArgNames = [] if len(defaults)==0 else set(list(zip(*defaults))[0])
 
                 # -- create parameters that do not have defaults (not in defaultArgNames)
                 for arg in args:
@@ -96,7 +104,7 @@ class Signature(object):
                 if keywords is not None:
                     self.keywords = {"keywords":arg, "interface":"IDict","value":{}}
 
-            except Exception, e:
+            except Exception as e:
                 traceback.print_exc()
 
 
@@ -155,17 +163,24 @@ class Signature(object):
         For Python defined callables, uses the "inspect" module. For builtins, tries
         some regexp parsing of the docstring.
         """
+        # different behavior in Python 3
         isMethod = inspect.ismethod(function)
         if isMethod or inspect.isfunction(function):
             argspec  = inspect.getargspec(function)
             if argspec.defaults:
                 ndefs    = len(argspec.defaults)
                 args     = argspec.args[:-ndefs]
-                defaults = zip(argspec.args[-ndefs:], argspec.defaults)
+                defaults = list(zip(argspec.args[-ndefs:], argspec.defaults))
             else:
                 args     = argspec.args
                 defaults = []
-            return args, defaults, argspec.varargs, argspec.keywords, isMethod
+
+            if not INSPECT_FULL:
+                keywords = argspec.keywords
+            else:
+                keywords = argspec.varkw
+
+            return args, defaults, argspec.varargs, keywords, isMethod
 
         elif inspect.isbuiltin(function):
             # builtins have no argument description
@@ -175,12 +190,20 @@ class Signature(object):
 
         elif inspect.isclass(function) and "__call__" in function.__dict__:
             func = function.__call__
-            return Signature.get_callable_arguments(func)
-
-        elif isinstance(function, types.InstanceType) and "__call__" in function.__dict__:
-            func = function.__call__
-            return Signature.get_callable_arguments(func)
+            # fix different behaior in Python 3
+            results = list(Signature.get_callable_arguments(func))
+            if results[-1] != -1:
+                results[-1] = True
+            return results
         else:
+            if (six.PY2 and "__call__" in function.__dict__ and 
+                isinstance(function, types.InstanceType)) :
+                func = function.__call__
+                # fix different behaior in Python 3
+                results = list(Signature.get_callable_arguments(func))
+                results[-1]=True
+                return results
+
             return -1,-1,-1,-1,-1
 
     @staticmethod

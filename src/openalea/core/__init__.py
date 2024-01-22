@@ -1,17 +1,17 @@
 # {# pkglts, base
 
-from . import version
+from openalea.core import version
 
 __version__ = version.__version__
 
 # #}
 
 from openalea.core.external import *
-from script_library import ScriptLibrary
+from .script_library import ScriptLibrary
 
 
 def global_module(module):
     """ Declare a module accessible everywhere. """
 
-    import __builtin__
-    __builtin__.__dict__[module.__name__] = module
+    import six.moves.builtins
+    six.moves.builtins.__dict__[module.__name__] = module

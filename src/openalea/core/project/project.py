@@ -50,20 +50,22 @@ __all__ = [
     "ErrorItemExistsInProject",
 ]
 
-from collections import OrderedDict
 import copy
 import os
+from io import open
+from configobj import ConfigObj
+from collections import OrderedDict
 
 from openalea.core.control import Control
 from openalea.core.data import Data
 from openalea.core.observer import Observed
 from openalea.core.path import path as Path
-from openalea.core.project.configobj import ConfigObj
 from openalea.core.service.data import DataFactory
 from openalea.core.service.interface import interface_name
 from openalea.core.service.model import to_model, ModelFactory
-from openalea.core.customexception import CustomException, ErrorInvalidItem, ErrorInvalidItemName
-
+from openalea.core.customexception import (
+    CustomException, ErrorInvalidItem, ErrorInvalidItemName
+)
 
 class ErrorItemExistsInProject(CustomException):
     title = u'Error: item exists in project yet.'
@@ -153,7 +155,7 @@ class Project(Observed):
         self._path = _normpath(path)
 
         # Fill metadata
-        for k, v in self.DEFAULT_METADATA.iteritems():
+        for k, v in self.DEFAULT_METADATA.items():
             self.metadata[k] = kwargs.get(k, v.value)
 
         # Allocate category dictionaries

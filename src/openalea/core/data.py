@@ -20,6 +20,10 @@
 
 """Data management classes"""
 
+from __future__ import print_function
+from io import open
+import six
+
 __license__ = "Cecill-C"
 __revision__ = " $Id$ "
 
@@ -192,7 +196,7 @@ class DataNode(Node):
         """ Enable file monitoring """
         try:
             # TODO : Try to remove qt dependencie here
-            from openalea.vpltk.qt import QtCore
+            from qtpy import QtCore
 
             self.watch = QtCore.QFileSystemWatcher()
             QtCore.QCoreApplication.instance().connect(
@@ -202,7 +206,7 @@ class DataNode(Node):
             self.watch.addPath(filename)
 
         except:
-            print "File monitoring is not available"
+            print("File monitoring is not available")
 
     def changed(self, path):
         """ Call listeners """
@@ -281,6 +285,9 @@ class Data(object):
         if self.path is None:
             raise ValueError('You must specify a path to be able to save data')
         if self._content is not None:
+            if six.PY3:
+                if isinstance(self._content, str):
+                    self._content = bytes(self._content, 'utf-8')
             with open(self.path, 'wb') as f:
                 f.write(self._content)
             self._content = None

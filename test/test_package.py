@@ -1,3 +1,5 @@
+from __future__ import absolute_import
+from __future__ import print_function
 from os.path import exists
 from os.path import join as pj
 
@@ -21,13 +23,13 @@ def test_package():
 
 
 class TestUserPackage():
-    def setUp(self):
+    def setup_method(self, testfun):
         self.tmp_dir = "toto_test_package"
         ensure_created(self.tmp_dir)
         ensure_created(pj(self.tmp_dir, "tstpkg"))
 
-    def tearDown(self):
-        rmdir("toto_test_package")
+    def teardown_method(self, testfun):
+        rmdir(self.tmp_dir)
 
     def test_case_1(self):
         metainfo = {'version': '0.0.1',
@@ -51,17 +53,17 @@ class TestUserPackage():
         assert len(factory.outputs) == 2
 
         assert exists(pj(path, "TestFact.py"))
-        execfile(pj(path, "TestFact.py"))
+        exec(compile(open(pj(path, "TestFact.py"), "rb").read(), pj(path, "TestFact.py"), 'exec'))
 
         mypackage.write()
         assert exists(pj(path, "__wralea__.py"))
         assert exists(pj(path, "__init__.py"))
-        execfile(pj(path, "__wralea__.py"))
+        exec(compile(open(pj(path, "__wralea__.py"), "rb").read(), pj(path, "__wralea__.py"), 'exec'))
 
         # Test_clone_package
         path = pj(self.tmp_dir, "clonepkg")
         pkg2 = UserPackage("ClonePkg", metainfo, path)
-        print pkg2.wralea_path
+        print((pkg2.wralea_path))
 
         # todo this is not working !!
         # from openalea.core.pkgmanager import PackageManager

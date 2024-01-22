@@ -20,17 +20,30 @@
 It is able to find installed package and their wralea.py
 It stores the packages and nodes informations
 """
-
+# force python 3 syntax
+from __future__ import division
+from __future__ import print_function
+from six.moves import map
+from six.moves import filter
+from io import open
+try:
+    # Python 2: "unicode" is built-in
+    unicode
+except NameError:
+    unicode = str
+    
 __license__ = "Cecill-C"
 __revision__ = " $Id$ "
 
 import sys
 import os
+from math import pow
 from os.path import join as pj
 from os.path import isdir
 
 import tempfile
-import urlparse
+import importlib
+import six.moves.urllib.parse
 from openalea.core.path import path
 from fnmatch import fnmatch
 from pkg_resources import iter_entry_points
@@ -44,13 +57,18 @@ from openalea.core.pkgdict import PackageDict, is_protected, protected
 from openalea.core.category import PackageManagerCategory
 from openalea.core import logger
 
-from ConfigParser import NoSectionError, NoOptionError
+import six
+from six.moves.configparser import NoSectionError, NoOptionError
 
 ###########################################################################
 # Exceptions
 ###########################################################################
 
-import time
+try: # PY2
+    from time import clock
+except ImportError: #PY3
+    from time import process_time as clock
+
 DEBUG = False
 SEARCH_OUTSIDE_ENTRY_POINTS = True
 
@@ -92,14 +110,14 @@ class Logger(object):
         self.log_file = os.path.join(tempfile.gettempdir(), "openalea.log")
 
         f = open(self.log_file, 'w')
-        f.write("OpenAlea Log\n\n")
+        f.write(u"OpenAlea Log\n\n")
         f.close()
 
     def add(self, msg):
         """ Write to log file """
 
         f = open(self.log_file, 'a')
-        f.write("%i %s\n" % (self.log_index, msg))
+        f.write(unicode("%i %s\n" % (self.log_index, msg)))
         f.close()
         self.log_index += 1
         pmanLogger.debug(msg)
@@ -108,19 +126,17 @@ class Logger(object):
         """ Print log file """
 
         f = open(self.log_file)
-        print f.read()
+        print(f.read())
         f.close()
 
 
 ###############################################################################
 
-class PackageManager(Observed):
+class PackageManager(six.with_metaclass(Singleton, Observed)):
     """
     The PackageManager is a Dictionary of Packages
     It can locate OpenAlea packages on the system (with wralea).
     """
-
-    __metaclass__ = Singleton
 
     def __init__(self, verbose=True):
         """ Constructor """
@@ -128,7 +144,7 @@ class PackageManager(Observed):
         self.log = Logger()
 
         # make urlparse correctly handle the glorious "oa" protocol :)
-        urlparse.uses_query.append("oa")
+        six.moves.urllib.parse.uses_query.append("oa")
 
         self.verbose = verbose
         # remove namespace option
@@ -178,7 +194,7 @@ class PackageManager(Observed):
         """ return the list of wralea path (union of user and system)"""
 
         dirs = list(self.temporary_wralea_paths.union(self.sys_wralea_path.union(self.user_wralea_path)))
-        dirs = filter(isdir, dirs)
+        dirs = list(filter(isdir, dirs))
         return dirs
 
     def set_user_wralea_path(self):
@@ -246,18 +262,19 @@ class PackageManager(Observed):
             # to find the path.
             if DEBUG:
                 print(epoint.module_name)
-                t1 = time.clock()
+                t1 = clock()
 
             try:
-                m = __import__(epoint.module_name, fromlist=epoint.module_name)
-            except ImportError, e:
+                m = importlib.import_module(epoint.module_name)
+                #m = __import__(epoint.module_name, fromlist=epoint.module_name)
+            except ImportError as e:
                 logger.error("Cannot load %s : %s" % (epoint.module_name, e))
                 # self.log.add("Cannot load %s : %s"%(epoint.module_name, e))
                 continue
 
             if DEBUG:
-                print(epoint.module_name)
-                tn = time.clock() - t1
+                print((epoint.module_name))
+                tn = clock() - t1
                 res[tn] = epoint.module_name
 
 
@@ -385,7 +402,7 @@ class PackageManager(Observed):
         pt = PseudoPackage('Root')
 
         # Build the name tree (on uniq objects)
-        for k, v in self.pkgs.iteritems():
+        for k, v in self.pkgs.items():
             if(not is_protected(k)):
                 pt.add_name(k, v)
 
@@ -399,7 +416,7 @@ class PackageManager(Observed):
     def update_category(self, package):
         """ Update the category dictionary with package contents """
 
-        for nf in package.itervalues():
+        for nf in package.values():
             # skip the deprecated name (starting with #)
             if is_protected(nf.name):
                 continue
@@ -431,7 +448,7 @@ class PackageManager(Observed):
         """ Rebuild all the category """
 
         self.category = PseudoGroup('Root')
-        for p in self.pkgs.itervalues():
+        for p in self.pkgs.values():
             self.update_category(p)
 
     # Wralea functions
@@ -496,7 +513,7 @@ class PackageManager(Observed):
             logger.info("Package Manager : found  VLAB %s" % p)
             # self.log.add("Package Manager : found  VLAB %s" % p)
 
-        return map(self.get_pkgreader, spec_files)
+        return list(map(self.get_pkgreader, spec_files))
 
     def find_wralea_dir(self, directory, recursive=True):
         """
@@ -507,7 +524,7 @@ class PackageManager(Observed):
         """
 
         if DEBUG:
-            t0 = time.clock()
+            t0 = clock()
 
         wralea_files = set()
         if(not os.path.isdir(directory)):
@@ -529,16 +546,16 @@ class PackageManager(Observed):
             # self.log.add("Package Manager : found %s" % f)
 
         if DEBUG:
-            t1 = time.clock()
+            t1 = clock()
             dt = t1 - t0
-            print 'search wralea files takes %f sec' % dt
+            print('search wralea files takes %f sec' % dt)
 
-        readers = map(self.get_pkgreader, wralea_files)
+        readers = list(map(self.get_pkgreader, wralea_files))
 
         if DEBUG:
-            t2 = time.clock()
+            t2 = clock()
             dt1 = t2 - t1
-            print 'readers takes %f sec: ' % (dt1,)
+            print('readers takes %f sec: ' % (dt1,))
 
         return readers
 
@@ -561,13 +578,13 @@ class PackageManager(Observed):
             # No cache : search recursively on the disk
 
         if DEBUG:
-            # t1 = time.clock()
+            # t1 = clock()
             pass 
 
         directories = self.get_wralea_path()
         if DEBUG:
             # print '      ~~~~~~~~~~'
-            # t2 = time.clock()
+            # t2 = clock()
             # print '      get_wralea_path %f sec'%(t2-t1)
             # print '\n'.join(directories)
             pass
@@ -575,7 +592,7 @@ class PackageManager(Observed):
         recursive = True
 
         for wp in directories:
-            #if DEBUG: t0 = time.clock()
+            #if DEBUG: t0 = clock()
 
             ret = self.find_wralea_dir(wp, recursive)
             if(ret):
@@ -583,13 +600,13 @@ class PackageManager(Observed):
 
             if DEBUG:
                 # print '      ~~~~~~~~~~'
-                # t1 = time.clock()
+                # t1 = clock()
                 # print '      find_wralea %s %f sec'%(wp, t1-t0)
                 pass
 
         if DEBUG:
             # print '      ~~~~~~~~~~'
-            # t3 = time.clock()
+            # t3 = clock()
             # print '      find_wralea_dir %f sec'%(t3-t2)
             pass
 
@@ -614,7 +631,7 @@ class PackageManager(Observed):
         return files
 
     def create_readers(self, wralea_files):
-        return filter(None, (self.get_pkgreader(f) for f in wralea_files))
+        return [_f for _f in (self.get_pkgreader(f) for f in wralea_files) if _f]
 
     def get_pkgreader(self, filename):
         """ Return the pkg reader corresponding to the filename """
@@ -643,7 +660,7 @@ class PackageManager(Observed):
         self.set_sys_wralea_path()
         self.set_user_wralea_path()
         if DEBUG:
-            t1 = time.clock()
+            t1 = clock()
 
         wralea_files = self.find_all_wralea()
         readerlist = self.create_readers(wralea_files)
@@ -651,24 +668,24 @@ class PackageManager(Observed):
         # readerlist = self.find_wralea_files()
 
         if DEBUG:
-            t2 = time.clock()
-            print '-------------------'
-            print 'find_wralea_files takes %f seconds' % (t2 - t1)
+            t2 = clock()
+            print('-------------------')
+            print('find_wralea_files takes %f seconds' % (t2 - t1))
 
         if DEBUG:
             res = {}
         for x in readerlist:
             if DEBUG:
-                tn = time.clock()
+                tn = clock()
             x.register_packages(self)
             if DEBUG:
-                tt = time.clock() - tn
-                print 'register package ', x.get_pkg_name(), 'in ', time.clock() - tn
+                tt = clock() - tn
+                print('register package ', x.get_pkg_name(), 'in ', clock() - tn)
                 res[x.filename]=tt
         if DEBUG:
-            t3 = time.clock()
-            print '-------------------'
-            print 'register_packages takes %f seconds' % (t3 - t2)
+            t3 = clock()
+            print('-------------------')
+            print('register_packages takes %f seconds' % (t3 - t2))
 #        self.save_cache()
 
         self.rebuild_category()
@@ -793,16 +810,16 @@ class PackageManager(Observed):
         return self.pkgs.values()
 
     def iterkeys(self):
-        return self.pkgs.iterkeys()
+        return six.iterkeys(self.pkgs)
 
     def iteritems(self):
-        return self.pkgs.iteritems()
+        return six.iteritems(self.pkgs)
 
     def itervalues(self):
-        return self.pkgs.itervalues()
+        return six.itervalues(self.pkgs)
 
-    def has_key(self, *args):
-        return self.pkgs.has_key(*args)
+    def has_key(self, key):
+        return key in self.pkgs
 
     def get(self, *args):
         return self.pkgs.get(*args)
@@ -833,9 +850,9 @@ class PackageManager(Observed):
 
     def get_package_from_url(self, url):
         if isinstance(url, str):
-            url = urlparse.urlparse(url)
-        assert isinstance(url, urlparse.ParseResult)
-        queries = urlparse.parse_qs(url.query)
+            url = six.moves.urllib.parse.urlparse(url)
+        assert isinstance(url, six.moves.urllib.parse.ParseResult)
+        queries = six.moves.urllib.parse.parse_qs(url.query)
         pkg_id = url.path.strip("/")  # the path is preceded by one "/"
         pkg = self[pkg_id]
         return pkg, queries
@@ -868,51 +885,51 @@ class PackageManager(Observed):
         match = []
 
         # Search for each package and for each factory
-        for name, pkg in self.iteritems():
+        for name, pkg in self.items():
             if is_protected(name):
                 continue  # alias
 
-            for fname, factory in pkg.iteritems():
+            for fname, factory in pkg.items():
                 if is_protected(fname): 
                     continue  # alias
 
                 # -- The scores for each string that is explored.
                 # They are long ints because we make a 96 bits bitshift
                 # to compute the final score --
-                facNameScore = 0L
-                facDescScore = 0L
-                facCateScore = 0L
-                pkgNameScore = 0L
+                facNameScore = 0
+                facDescScore = 0
+                facCateScore = 0
+                pkgNameScore = 0
 
                 fname = factory.name.upper()
                 if search_str in fname:
                     l = float(len(fname))
-                    facNameScore = long(100 * (1 - fname.index(search_str) / l))
+                    facNameScore = int(100 * (1 - fname.index(search_str) / l))
 
-                facDescScore = long(factory.description.upper().count(search_str))
-                facCateScore = long(factory.category.upper().count(search_str))
+                facDescScore = int(factory.description.upper().count(search_str))
+                facCateScore = int(factory.category.upper().count(search_str))
 
                 pname = pkg.name.upper()
                 if search_str in pname:
                     l = float(len(pname))
-                    pkgNameScore = long(100 * (1 - pname.index(search_str) / l))
-
-                score = (facNameScore << (32 * 3) | facDescScore << (32 * 2) | 
-                         facCateScore << (32 * 1) | pkgNameScore << (32))
+                    pkgNameScore = int(100 * (1 - pname.index(search_str) / l))
+                # A left shift by n bits is equivalent to multiplication by pow(2, n)
+                score = (int(facNameScore * pow(2, 32 * 3)) | int(facDescScore * pow(2, 32 * 2)) | 
+                         int(facCateScore * pow(2, 32 * 1)) | pkgNameScore)
                 if score > 0:
                     match.append((score, factory))
 
         # Filter ports
         if(nb_inputs >= 0):
-            match = filter(lambda (sc, x): x and x.inputs and len(x.inputs) == nb_inputs, match)
+            match = [sc_x for sc_x in match if sc_x[1] and sc_x[1].inputs and len(sc_x[1].inputs) == nb_inputs]
         if(nb_outputs >= 0):
-            match = filter(lambda (sc, x): x and x.outputs and len(x.outputs) == nb_outputs, match)
+            match = [sc_x for sc_x in match if sc_x[1] and sc_x[1].outputs and len(sc_x[1].outputs) == nb_outputs]
 
         if not len(match):
             return match
 
-        match.sort(reverse=True)
-        match = zip(*match)[1]
+        match.sort(key=lambda score:score[0], reverse=True)
+        match = list(zip(*match))[1]
 
         return match
 
@@ -929,7 +946,7 @@ class PackageManager(Observed):
         if pkg_name and pkg_name in self:
             pkgs = [pkg_name]
         else:
-            pkgs = set(pk.name for pk in self.itervalues() if not is_protected(pk.name))
+            pkgs = set(pk.name for pk in self.values() if not is_protected(pk.name))
         return [self[p] for p in pkgs]
 
     def get_data(self, pattern='*.*', pkg_name=None, as_paths=False):
@@ -937,19 +954,19 @@ class PackageManager(Observed):
         pkgs = self.get_packages(pkg_name)
         datafiles = [
             (pj(p.path, f.name) if as_paths else f) 
-            for p in pkgs for f in p.itervalues() if( 
+            for p in pkgs for f in p.values() if( 
                 not is_protected(f.name) and
                 f.is_data() and fnmatch(f.name, pattern))]
         return datafiles
 
     def get_composite_nodes(self, pkg_name=None):
         pkgs = self.get_packages(pkg_name)
-        cn = [f for p in pkgs for f in p.itervalues() if f.is_composite_node()]
+        cn = [f for p in pkgs for f in p.values() if f.is_composite_node()]
         return cn
 
     def get_nodes(self, pkg_name=None):
         pkgs = self.get_packages(pkg_name)
-        nf = [f for p in pkgs for f in p.itervalues() if f.is_node()]
+        nf = [f for p in pkgs for f in p.values() if f.is_node()]
         return nf
 
     def _dependencies(self, factory):
@@ -1023,7 +1040,7 @@ class PackageManager(Observed):
         return d
 
     def _pkg_dependencies(self, package):
-        cns = [f for f in package.itervalues() if f.is_composite_node()]
+        cns = [f for f in package.values() if f.is_composite_node()]
         factories = set(
             (f.package.name, f.name) for cn_factory in cns for f in self._dependencies(cn_factory) 
             if f.package.name != package.name)
@@ -1042,7 +1059,7 @@ class PackageManager(Observed):
         return d
 
     def _missing_pkg_dependencies(self, package):
-        cns = [f for f in package.itervalues() if f.is_composite_node()]
+        cns = [f for f in package.values() if f.is_composite_node()]
         l = []
         for cn in cns:
             self._missing(cn, l)
@@ -1065,12 +1082,22 @@ class PackageManager(Observed):
         """
         res = []
         for pkg in self.get_packages():
-            cns = [f for f in pkg.itervalues() if f.is_composite_node()]
+            cns = [f for f in pkg.values() if f.is_composite_node()]
             res.extend(
                 (pkg.name, cn.name) for cn in cns for pname, name in self._cn_dependencies(cn) 
                 if name == factory_name)
         return res
 
+def cmp(x, y):
+    """
+    Replacement for built-in function cmp that was removed in Python 3
+
+    Compare the two objects x and y and return an integer according to
+    the outcome. The return value is negative if x < y, zero if x == y
+    and strictly positive if x > y.
+    """
+
+    return (x > y) - (x < y)
 
 def cmp_name(x, y):
     """ Comparison function """
@@ -1109,13 +1136,13 @@ class PseudoGroup(PackageDict):
             # if value is a dict we include sub nodes
             self.item = value
             try:
-                for k, v in value.iteritems():
+                for k, v in value.items():
                     self[k] = v
             except:
                 try:
                     self[str(id(value))] = value
-                except Exception, e:
-                    print e
+                except Exception as e:
+                    print(e)
                     pass
             return
 
@@ -1128,19 +1155,19 @@ class PseudoGroup(PackageDict):
             remain = None
 
         # Create sub dict if necessary
-        if not dict.has_key(self, key.lower()):
+        if not dict.__contains__(self, key.lower()):
             self[key] = self.new(key)
 
         try:
             self[key].add_name(remain, value)
-        except Exception, e:
-            print 'Package %s[%s]' % (self.name, name)
-            print e
+        except Exception as e:
+            print('Package %s[%s]' % (self.name, name))
+            print(e)
             try:
                 self[str(id(key))].add_name(remain, value)
-            except Exception, e:
-                print 'Unable to find these nodes: %s' % value
-                print e
+            except Exception as e:
+                print('Unable to find these nodes: %s' % value)
+                print(e)
                 pass
 
 

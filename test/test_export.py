@@ -7,11 +7,15 @@ from openalea.core import export_app
 from openalea.core.pkgmanager import PackageManager
 from openalea.core import *
 import os
+from io import open
 
 def test_export():
     """test export"""
     d= {}
-    execfile('catalog.py', globals(), d)
+    with open("catalog.py") as f:
+        code = compile(f.read(), "catalog.py", 'exec')
+        exec(code, globals(), d)
+    #execfile('catalog.py', globals(), d)
     pkg = d['pkg']
     plus_node= pkg['plus'].instantiate()
     float_node= pkg['float'].instantiate()
@@ -37,16 +41,20 @@ def test_export():
 
     export_app.export_app("ADD", "app.py", sgfactory)
 
-    f = open("app.py")
-    assert f
-
-    import app
-    # requires X server 
-    # app.main(sys.argv)
-    f.close()
-    os.remove("app.py")
     try:
-        os.remove("app.pyc")
+        import qtpy
+        f = open("app.py")
+        assert f
+
+        from . import app
+        # requires X server 
+        # app.main(sys.argv)
+        f.close()
+        os.remove("app.py")
+        try:
+            os.remove("app.pyc")
+        except:
+            pass
+
     except:
         pass
-

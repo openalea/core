@@ -16,18 +16,18 @@ def test_system():
     try:
         from openalea import core
     except ImportError:
-        print "OpenAlea application need OpenAlea.Core"
+        print ("OpenAlea application need OpenAlea.Core")
         sys.exit(1)
 
     # QT
     try:
-        from PyQt4 import QtGui, QtCore
-        version = int(QtCore.QT_VERSION_STR.replace('.', ''))
+        from qtpy import QtGui, QtCore
+        version = int(QtCore.__version__.replace('.', ''))
         if(version < 420):
-            raise ImporError
+            raise ImportError
 
     except ImportError:
-        print "OpenAlea application need QT >= 4.2"
+        print ("OpenAlea application need QT >= 5.5")
         sys.exit(1)
 
 
@@ -37,7 +37,7 @@ test_system()
 
 from openalea.core import *
 from openalea.core.pkgmanager import PackageManager
-from PyQt4 import QtGui, QtCore
+from qtpy import QtGui, QtCore
 
 
 $FACTORY_CODE

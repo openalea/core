@@ -20,14 +20,13 @@ to register objects with their names"""
 __license__ = "Cecill-C"
 __revision__ = " $Id$ "
 
-from singleton import Singleton
+from .singleton import Singleton
+import six
 
-class ScriptLibrary(object):
+class ScriptLibrary(six.with_metaclass(Singleton, object)):
     """The ScriptLibrary is a library that register
     python objects with their names
     """
-    
-    __metaclass__ = Singleton
     
     def __init__ (self) :
         self._registered = {}

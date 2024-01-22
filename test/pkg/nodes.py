@@ -33,7 +33,7 @@ class Float(Node):
 def pyrange(start=0, stop=0, step=1):
     """ range(start, stop, step) """
 
-    return (range(start, stop, step),)
+    return (list(range(start, stop, step)),)
 
 class List(Node):
     """Python List"""
@@ -54,6 +54,6 @@ def pymap(func, seq):
     """ map(func, seq) """
 
     if func is not None and seq is not None and len(seq):
-        return ( map(func, seq), )
+        return ( [func(x) for x in seq], )
     else:
         return ( [], )

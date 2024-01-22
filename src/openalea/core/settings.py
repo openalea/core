@@ -24,16 +24,16 @@ __revision__ = " $Id$ "
 import os
 import sys
 import platform
-from ConfigParser import SafeConfigParser, NoSectionError, NoOptionError
+import atexit
+import six
+from configparser import ConfigParser, NoSectionError, NoOptionError
 from openalea.core.singleton import Singleton, ProxySingleton
 from openalea.core import logger
-
 # [pkgmanager]
 # path = '.', '/home/user/directory'
 
 
 settingsLogger = logger.get_logger(__name__)
-
 
 ##############################################################################
 # Directories functions
@@ -134,15 +134,13 @@ def get_userpkg_dir(name='user_pkg'):
 ####################
 # Settings classes #
 ####################
-class Settings(object, SafeConfigParser):
+class Settings(six.with_metaclass(ProxySingleton, object)):
     """ Retrieve and set user configuration """
-
-    __metaclass__ = ProxySingleton
     __notset__ = "NotSet"
 
     def __init__(self):
         object.__init__(self)
-        SafeConfigParser.__init__(self)
+        self.parser = ConfigParser()
 
         self.__sectionHandlers = {}
 
@@ -153,25 +151,27 @@ class Settings(object, SafeConfigParser):
         self.read()
 
         # the following must be deleted
-        if not self.has_section("AutoAddedConfItems"):
-            self.add_section("AutoAddedConfItems")
+        if not self.parser.has_section("AutoAddedConfItems"):
+            self.parser.add_section("AutoAddedConfItems")
+            
+        # replace del mechanism called after open being removed from builtins
+        atexit.register(self.cleanup)
 
-    def __del__(self):
+    def cleanup(self):
         self.write()
 
     def read(self):
         """Overriden method to read the configuration
         from Openalea's default configuration file"""
         settingsLogger.debug("Reading configuration file from " + self.configfile)
-        SafeConfigParser.read(self, [self.configfile])
+        self.parser.read([self.configfile])
 
     def write(self):
         """Overriden method to write the configuration
         to Openalea's default configuration file"""
         settingsLogger.debug("Writing configuration file to " + self.configfile)
-        where = open(self.configfile, "w")
-        SafeConfigParser.write(self, where)
-        where.close()
+        with open(self.configfile, "w") as where:
+            self.parser.write(where)
 
     def add_section_update_handler(self, section, handler):
         if section not in self.__sectionHandlers:
@@ -181,35 +181,45 @@ class Settings(object, SafeConfigParser):
 
     def add_option(self, section, option, value=__notset__):
         option = option.lower().replace(" ", "_")
-        SafeConfigParser.set(self, section, option, value)
+        self.parser.set(section, option, value)
+
+    def add_section(self, section):
+        self.parser.add_section(section)
+
+    def sections(self):
+        return self.parser.sections()
+
+    def has_section(self, section):
+        return self.parser.has_section(section)
 
     def get(self, section, option):
         option = option.lower().replace(" ", "_")
-        return SafeConfigParser.get(self, section, option)
+        return self.parser.get(section, option)
 
     def set(self, section, option, value):
         """Set the value of an option within a section. Both must exist"""
-        if not self.has_section(section):
-            self.add_section(section)
-            SafeConfigParser.set(self, "AutoAddedConfItems", section, str(True))
-        if self.has_option("AutoAddedConfItems", section):
+        if not self.parser.has_section(section):
+            self.parser.add_section(section)
+            self.parser.set("AutoAddedConfItems", section, str(True))
+        if self.parser.has_option("AutoAddedConfItems", section):
             settingsLogger.warning("Automatic addition of sections will be discarded by the end of the next release cycle (0.10 or 1.0) : " + section)
 
         # mangle option name:
         option = option.lower().replace(" ", "_")
 
         longname = section+"."+option
-        if not self.has_option(section, option):
-            SafeConfigParser.set(self, "AutoAddedConfItems", longname, str(True))
-        if self.has_option("AutoAddedConfItems", longname):
+        if not self.parser.has_option(section, option):
+            self.parser.set("AutoAddedConfItems", longname, str(True))
+        if self.parser.has_option("AutoAddedConfItems", longname):
             settingsLogger.warning("Automatic addition of options will be discarded by the end of the next release cycle (0.10 or 1.0) : " + longname)
             #raise NoOptionError(option, section)
 
 
-        SafeConfigParser.set(self, section, option, value)
+        self.parser.set(section, option, value)
         handler = self.__sectionHandlers.get(section)
         if handler:
             handler.update_settings(self.items(section))
 
-    exists = SafeConfigParser.has_section
+    def exists(self, section):
+        return self.parser.has_section(section)
 

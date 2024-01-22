@@ -1,6 +1,7 @@
 """Tree Concept."""
 
-from graphconcept import * #IGNORE:W0614
+
+from .graphconcept import * #IGNORE:W0614
 
 
 class RootedTreeConcept(VertexListGraphConcept):

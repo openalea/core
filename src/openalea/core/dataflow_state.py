@@ -20,6 +20,18 @@ to store data exchanged between nodes of a dataflow.
 __license__ = "Cecill-C"
 __revision__ = " $Id$ "
 
+import functools
+
+def cmp(x, y):
+    """
+    Replacement for built-in function cmp that was removed in Python 3
+
+    Compare the two objects x and y and return an integer according to
+    the outcome. The return value is negative if x < y, zero if x == y
+    and strictly positive if x > y.
+    """
+
+    return (x > y) - (x < y)
 
 class DataflowState(object):
     """ Store outputs of node and provide a way to access them
@@ -133,7 +145,7 @@ class DataflowState(object):
             elif len(npids) == 1:
                 return self.get_data(npids[0])
             else:
-                npids.sort(self.cmp_port_priority)
+                npids.sort(key = functools.cmp_to_key(self.cmp_port_priority))
                 return [self.get_data(pid) for pid in npids]
 
     def set_data(self, pid, data):

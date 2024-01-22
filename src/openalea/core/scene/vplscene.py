@@ -3,9 +3,10 @@ from collections import OrderedDict
 from openalea.core.singleton import Singleton
 from openalea.core.observer import Observed
 import warnings
+import six
 
 
-class VPLScene(OrderedDict, Observed):
+class VPLScene(six.with_metaclass(Singleton, OrderedDict, Observed)):
 
     """
     Scene for OALab. Singleton.
@@ -14,8 +15,6 @@ class VPLScene(OrderedDict, Observed):
     This scene also inherits from Observed, especially to know when Scene has changed.
     (Notify listeners with world_changed event)
     """
-
-    __metaclass__ = Singleton
 
     def __init__(self, *args, **kwds):
         OrderedDict.__init__(self, *args, **kwds)
