@@ -46,7 +46,7 @@ class Session(Observed):
     A session can be saved on disk.
     """
 
-    USR_PKG_NAME = "__my package__"
+    USR_PKG_NAME = "__my_package__" # we do not want space in names
 
     def __init__(self):
 
@@ -223,7 +223,8 @@ class Session(Observed):
 
     def load_module(self, name, path):
 
-        import imp
+        # import imp
+        from importlib import util, machinery
         if (name in list(sys.modules.keys())):
             return
         lastname = name.rsplit('.', 1)[-1]
@@ -231,7 +232,10 @@ class Session(Observed):
             path = os.path.dirname(path)
 
         try:
-            (file, filename, desc) = imp.find_module(lastname, [path])
-            imp.load_module(name, file, filename, desc)
+            # (file, filename, desc) = imp.find_module(lastname, [path])
+            # imp.load_module(name, file, filename, desc)
+            spec = machinery.PathFinder.find_spec(lastname, [path])
+            module = util.module_from_spec(spec)
+            spec.loader.exec_module(module)
         except Exception as e:
             pass

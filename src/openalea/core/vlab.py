@@ -164,10 +164,10 @@ class VlabObject(object):
     def read_files(self, f):
         pattern ='\w+\.\w+'
         for l in f:
-            if 'ignore:' in l or l is '*':
+            if ('ignore:' in l) or (l == '*'):
                 break
             fn = l.strip()
-            if ':' not in fn and re.match(pattern, fn):
+            if (':' not in fn) and re.match(pattern, fn):
                 self._files[fn]=[]
 
     def read_commands(self, f):
@@ -396,7 +396,7 @@ class VlabObject2(VlabObject):
     def read_files(self, f):
         pattern ='\w+\.\w+'
         for l in f:
-            if 'ignore:' in l or l is '*':
+            if ('ignore:' in l) or (l == '*'):
                 break
             fn = l.strip()
             if re.match(pattern, fn) and fn[-1] != ':':

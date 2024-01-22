@@ -82,7 +82,7 @@ def test_nodewriter():
                 'authors': 'OpenAlea Consortium',
                 'institutes': 'INRIA/CIRAD',
                 'description': 'Base library.',
-                'url': 'http://openalea.gforge.inria.fr'}
+                'url': 'http://openalea.rtfd.io'}
 
     package1 = pm.create_user_package("MyTestPackage",
                                       metainfo, tmp_dir)

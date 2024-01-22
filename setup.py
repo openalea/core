@@ -35,6 +35,9 @@ setup_kwds = dict(
     packages=pkgs,
     namespace_packages=['openalea'],
     package_dir={'': 'src'},
+    package_data = {'openalea.core' : ['*.txt'],},
+    include_package_data = True,
+
     entry_points={},
     keywords='openalea',
     )
