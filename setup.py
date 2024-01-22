@@ -3,7 +3,7 @@
 
 # format setup arguments
 
-from setuptools import setup, find_packages
+from setuptools import setup, find_namespace_packages
 from io import open
 
 
@@ -19,7 +19,7 @@ with open("src/openalea/core/version.py") as fp:
     version = _version["__version__"]
 
 # find packages
-pkgs = find_packages('src')
+pkgs = find_namespace_packages('src', include=['openalea', 'openalea.*'])
 
 setup_kwds = dict(
     name='openalea.core',
@@ -29,11 +29,11 @@ setup_kwds = dict(
     author="Christophe Pradal",
     author_email="christophe dot pradal at cirad dot fr",
     url='https://github.com/openalea/core',
-    license='cecill-c',
+    license='CeCILL-C',
     zip_safe=False,
 
     packages=pkgs,
-    #namespace_packages=['openalea'],
+    namespace_packages=['openalea'],
     package_dir={'': 'src'},
     entry_points={},
     keywords='openalea',
