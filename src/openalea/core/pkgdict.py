@@ -14,7 +14,7 @@
 #
 ###############################################################################
 """Special Dict with case insensitive key and protected field"""
-from six.moves import filter
+# from six.moves import filter
 
 __license__ = "Cecill-C"
 __revision__ = " $Id$ "
@@ -103,7 +103,7 @@ class PackageDict(dict):
 
         if (self.nb_public is None):
             l = lambda x: not is_protected(x)
-            ks = filter(l, self.keys())
-            self.nb_public = len(ks)
+            ks = filter(l, list(self.keys()))
+            self.nb_public = len(list(ks))
 
         return self.nb_public

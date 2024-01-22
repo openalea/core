@@ -32,7 +32,7 @@ try:
     from types import (StringType, SliceType, FloatType, IntType, BooleanType, TupleType,
                       ListType, DictType, InstanceType)
 except ImportError:
-    StringType = six.string_types
+    StringType = str #six.string_types gave a tuple
     SliceType = slice
     FloatType = float
     IntType = int
@@ -455,7 +455,7 @@ class IInterfaceWidget(six.with_metaclass(IWidgetMetaClass, AbstractListener)):
 
     def internal_data(self):
         "return a dict: minimal"
-        return self.node.internal_data()
+        return self.node.internal_data
 
     @classmethod
     def get_label(cls, node, parameter_str):
