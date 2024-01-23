@@ -19,7 +19,7 @@ with open("src/openalea/core/version.py") as fp:
     version = _version["__version__"]
 
 # find packages
-pkgs = find_namespace_packages('src', include=['openalea', 'openalea.*'])
+pkgs = find_namespace_packages('src', include=['openalea.*'])
 
 setup_kwds = dict(
     name='openalea.core',
@@ -33,7 +33,7 @@ setup_kwds = dict(
     zip_safe=False,
 
     packages=pkgs,
-    namespace_packages=['openalea'],
+    #namespace_packages=['openalea'],
     package_dir={'': 'src'},
     package_data = {'openalea.core' : ['*.txt'],},
     include_package_data = True,
