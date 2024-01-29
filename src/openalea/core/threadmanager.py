@@ -42,10 +42,9 @@ class ThreadManager(six.with_metaclass(Singleton, object)):
 
         self.thread_list = []
 
-
         for i in range(num_thread):
             t = Thread(target=worker, args=(self.queue, ))
-            t.setDaemon(True)
+            t.daemon = True
             t.start()
 
             self.thread_list.append(t)
@@ -62,7 +61,7 @@ class ThreadManager(six.with_metaclass(Singleton, object)):
     def clear(self):
         """ clear pending task """
 
-        while(not self.queue.empty()):
+        while not self.queue.empty():
             self.queue.get()
 
 

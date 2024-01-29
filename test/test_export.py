@@ -9,18 +9,21 @@ from openalea.core import *
 import os
 from io import open
 
+
 def test_export():
     """test export"""
-    d= {}
-    with open("catalog.py") as f:
-        code = compile(f.read(), "catalog.py", 'exec')
+    d = {}
+    file_path = os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                             "catalog.py")
+    with open(file_path) as f:
+        code = compile(f.read(), file_path, 'exec')
         exec(code, globals(), d)
-    #execfile('catalog.py', globals(), d)
+    # execfile('catalog.py', globals(), d)
     pkg = d['pkg']
-    plus_node= pkg['plus'].instantiate()
-    float_node= pkg['float'].instantiate()
-    int_node= pkg['int'].instantiate()
-    string_node= pkg['string'].instantiate()
+    plus_node = pkg['plus'].instantiate()
+    float_node = pkg['float'].instantiate()
+    int_node = pkg['int'].instantiate()
+    string_node = pkg['string'].instantiate()
     pm = PackageManager()
     pm.add_package(pkg)
 
