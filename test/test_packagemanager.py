@@ -1,9 +1,14 @@
 from __future__ import absolute_import
 from __future__ import print_function
+
+import openalea.core
+
 from openalea.core.pkgmanager import PackageManager
 
 from .small_tools import test_dir
 
+def oa_dir():
+    return openalea.core.__path__[0]
 
 # test has been removed
 # adding OS directories ensure fail of pm.init()
@@ -28,7 +33,7 @@ from .small_tools import test_dir
 
 def test_load_pm():
     pkgman = PackageManager()
-    pkgman.init()
+    pkgman.load_directory(oa_dir())
 
     simpleop = pkgman["openalea.flow control"]
     assert simpleop
@@ -43,9 +48,10 @@ def test_load_pm():
 
 def test_category():
     pkgman = PackageManager()
+    pkgman.load_directory(oa_dir())
 
-    pkgman.init()
-    pkgman.find_and_register_packages()
+    #pkgman.init()
+    #pkgman.find_and_register_packages()
 
     # test if factory are dedoubled
     for cat in pkgman.category.values():
