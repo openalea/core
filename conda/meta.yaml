@@ -20,7 +20,7 @@ requirements:
     - openalea.deploy
     - six
   run:
-    - python  x.x
+    - python >= 3.8
     - ipykernel
     - configobj
     - six
