@@ -42,4 +42,3 @@ about:
   home: {{ data.get('url') }}
   license: Cecill-c License
   summary: {{ data.get('description') }}
-
