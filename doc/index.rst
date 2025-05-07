@@ -26,21 +26,19 @@ Documentation
 .. toctree::
     :maxdepth: 1
 
-    User Guide<user/index.rst>
+    installation
+    usage
     Reference Guide<_dvlpt/modules.rst>
-
-- A `PDF <../latex/main.pdf>`_ version of |core| documentation is
-  available.
 
 .. seealso::
 
-   More documentation can be found on the
-   `openalea <http://openalea.gforge.inria.fr/dokuwiki/doku.php?id=packages:core:core:core>`__ wiki.
+   More documentation about openalea in general can be found on the
+   `openalea <https://openalea.readthedocs.io/en/latest/>`__.
 
 
 .. include:: ../AUTHORS.rst
 
-.. include:: ../HISTORY.rst
+#.. include:: ../HISTORY.rst
 
 License
 =======
@@ -51,21 +49,6 @@ License
     license is a LGPL compatible license.
 
 .. |core| replace:: OpenAlea.Core
-
-Welcome to openalea.core's documentation!
-=========================================
-
-Contents:
-
-.. toctree::
-   :maxdepth: 2
-
-   readme
-   installation
-   usage
-   contributing
-   authors
-   history
 
 Indices and tables
 ==================
