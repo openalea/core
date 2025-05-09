@@ -16,8 +16,8 @@ reference guide, see :ref:`core_reference`.
    This "Reference Guide" is still very much in progress. 
    Many aspects of OpenAlea.Core are not covered.
 
-   More documentation can be found on the
-   `openalea <http://openalea.gforge.inria.fr>`__ wiki.
+   More documentation about openalea in general can be found on the
+   `openalea <https://openalea.readthedocs.io/en/latest/>`__.
 
 .. toctree::
    

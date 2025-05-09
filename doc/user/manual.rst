@@ -24,16 +24,8 @@ Installation
 
 ::
 
-    python setup.py install
+    mamba install -c openalea3 -c conda-forge openalea.core
 
-Generate this documentation
-===========================
-
-::
-
-    python setup.py build_sphinx
-
-                                  
 Overview of the different classes
 =================================
 

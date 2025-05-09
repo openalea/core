@@ -1,0 +1,81 @@
+# FB 2025-04-14: based on ADEL and hydroshoot, sphinx pkg in environment.yml
+[build-system]
+requires = [
+    "setuptools",
+    "setuptools_scm",
+    "six",
+  ]
+build-backend = "setuptools.build_meta"
+
+# allow openalea to be a namespace package
+[tool.setuptools.packages.find]
+where = ["src"]
+
+# enable dynamic versioning based on git tags
+[tool.setuptools_scm]
+# can be empty if no extra settings are needed, presence enables setuptools-scm
+
+[project]
+name = "openalea.core"
+authors = [
+  { name = "Christophe Pradal" },
+]
+description = "OpenAlea.Core is able to discover and manage packages and logical components, build and evaluate dataflows and generate final applications."
+readme = "README.md"
+license = "CECILL-C"
+license-files = ["LICEN[CS]E*"]
+requires-python = ">=3.8"
+classifiers = [
+  "Intended Audience :: Science/Research",
+  "Intended Audience :: Developers",
+  "Programming Language :: Python :: 3 :: Only",
+  "Programming Language :: Python :: 3.8",
+  "Programming Language :: Python :: 3.9",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Topic :: Scientific/Engineering",
+]
+dynamic = ["version"]
+
+dependencies = [
+    "ipykernel",
+    "configobj",
+    "six",
+]
+
+
+# section specific to conda-only distributed package (not used by pip yet)
+[tool.conda.environment]
+channels = [
+  "openalea3",
+  "conda-forge"
+]
+dependencies = [
+    "openalea.deploy"
+]
+
+[project.optional-dependencies]
+test = ["pytest"]
+doc = [
+  "sphinx-favicon",
+  "sphinx-rtd-theme",
+  "pydata-sphinx-theme",
+  "myst-parser",
+  "nbsphinx",
+]
+
+[project.urls]
+Homepage = "https://github.com/openalea/core"
+"Bug Tracker" = "https://github.com/openalea/core/issues"
+Discussions = "https://github.com/openalea/core/discussions"
+Changelog = "https://github.com/openalea/core/releases"
+
+[tool.setuptools.package-data]
+"core_data" = ["*"]
+
+[project.entry-points."wralea"]
+"openalea.flow control" = "openalea.core.system"
+
+[project.entry-points."openalea.core"]
+"openalea.core/openalea" = "openalea.core.plugin.builtin"

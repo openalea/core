@@ -1,0 +1,10 @@
+name: core
+channels:
+  - openalea3
+  - conda-forge
+
+dependencies:
+  - python
+  - pip
+  - pip:
+    - -e ..[doc]
