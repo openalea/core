@@ -197,12 +197,12 @@ class Project(Observed):
     def _repr_html_(self):
         import openalea.core
         import base64
-        from openalea.deploy.shared_data import shared_data
+        from openalea.core.resources import resources_dir
         from openalea.core.project.formatting.html import html_metainfo_summary, html_item_summary
         from openalea.core.formatting.util import obj_icon_path
         from IPython.display import Image
 
-        stylesheet_path = shared_data(openalea.core, 'stylesheet.css')
+        stylesheet_path = resources_dir/'stylesheet.css'
         if stylesheet_path and stylesheet_path.isfile():
             with open(stylesheet_path) as f:
                 stylesheet = f.read()

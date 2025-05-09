@@ -68,8 +68,8 @@ Load project from default directory
 
 Load project from a specific directory
     >>> import openalea.oalab
-    >>> from openalea.deploy.shared_data import shared_data
-    >>> project_dir = shared_data(openalea.oalab)
+    >>> from openalea.oalab.data import resources_dir
+    >>> project_dir = resources_dir
     >>> p4 = project_manager.load('sum', project_dir)
 
 Load
