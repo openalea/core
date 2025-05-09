@@ -1,6 +1,6 @@
 # openalea.core
 
-[![Documentation Status](https://readthedocs.org/projects/sconsx/badge/?version=latest)](https://sconsx.readthedocs.io/en/latest/?badge=latest)
+[![Documentation Status](https://readthedocs.org/projects/core/badge/?version=latest)](https://core.readthedocs.io/en/latest/?badge=latest)
 
 
 # Description
