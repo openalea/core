@@ -42,6 +42,7 @@ dependencies = [
     "ipykernel",
     "configobj",
     "six",
+    "pkg_resources",
 ]
 
 
