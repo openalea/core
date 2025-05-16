@@ -30,6 +30,7 @@ Plugin fundamentals are:
 """
 
 import pkg_resources
+from openalea.core.oa_pkg_resources import iter_entry_points
 import site
 import sys
 
@@ -53,7 +54,7 @@ def discover(group, name=None):
     :todo: check that the same name is not used by several plugins
     """
 
-    plugin_map = {ep.name:ep for ep in pkg_resources.iter_entry_points(group, name)}
+    plugin_map = {ep.name:ep for ep in iter_entry_points(group, name)}
     return plugin_map
 
 def iter_groups():
@@ -76,7 +77,7 @@ def iter_groups():
 
 
 def iter_plugins(group, name=None, debug=False):
-    for ep in pkg_resources.iter_entry_points(group, name):
+    for ep in iter_entry_points(group, name):
         if debug is True or debug == 'all' or debug == group:
             ep = ep.load()
             if isinstance(ep, (list, tuple)):

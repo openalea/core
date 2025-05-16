@@ -46,7 +46,7 @@ import importlib
 import six.moves.urllib.parse
 from openalea.core.path import path
 from fnmatch import fnmatch
-from pkg_resources import iter_entry_points
+from openalea.core.oa_pkg_resources import iter_entry_points
 
 from openalea.core.singleton import Singleton
 from openalea.core.observer import Observed

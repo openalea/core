@@ -25,7 +25,7 @@ See :meth:`PluginManager.set_proxy` and "plugin_proxy" parameter in :meth:`Plugi
 import inspect
 from warnings import warn
 import importlib
-from pkg_resources import iter_entry_points
+from openalea.core.oa_pkg_resources import iter_entry_points
 
 from openalea.core import logger
 from openalea.core.manager import GenericManager

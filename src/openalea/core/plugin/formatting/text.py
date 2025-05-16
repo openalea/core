@@ -110,7 +110,7 @@ def format_criterion(criterion, value, indent=0):
 def list_plugins(lst, verbose=False):
     from openalea.core.plugin.manager import PluginManager
     pm = PluginManager()
-    import pkg_resources
+    from openalea.core.oa_pkg_resources import iter_entry_points
     from openalea.core.plugin import iter_groups
 
     if lst in ['summary', 'all']:
@@ -124,7 +124,7 @@ def list_plugins(lst, verbose=False):
                 match = True
                 break
         if match:
-            eps = [ep for ep in pkg_resources.iter_entry_points(group)]
+            eps = [ep for ep in iter_entry_points(group)]
             if lst == 'summary':
                 print('\n\033[91m%s\033[0m (%d plugins)' % (group, len(eps)))
                 for ep in eps:
