@@ -6,7 +6,7 @@
 # Description
 
 OpenAlea.Core is able to discover and manage packages and logical components, 
-build and evaluate dataflows and Generate final applications
+build and evaluate dataflows and generate final applications
 
 # Authors
 
