@@ -29,7 +29,7 @@ Plugin fundamentals are:
 
 """
 
-import pkg_resources
+from openalea.core import oa_pkg_resources as pkg_resources
 from openalea.core.oa_pkg_resources import iter_entry_points
 import site
 import sys

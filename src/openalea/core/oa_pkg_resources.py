@@ -7,11 +7,11 @@ that are importlib_resources, importlib_metadata
     (e.g. requirements and version parsing). Users should refrain from new usage of pkg_resources and should work
     to port to importlib-based solutions.
 """
-
-from importlib.metadata import entry_points, distributions
 import sys
+import pathlib
+from importlib.metadata import entry_points, distributions, PathDistribution
 
-class wrapper_distribution:
+class Wrapper_distribution:
     def __init__(self,dist,location,egg_name = None):
         self._dist = dist
         self.location = location
@@ -39,11 +39,34 @@ class ExtendedEntryPoint:
         for dist in distributions():
             if self._entry_point in dist.entry_points:
                 location = dist.locate_file('')
-                return wrapper_distribution(dist, location)
+                return Wrapper_distribution(dist, location)
         return None  # Not found
 
     def load(self):
         return self._entry_point.load()
+class Distrib:
+    def __init__(self,dist):
+        self._dist = dist
+        self.project_name = dist.name
+
+    # def __getattr__(self, item):
+    #     return getattr(self._dist, item)
+
+    def get_entry_map(self):
+        entry_map = {}
+        for ep in self._dist.entry_points:
+            entry_map.setdefault(ep.group, []).append(ep)
+        return entry_map
+
+def find_distributions(path):
+    path = pathlib.Path(path)
+    for dist_info in path.glob('*.dist-info'):
+        try:
+            _dist = PathDistribution(dist_info)
+            yield Distrib(_dist)
+
+        except Exception as e:
+            print(f"Error reading {dist_info.name}: {e}")
 
 def iter_entry_points(group: str, name: str | None = None):
     eps = entry_points(group=group)
