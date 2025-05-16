@@ -1,7 +1,7 @@
 # openalea.core
 
 [![Documentation Status](https://readthedocs.org/projects/core/badge/?version=latest)](https://core.readthedocs.io/en/latest/?badge=latest)
-
+[![CI status](https://github.com/openalea/core/actions/workflows/conda-package-build.yml/badge.svg)](https://github.com/openalea/core/actions/workflows/conda-package-build.yml)
 
 # Description
 
@@ -10,9 +10,14 @@ build and evaluate dataflows and Generate final applications
 
 # Authors
 
-```{eval-rst}
-.. include:: AUTHORS.rst
-```
+* Pradal Christophe
+* Samuel Dufour-Kowalski
+
+# License
+
+Our code is released under **Cecill-C** (https://cecill.info/licences/Licence_CeCILL_V1.1-US.txt) licence. 
+See LICENSE file for details.
+
 # Installation
 
 ```commandline
