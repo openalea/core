@@ -18,12 +18,12 @@
 ###############################################################################
 import openalea.core
 
-from openalea.deploy.shared_data import shared_data
+from openalea.core.resources import resources_dir
 from openalea.core.formatting.util import icon_path
 from openalea.core.formatting.html import html_section, html_list
 from openalea.core.plugin.formatting.util import DEFAULT_ICON
 from openalea.core.plugin.formatting.text import format_str, format_author
-stylesheet_path = shared_data(openalea.core, 'stylesheet.css')
+stylesheet_path = resources_dir/'stylesheet.css'
 
 html_header = u'\n'.join([
     u'<html>',

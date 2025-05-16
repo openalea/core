@@ -16,10 +16,9 @@
 #       OpenAlea WebSite : http://openalea.gforge.inria.fr
 #
 ###############################################################################
-from openalea.deploy.shared_data import shared_data
 from openalea.core.path import path as Path
 import six
-
+import importlib
 
 def pretty_print(obj):
     """
@@ -54,9 +53,11 @@ def icon_path(filepath, default=None, paths=None, packages=None):
 
     # Search in shared icons provided by packages given by user
     for package in packages:
+        module = importlib.import_module(package + '.resources')
+        resources_dir = getattr(module, 'resources_dir')
         for path in (filepath, 'icons/%s' % filepath):
-            path = shared_data(package, path)
-            if path and path.isfile():
+            path = resources_dir/path
+            if path and path.is_file():
                 return path
 
 

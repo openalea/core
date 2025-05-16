@@ -1,6 +1,5 @@
 import openalea.core
 
-from openalea.deploy.shared_data import shared_data
 from openalea.core.path import path as Path
 
 
