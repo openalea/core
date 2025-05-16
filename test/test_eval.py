@@ -57,9 +57,9 @@ def test_diamond_after_map():
     """ Tests that a diamond after a map evaluates only onces the map node.
 
           Map
-         /   \
+         /   /
         N1   N2
-         \   /
+          /  /
            +    #evaluation of + should only trigger one evaluation of Map.
     """
 
