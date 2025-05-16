@@ -18,5 +18,6 @@ jobs:
       operating-system: '["ubuntu-latest"]'
       build-options: ""
       label: latest
+      python-minor-version: [ 12 ]
     secrets:
       anaconda_token: ${{ secrets.ANACONDA_TOKEN }}
