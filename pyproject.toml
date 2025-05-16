@@ -21,7 +21,6 @@ authors = [
   { name = "Christophe Pradal" },
 ]
 description = "OpenAlea.Core is able to discover and manage packages and logical components, build and evaluate dataflows and generate final applications."
-readme = "README.md"
 license = "CECILL-C"
 license-files = ["LICEN[CS]E*"]
 requires-python = ">=3.8"
@@ -37,7 +36,7 @@ classifiers = [
   "Topic :: Scientific/Engineering",
   "Framework :: OpenAlea",
 ]
-dynamic = ["version"]
+dynamic = ["version", "readme"]
 
 dependencies = [
     "ipykernel",
@@ -46,6 +45,9 @@ dependencies = [
     "setuptools",
 ]
 
+[tool.setuptools.dynamic]
+version = {attr = "openalea.core.version.__version__"}
+readme = {file = ["README.md"]}
 
 # section specific to conda-only distributed package (not used by pip yet)
 [tool.conda.environment]
@@ -76,7 +78,7 @@ Changelog = "https://github.com/openalea/core/releases"
 "core_data" = ["*"]
 
 [project.entry-points."wralea"]
-"openalea.flow control" = "openalea.core.system"
+"openalea.flow-control" = "openalea.core.system"
 
 [project.entry-points."openalea.core"]
 "openalea.core/openalea" = "openalea.core.plugin.builtin"
