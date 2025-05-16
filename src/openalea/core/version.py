@@ -1,6 +1,6 @@
 import importlib.metadata
 
-__version__ =  importlib.metadata.version("openalea.mtg")
+__version__ =  importlib.metadata.version("openalea.core")
 
 numbers = __version__.split(".")
 
