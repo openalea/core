@@ -14,6 +14,9 @@ where = ["src"]
 # enable dynamic versioning based on git tags
 [tool.setuptools_scm]
 # can be empty if no extra settings are needed, presence enables setuptools-scm
+fallback_version = "2.4.4.dev0"
+version_scheme = "guess-next-dev"
+local_scheme = "no-local-version"
 
 [project]
 name = "openalea.core"
@@ -61,10 +64,12 @@ dependencies = [
 [project.optional-dependencies]
 test = ["pytest"]
 doc = [
-  "sphinx-favicon",
-  "sphinx-rtd-theme",
   "pydata-sphinx-theme",
   "myst-parser",
+  "sphinx-favicon",
+  "ipykernel",
+  "sphinx-copybutton",
+  "ipython_genutils",
   "nbsphinx",
 ]
 
