@@ -13,7 +13,10 @@ where = ["src"]
 
 # enable dynamic versioning based on git tags
 [tool.setuptools_scm]
-# can be empty if no extra settings are needed, presence enables setuptools-scm
+# Format version to ease alignment with conda/meta.yaml tag-based versioning
+fallback_version = "2.4.2.dev0"
+version_scheme = "guess-next-dev"
+local_scheme = "no-local-version"
 
 [project]
 name = "openalea.core"
@@ -28,11 +31,10 @@ classifiers = [
   "Intended Audience :: Science/Research",
   "Intended Audience :: Developers",
   "Programming Language :: Python :: 3 :: Only",
-  "Programming Language :: Python :: 3.8",
-  "Programming Language :: Python :: 3.9",
   "Programming Language :: Python :: 3.10",
   "Programming Language :: Python :: 3.11",
   "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
   "Topic :: Scientific/Engineering",
   "Framework :: OpenAlea",
 ]
