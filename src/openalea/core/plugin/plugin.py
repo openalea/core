@@ -29,12 +29,23 @@ Plugin fundamentals are:
 
 """
 
-import pkg_resources
+#import pkg_resources
+from importlib.metadata import entry_points, distribution, PackageNotFoundError
+
+
 import site
 import sys
 
 from openalea.core.factory import AbstractFactory
 import six
+
+
+def find_distribution(name):
+    try:
+        return distribution(name)
+    except PackageNotFoundError:
+        return None
+    
 
 def plugin_name(plugin):
     return plugin.name if hasattr(plugin, 'name') else plugin.__name__
@@ -53,7 +64,7 @@ def discover(group, name=None):
     :todo: check that the same name is not used by several plugins
     """
 
-    plugin_map = {ep.name:ep for ep in pkg_resources.iter_entry_points(group, name)}
+    plugin_map = {ep.name:ep for ep in entry_points(group=group, name=name)}
     return plugin_map
 
 def iter_groups():
@@ -67,7 +78,7 @@ def iter_groups():
     paths += sys.path
     # scan all entry_point and list different groups
     for path in set(paths):
-        distribs = pkg_resources.find_distributions(path)
+        distribs = find_distribution(path)
         for distrib in distribs :
             for group in distrib.get_entry_map():
                 groups.add(group)
@@ -76,7 +87,7 @@ def iter_groups():
 
 
 def iter_plugins(group, name=None, debug=False):
-    for ep in pkg_resources.iter_entry_points(group, name):
+    for ep in entry_points(group, name):
         if debug is True or debug == 'all' or debug == group:
             ep = ep.load()
             if isinstance(ep, (list, tuple)):

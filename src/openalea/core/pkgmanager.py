@@ -46,7 +46,10 @@ import importlib
 import six.moves.urllib.parse
 from openalea.core.path import path
 from fnmatch import fnmatch
-from pkg_resources import iter_entry_points
+
+# Remove old dependency to openalea
+#from pkg_resources import iter_entry_points
+from importlib.metadata import entry_points
 
 from openalea.core.singleton import Singleton
 from openalea.core.observer import Observed
@@ -245,12 +248,12 @@ class PackageManager(six.with_metaclass(Singleton, Observed)):
 
         if DEBUG:
             res = {}
-        # Use setuptools entry_point
-        for epoint in iter_entry_points("wralea"):
-            # Get Deprecated packages
+        # Deprecated : Use setuptools entry_point
+        # Replace by importlib metadat
+        for epoint in entry_points(group="wralea"):
             if self.verbose:
-                pmanLogger.debug(epoint.name + " " + epoint.module_name)
-            if(epoint.module_name == "deprecated"):
+                pmanLogger.debug(epoint.name + " " + epoint.module)
+            if(epoint.module == "deprecated"):
                 self.deprecated_pkg.add(epoint.name.lower())
                 continue
 
@@ -261,28 +264,26 @@ class PackageManager(six.with_metaclass(Singleton, Observed)):
             # Be careful, this lines will import __init__.py and all its predecessor
             # to find the path.
             if DEBUG:
-                print(epoint.module_name)
+                print(epoint.module)
                 t1 = clock()
 
             try:
-                m = importlib.import_module(epoint.module_name)
+                m = importlib.import_module(epoint.module)
                 #m = __import__(epoint.module_name, fromlist=epoint.module_name)
             except ImportError as e:
-                logger.error("Cannot load %s : %s" % (epoint.module_name, e))
-                # self.log.add("Cannot load %s : %s"%(epoint.module_name, e))
+                logger.error("Cannot load %s : %s" % (epoint.module, e))
                 continue
 
             if DEBUG:
-                print((epoint.module_name))
+                print((epoint.module))
                 tn = clock() - t1
-                res[tn] = epoint.module_name
+                res[tn] = epoint.module
 
 
             l = list(m.__path__)
             for p in l:
                 p = os.path.abspath(p)
-                logger.info("Wralea entry point: %s (%s) " % (epoint.module_name, p))
-                # self.log.add("Wralea entry point: %s (%s) "%(epoint.module_name, p))
+                logger.info("Wralea entry point: %s (%s) " % (epoint.module, p))
                 self.add_wralea_path(p, self.sys_wralea_path)
 
         # Search the path based on the old method (by hand).
