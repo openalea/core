@@ -22,7 +22,9 @@ except NameError:
     unicode = str
     
 from openalea.core.plugin.plugin import plugin_name
-
+from openalea.core.plugin.manager import PluginManager
+from openalea.core.plugin import iter_groups
+from importlib.metadata import entry_points
 
 def format_author(author, key=None, **kwds):
 
@@ -108,10 +110,8 @@ def format_criterion(criterion, value, indent=0):
 
 
 def list_plugins(lst, verbose=False):
-    from openalea.core.plugin.manager import PluginManager
-    pm = PluginManager()
-    import pkg_resources
-    from openalea.core.plugin import iter_groups
+
+    pm = PluginManager()    
 
     if lst in ['summary', 'all']:
         prefixes = ['openalea', 'oalab', 'vpltk']
@@ -124,13 +124,13 @@ def list_plugins(lst, verbose=False):
                 match = True
                 break
         if match:
-            eps = [ep for ep in pkg_resources.iter_entry_points(group)]
+            eps = [ep for ep in entry_points(group=group)]
             if lst == 'summary':
                 print('\n\033[91m%s\033[0m (%d plugins)' % (group, len(eps)))
                 for ep in eps:
-                    parts = [str(s) for s in (ep.module_name, ep.name)]
+                    parts = [str(s) for s in (ep.module, ep.name)]
                     identifier = ':'.join(parts)
-                    print('  - %s \033[90m%s (%s)\033[0m' % (ep.name, identifier, ep.dist.egg_name()))
+                    print('  - %s \033[90m%s (%s)\033[0m' % (ep.name, identifier, ep.dist.name))
             else:
                 print('\033[44m%s\033[0m' % group)
                 UNDEF = 'Not defined'
@@ -155,7 +155,7 @@ def list_plugins(lst, verbose=False):
                         if verbose:
                             print('        tags: %s' % ', '.join(plugin.tags))
                             print('        plugin: %s, egg: %s\n        path: %s' % (
-                                ep.name, ep.dist.egg_name(), ep.dist.location))
+                                ep.name, ep.dist.name, ep.dist.locate_file('')))
                             print('        criteria:')
                             for crit_name in sorted(dir(plugin)):
                                 if crit_name in ('implementation', '__call__'):

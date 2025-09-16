@@ -25,7 +25,9 @@ See :meth:`PluginManager.set_proxy` and "plugin_proxy" parameter in :meth:`Plugi
 import inspect
 from warnings import warn
 import importlib
-from pkg_resources import iter_entry_points
+# Deprecated : replace by importlib metadata
+#from pkg_resources import iter_entry_points
+from importlib.metadata import entry_points
 
 from openalea.core import logger
 from openalea.core.manager import GenericManager
@@ -104,7 +106,7 @@ class PluginManager(GenericManager):
 
     def discover(self, group=None, item_proxy=None):
         if "entry_points" in self._autoload:
-            for ep in iter_entry_points(group):
+            for ep in entry_points(group=group):
                 self._load_entry_point_plugin(group, ep, item_proxy=item_proxy)
 
     def instantiate(self, item):
@@ -127,7 +129,7 @@ class PluginManager(GenericManager):
 
     def patch_ep_plugin(self, plugin, ep):
         plugin.plugin_ep = ep.name
-        plugin.plugin_modulename = ep.module_name
+        plugin.plugin_modulename = ep.module
         plugin.plugin_dist = ep.dist
 
     def _is_plugin_class(self, obj):
@@ -154,7 +156,7 @@ class PluginManager(GenericManager):
 
         for plugin_class in plugin_classes:
             name = plugin_class.name if hasattr(plugin_class, 'name') else plugin_class.__name__
-            parts = [str(s) for s in (ep.dist.egg_name(), group, ep.module_name, ep.name, name)]
+            parts = [str(s) for s in (ep.dist.name, group, ep.module, ep.name, name)]
             identifier = ':'.join(parts)
             item = self.add(plugin_class, group, item_proxy=plugin_proxy, identifier=identifier)
             self.patch_ep_plugin(item, ep)
