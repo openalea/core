@@ -47,7 +47,7 @@ test:
     - test/data/**
   commands:
     - cd test
-    - pytest -v test_*.py
+    - pytest -v
 
 about:
   home: {{ home }}
