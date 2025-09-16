@@ -29,12 +29,6 @@ from openalea.core.interface import TypeInterfaceMap
 import six
 from six.moves import zip
 
-# Fix Error in 3.11
-INSPECT_FULL=False
-if not hasattr(inspect, 'getargspec'):
-    inspect.getargspec = inspect.getfullargspec
-    INSPECT_FULL=True
-
 
 class Signature:
     """Object to represent the signature of a function/method.
@@ -166,7 +160,7 @@ class Signature:
         # different behavior in Python 3
         isMethod = inspect.ismethod(function)
         if isMethod or inspect.isfunction(function):
-            argspec  = inspect.getargspec(function)
+            argspec  = inspect.getfullargspec(function)
             if argspec.defaults:
                 ndefs    = len(argspec.defaults)
                 args     = argspec.args[:-ndefs]
@@ -175,10 +169,7 @@ class Signature:
                 args     = argspec.args
                 defaults = []
 
-            if not INSPECT_FULL:
-                keywords = argspec.keywords
-            else:
-                keywords = argspec.varkw
+            keywords = argspec.varkw
 
             return args, defaults, argspec.varargs, keywords, isMethod
 

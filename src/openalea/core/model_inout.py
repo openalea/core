@@ -295,11 +295,11 @@ def parse_input_and_output(docstring):
         docsplit = docstring.splitlines()
         for line in docsplit:
             line = line.strip()
-            if re.search('^#*\s*input\s*=', line):
+            if re.search(r'^#*\s*input\s*=', line):
                 line = "input".join(line.split('input')[1:])
                 line = "=".join(line.split('=', 1)[1:]).strip()
                 inputs = _safe_split(line)
-            if re.search('^#*\s*output\s*=', line):
+            if re.search(r'^#*\s*output\s*=', line):
                 line = "output".join(line.split('output')[1:])
                 line = line.split('=', 1)[1].strip()
                 outputs = _safe_split(line)
@@ -339,15 +339,15 @@ def extract_functions(codestring, filename='tmp'):
 #################################################
 
 def _replace_regex(line, regex, replaced="_"):
-    """
+    '''
     Search *regex* inside *line* and replace it by *replaced*
 
     :return: line replaced
     :use:
     >>> line = "a=(1,2,3), b=[1,2], c=4, d=([1,2,3],4)"
-    >>> _replace_regex(line, "\([A-Za-z0-9_,()]*\)", "_")
+    >>> _replace_bracket(line)
     >>> "a=_______, b=[1,2], c=4, d=___________"
-    """
+    '''
     line2 = line
     search = re.search(regex, line2)
     while search is not None:
@@ -366,7 +366,7 @@ def _replace_bracket(line):
     #   - one opening bracket (
     #   - what you want
     #   - one closing bracket )
-    return _replace_regex(line, "\([A-Za-z0-9_,()]*\)")
+    return _replace_regex(line, r"\([A-Za-z0-9_,()]*\)")
 
 
 def _replace_square_bracket(line):
@@ -374,7 +374,7 @@ def _replace_square_bracket(line):
     #   - one opening square bracket [
     #   - what you want
     #   - one closing square bracket ]
-    return _replace_regex(line, "\[[A-Za-z0-9_,()]*\]")
+    return _replace_regex(line, r"\[[A-Za-z0-9_,()]*\]")
 
 
 def _replace_quoted(line):
@@ -382,7 +382,8 @@ def _replace_quoted(line):
     #   - one opening quote '
     #   - what you want
     #   - one closing quote '
-    return _replace_regex(line, "\'\s*([^\"]*?)\s*\'")
+    pattern = r"'\s*([^\"]*?)\s*'"
+    return _replace_regex(line, pattern)
 
 
 def _replace_double_quoted(line):
@@ -390,7 +391,8 @@ def _replace_double_quoted(line):
     #   - one opening quote "
     #   - what you want
     #   - one closing quote "
-    return _replace_regex(line, "\"\s*([^\"]*?)\s*\"")
+    pattern = r'"\s*([^"]*?)\s*"'
+    return _replace_regex(line, pattern)
 
 
 def _safe_split(line):
