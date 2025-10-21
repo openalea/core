@@ -11,14 +11,6 @@ Subpackages
 Submodules
 ----------
 
-openalea.core.project.configobj module
---------------------------------------
-
-.. automodule:: openalea.core.project.configobj
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
 openalea.core.project.manager module
 ------------------------------------
 
