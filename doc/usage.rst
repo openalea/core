@@ -1,9 +1,5 @@
-=====
-Usage
-=====
-
-Overview of the different classes
-=================================
+Overview of different classes
+=============================
 
 Create an actor
 ---------------
