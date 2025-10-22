@@ -1,54 +1,23 @@
-.. _core:
+Welcome to OpenAlea Core's documentation
+########################################
 
-.. module:: core
+OpenAlea.Core is able to:
 
-OpenAlea Core documentation
-###########################
+- Discover and manage packages and logical components
+- Build and evaluate dataflows
+- Generate final applications
 
-Module description
-==================
+It doesn’t include any GUI interface (See `OpenAlea.Visualea <https://visualea.readthedocs.io/en/latest/>`_ for that).
 
-.. sidebar:: Summary
-
-    :Version: |version|
-    :Release: |release|
-    :Date: |today|
-    :Author: See `authors`_ section
-    :ChangeLog: See `changelog`_ section
-
-.. topic:: Overview
-
-    .. include:: user/overview.txt
-
-Documentation
-=============
+Contents
+========
 
 .. toctree::
     :maxdepth: 1
 
-    installation
-    usage
+    Installation<installation.rst>
+    Overview of different classes<usage.rst>
     Reference Guide<_dvlpt/modules.rst>
-
-.. seealso::
-
-   More documentation about openalea in general can be found on the
-   `openalea <https://openalea.readthedocs.io/en/latest/>`__.
-
-
-.. include:: ../AUTHORS.rst
-
-#.. include:: ../HISTORY.rst
-
-License
-=======
-
-|core| is released under a Cecill-C License.
-
-.. note:: `Cecill-C <http://www.cecill.info/licences/Licence_CeCILL-C_V1-en.html>`_
-    license is a LGPL compatible license.
-
-.. |core| replace:: OpenAlea.Core
 
 Indices and tables
 ==================
