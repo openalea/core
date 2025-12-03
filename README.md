@@ -1,7 +1,7 @@
 # openalea.core
 
 [![Docs](https://readthedocs.org/projects/core/badge/?version=latest)](https://core.readthedocs.io/)
-[![Build Status](https://github.com/openalea/core/actions/workflows/openalea_ci.yml/badge.svg?branch=main)](https://github.com/openalea/core/actions/workflows/openalea_ci.yml?query=branch%3Amain)
+[![Build Status](https://github.com/openalea/core/actions/workflows/openalea_ci.yml/badge.svg?branch=master)](https://github.com/openalea/core/actions/workflows/openalea_ci.yml?query=branch%3Amaster)
 [![License](https://img.shields.io/badge/License--CeCILL-C-blue)](https://www.cecill.info/licences/Licence_CeCILL-C_V1-en.html)
 [![Anaconda-Server Badge](https://anaconda.org/openalea3/openalea.core/badges/version.svg)](https://anaconda.org/openalea3/openalea.core)
 
