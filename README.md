@@ -14,7 +14,6 @@ build and evaluate dataflows and generate final applications
 # Authors
 
 * Pradal Christophe
-* Samuel Dufour-Kowalski
 
 # License
 
@@ -26,3 +25,9 @@ See LICENSE file for details.
 ```commandline
 mamba install -c openalea3 -c conda-forge openalea.core
 ```
+
+# Contributors
+
+<a href="https://github.com/openalea/core/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=openalea/core" />
+</a>
