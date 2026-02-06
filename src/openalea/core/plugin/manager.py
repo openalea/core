@@ -9,8 +9,9 @@ Plugin Manager
 
 A plugin manager class is used to load plugins, search among it and manage the list of loaded plugins.
 Plugins are loaded from entry points or can be added dynamically to manager.
-  - To *list* plugins, see :meth:`PluginManager.plugin` and :meth:`PluginManager.plugins`.
-  - To *add* plugins dynamically, see :meth:`PluginManager.add_plugin` and :meth:`PluginManager.add_plugins`.
+
+- To *list* plugins, see :meth:`PluginManager.plugin` and :meth:`PluginManager.plugins`.
+- To *add* plugins dynamically, see :meth:`PluginManager.add_plugin` and :meth:`PluginManager.add_plugins`.
 
 All plugin are sorted in categories, each group defining a contract.
 This contract is generally described in an interface class or documentation.

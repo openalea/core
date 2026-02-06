@@ -8,8 +8,9 @@ Interfaces and entry_points are described in plugin documentation.
 Generally, a plugin code looks like:
 
 .. code-block :: python
-    :filename: ex: mypackage/plugin/applet.py
     :linenos:
+
+    #filename: ex: mypackage/plugin/applet.py
 
     class PluginMyApplet(object):
         name = 'MyApplet'

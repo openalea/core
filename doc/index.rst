@@ -17,7 +17,7 @@ Contents
 
     Installation<installation.rst>
     Usage<usage.rst>
-    _dvlpt/modules.rst
+    Reference Guide<_dvlpt/modules.rst>
 
 Indices and tables
 ==================
