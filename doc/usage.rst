@@ -44,9 +44,3 @@ that returns a list of nodes. To access to a particular node, use:
     <openalea.core.node.NodeFactory object at 0x936906c>
 
 The `floor` node exists in the `openalea.math` package. The node `floor` is managed through a :class:`NodeFactory<openalea.core.node.NodeFactory>`.
-
-
-
-.. topic:: Documentation status
-
-    .. sectionauthor:: Thomas Cokelaer <Thomas Cokelaer __at__ sophia inria fr>
