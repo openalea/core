@@ -1,23 +1,6 @@
 openalea.core package
 =====================
 
-Subpackages
------------
-
-.. toctree::
-
-    openalea.core.algo
-    openalea.core.control
-    openalea.core.formatting
-    openalea.core.graph
-    openalea.core.interpreter
-    openalea.core.plugin
-    openalea.core.project
-    openalea.core.scene
-    openalea.core.service
-    openalea.core.system
-    openalea.core.world
-
 Submodules
 ----------
 

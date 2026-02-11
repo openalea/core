@@ -3,12 +3,6 @@
 interface plugin documentation
 ==============================
 
-Details
-=======
-
-.. autoclass:: openalea.oalab.interface.IPluginInterface
-    :members: __call__, name
-
 """
 
 class IPluginInterface(object):

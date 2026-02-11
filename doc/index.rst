@@ -16,7 +16,7 @@ Contents
     :maxdepth: 1
 
     Installation<installation.rst>
-    Overview of different classes<usage.rst>
+    Usage<usage.rst>
     Reference Guide<_dvlpt/modules.rst>
 
 Indices and tables
