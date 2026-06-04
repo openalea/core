@@ -12,7 +12,7 @@ def test_config1():
 
 
     unit1 = MyModelUnit('unit1', dict(p1=1, p2='2'))
-    unit2 = MyModelUnit('unit2', dict(p1=1, p2='2')
+    unit2 = MyModelUnit('unit2', dict(p1=1, p2='2'))
 
     config = Config([unit1, unit2])
     config.dump('toto.yml')
@@ -20,4 +20,3 @@ def test_config1():
     assert(len(config) == 2)
     assert(len(config['unit1'])==2)
 
-    
