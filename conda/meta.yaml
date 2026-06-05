@@ -25,12 +25,14 @@ build:
 requirements:
   host:
     - python
+    - pyyaml
     {% for dep in build_deps %}
     - {{ dep }}
     {% endfor  %}
 
   run:
     - python
+    - pyyaml
     {% for dep in deps + conda_deps %}
     - {{ dep }}
     {% endfor %}
