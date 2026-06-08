@@ -57,6 +57,8 @@ def test_config1():
     #config1.dump("toto.json")  
     #config2 = Config.load(unit1, "toto.json")
 
+    '''TEST WITH JSON'''
+
     print("Test avec params.json de HydroShoot\n")
 
     # Creation of the simulation section
@@ -127,7 +129,7 @@ def test_config1():
     d4.update(p_stem_lbl_prefix.to_dict())
 
     #
-    
+
 
     unit_mtg_api = MyModelUnit("mtg_api", d4)
 
@@ -308,7 +310,52 @@ def test_config1():
     config3 = Config(config_dict)
     print(config3)
     config3.dump("params.json")
+
+    '''TEST WITH YML'''
+
+    config4 = Config(config_dict)
+    config4.dump("params.yml")
+
+    # Creation of the simulation section
+
+    p_sdate1 = Parameter("sdate", "2012-08-01 00:00:00")
+    p_edate1 = Parameter("edate", "2012-08-04 23:00:00")
+    p_lat1 = Parameter("latitude", 43.61)
+    p_longitude1 = Parameter("longitude", 3.87)
+    p_elevation1 = Parameter("elevation", 44.0)
+
+    d11 = {}
+    d11.update(p_sdate.to_dict())
+    d11.update(p_edate.to_dict())
+    d11.update(p_lat.to_dict())
+    d11.update(p_longitude.to_dict())
+    d11.update(p_elevation.to_dict())
     
+    unit_simulation1 = MyModelUnit('simulation', d11)
+
+    # Creation of the planting section
+
+    p_spacing_between_rows1 = Parameter("spacing_between_rows", 3.6)
+    p_spacing_on_row1 = Parameter("spacing_on_row", 1)
+    p_row_angle_with_south1 = Parameter("row_angle_with_south", 140.0)
+
+    d12={}
+    d12.update(p_spacing_between_rows.to_dict())
+    d12.update(p_spacing_on_row.to_dict())
+    d12.update(p_row_angle_with_south.to_dict())
+
+    unit_planting_section1 = MyModelUnit('planting', d12)
+
+     #Configuration
+
+    config_dict1 = {}
+
+    config_dict1.update(unit_simulation1.to_dict())
+    config_dict1.update(unit_planting_section1.to_dict())
+
+    config5 = Config(config_dict1)
+    config5.dump("paramss.yml")
+
     '''
     assert(len(config) == 2)
     assert(len(config['unit1'])==2)
