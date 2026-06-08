@@ -41,23 +41,25 @@ def _load_yml(filename: str):
         data = yaml.load(f, Loader=yaml.SafeLoader)
     return data
 
-def _dump_yml(data, filename: str):
+def _dump_yml(data, filename: str, sort_keys=False):
     """Dump configuration to a YAML file."""
     
     file = Path(filename)
     with file.open("w") as f:
-        yaml.dump(data, f)
+        yaml.dump(data, f, sort_keys=sort_keys)
 
 def _dump_json(data, filename: str):
     """Dump configuration to a JSON file."""
     
     file = Path(filename)
     with file.open("w") as f:
-        json.dump(data, f)
+        json.dump(data, f, indent=4)
 
 
 class Config:
     """Configuration of OpenAlea models
+
+    
     
     TODO : Documentation to write
     """
