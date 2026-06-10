@@ -25,20 +25,47 @@ class Parameter:
         return f"name={self.name}, value={self.value}, unit={self.unit}, param_type={self.param_type}, description={self.description}, uid={self.uid}, uri={self.uri}"
 
 class MyModelUnit:
-    def __init__(self, name, parameters: dict):
+    def __init__(self, name, parameters: list):
         self.name = name
         self.parameters=parameters
     
     def to_dict(self):
+        params = {k : v  for param in self.parameters for k, v in param.to_dict().items()}
         return {
-            self.name : self.parameters
+            self.name : params
         }
     
 
     def __str__(self):
-        return f"name={self.name}, parameters={self.parameters}"
+        return f"name={self.name}, parameters={self.to_dict()}"
 
-    
+def hydroshoot_simulation_config():
+
+    p_sdate = Parameter("sdate", "2012-08-01 00:00:00")
+    p_edate = Parameter("edate", "2012-08-04 23:00:00")
+    p_lat = Parameter("latitude", 43.61)
+    p_longitude = Parameter("longitude", 3.87)
+    p_elevation = Parameter("elevation", 44.0)
+    p_tzone = Parameter("tzone", "Europe/Paris")
+    p_output_index = Parameter("output_index", "")
+    p_unit_scene_length = Parameter("unit_scene_length", "cm")
+    p_hydraulic_structure = Parameter("hydraulic_structure", True)
+    p_negligible_shoot_resistance = Parameter("negligible_shoot_resistance", False)
+    p_energy_budget = Parameter("energy_budget", True)
+    parameters = [p_sdate, p_edate, p_lat, p_longitude, p_elevation, p_tzone, p_output_index, p_unit_scene_length, p_hydraulic_structure, p_negligible_shoot_resistance, p_energy_budget]
+
+    simulation = MyModelUnit('simulation', parameters)
+    return simulation
+
+def test_config_hs_simu():
+    unit = hydroshoot_simulation_config()
+    config = Config([unit])
+
+    # tests
+    assert(len(config) == 1)
+    assert(len(config['simulation'])==11)
+
+
 def test_config1():
 
     #unit1 = MyModelUnit('unit1', dict(p1=1, p2='2'))
@@ -59,63 +86,38 @@ def test_config1():
 
     '''TEST WITH JSON'''
 
-    print("Test avec params.json de HydroShoot\n")
+    print("Test  params.json of HydroShoot\n")
 
     # Creation of the simulation section
 
-    p_sdate = Parameter("sdate", "2012-08-01 00:00:00")
-    p_edate = Parameter("edate", "2012-08-04 23:00:00")
-    p_lat = Parameter("latitude", 43.61)
-    p_longitude = Parameter("longitude", 3.87)
-    p_elevation = Parameter("elevation", 44.0)
-    p_tzone = Parameter("tzone", "Europe/Paris")
-    p_output_index = Parameter("output_index", "")
-    p_unit_scene_length = Parameter("unit_scene_length", "cm")
-    p_hydraulic_structure = Parameter("hydraulic_structure", True)
-    p_negligible_shoot_resistance = Parameter("negligible_shoot_resistance", False)
-    p_energy_budget = Parameter("energy_budget", True)
 
-
-    d1 = {}
-    d1.update(p_sdate.to_dict())
-    d1.update(p_edate.to_dict())
-    d1.update(p_lat.to_dict())
-    d1.update(p_longitude.to_dict())
-    d1.update(p_elevation.to_dict())
-    d1.update(p_tzone.to_dict())
-    d1.update(p_output_index.to_dict())
-    d1.update(p_unit_scene_length.to_dict())
-    d1.update(p_hydraulic_structure.to_dict())
-    d1.update(p_negligible_shoot_resistance.to_dict())
-    d1.update(p_energy_budget.to_dict())
 
     
+    
 
-    unit_simulation = MyModelUnit('simulation', d1)
+    unit_simulation = hydroshoot_simulation_config()
 
     # Creation of the planting section
 
     p_spacing_between_rows = Parameter("spacing_between_rows", 3.6)
     p_spacing_on_row = Parameter("spacing_on_row", 1)
     p_row_angle_with_south = Parameter("row_angle_with_south", 140.0)
+    parameters2 = [p_spacing_between_rows, p_spacing_on_row, p_row_angle_with_south]
 
-    d2={}
-    d2.update(p_spacing_between_rows.to_dict())
-    d2.update(p_spacing_on_row.to_dict())
-    d2.update(p_row_angle_with_south.to_dict())
-
-    unit_planting_section = MyModelUnit('planting', d2)
+    
+    unit_planting_section = MyModelUnit('planting', parameters2)
 
     #Creation of the phenology section
 
     p_emdate = Parameter("emdate", "2012-04-01 00:00:00")
     p_t_base = Parameter("t_base", 10.0)
 
+    p3 = [p_emdate, p_t_base]
     d3 = {}
     d3.update(p_emdate.to_dict())
     d3.update(p_t_base.to_dict())
 
-    unit_phenology = MyModelUnit("phenology", d3)
+    unit_phenology = MyModelUnit("phenology", p3)
 
     # Creation of the MTG API section 
     
@@ -123,6 +125,7 @@ def test_config1():
     p_leaf_lbl_prefix = Parameter("leaf_lbl_prefix", "L")
     p_stem_lbl_prefix = Parameter("stem_lbl_prefix", ["in", "Pet", "cx"])
 
+    p4 = [p_collar_label, p_leaf_lbl_prefix, p_stem_lbl_prefix]
     d4 = {}
     d4.update(p_collar_label.to_dict())
     d4.update(p_leaf_lbl_prefix.to_dict())
