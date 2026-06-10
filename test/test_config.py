@@ -364,7 +364,11 @@ def test_config1():
     assert(len(config['unit1'])==2)
     '''
 
-test_config1()
+def test_read_cnofig():
+    config = load_config("params.json")
+    config.dump("params1.json")
+    # compare both
+    print(config)
 
 
 
