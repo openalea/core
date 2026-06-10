@@ -35,7 +35,6 @@ class MyModelUnit:
             self.name : params
         }
     
-
     def __str__(self):
         return f"name={self.name}, parameters={self.to_dict()}"
 
@@ -55,17 +54,73 @@ def hydroshoot_simulation_config():
     parameters = [p_sdate, p_edate, p_lat, p_longitude, p_elevation, p_tzone, p_output_index, p_unit_scene_length, p_hydraulic_structure, p_negligible_shoot_resistance, p_energy_budget]
 
     simulation = MyModelUnit('simulation', parameters)
+
     return simulation
 
-def test_config_hs_simu():
+def hydroshoot_planting_config():
+    p_spacing_between_rows = Parameter("spacing_between_rows", 3.6)
+    p_spacing_on_row = Parameter("spacing_on_row", 1)
+    p_row_angle_with_south = Parameter("row_angle_with_south", 140.0)
+
+    parameters = [p_spacing_between_rows, p_spacing_on_row, p_row_angle_with_south]
+    planting = MyModelUnit('planting', parameters)
+
+    return planting
+
+def hydroshoot_phenology_config():
+    p_emdate = Parameter("emdate", "2012-04-01 00:00:00")
+    p_t_base = Parameter("t_base", 10.0)
+
+    parameters = [p_emdate, p_t_base]
+    phenology = MyModelUnit('phenology', parameters)
+
+    return phenology
+
+def test_config_hs():
     unit = hydroshoot_simulation_config()
     config = Config([unit])
+    config.dump("params3.json")
 
     # tests
+    
     assert(len(config) == 1)
     assert(len(config['simulation'])==11)
 
+    planting = hydroshoot_planting_config()
+    config.add_section(planting)
+    config.dump("params3.json")
 
+    assert len(config) == 2
+    assert len(config["planting"]) == 3
+
+    phenology = hydroshoot_phenology_config()
+    config.add_section(phenology)
+    config.dump("params3.json")
+
+    #assert len(config) == 3
+    #assert len(config["planting"]) == 2
+
+
+
+
+
+
+
+'''def test_config_hs_simu_plant():
+    simu = hydroshoot_simulation_config()
+    planting = hydroshoot_planting_config()
+    config = Config([simu, planting])
+    config.dump("params2.json")
+
+    assert len(config) == 2
+    assert len(config["simulation"]) == 11
+    assert len(config["planting"]) == 3'''
+
+
+test_config_hs()
+#test_config_hs_simu_plant()
+
+'''
 def test_config1():
 
     #unit1 = MyModelUnit('unit1', dict(p1=1, p2='2'))
@@ -84,16 +139,11 @@ def test_config1():
     #config1.dump("toto.json")  
     #config2 = Config.load(unit1, "toto.json")
 
-    '''TEST WITH JSON'''
+
 
     print("Test  params.json of HydroShoot\n")
 
     # Creation of the simulation section
-
-
-
-    
-    
 
     unit_simulation = hydroshoot_simulation_config()
 
@@ -314,8 +364,6 @@ def test_config1():
     print(config3)
     config3.dump("params.json")
 
-    '''TEST WITH YML'''
-
     config4 = Config(config_dict)
     config4.dump("params.yml")
 
@@ -359,16 +407,15 @@ def test_config1():
     config5 = Config(config_dict1)
     config5.dump("paramss.yml")
 
-    '''
-    assert(len(config) == 2)
-    assert(len(config['unit1'])==2)
-    '''
+  
 
 def test_read_cnofig():
     config = load_config("params.json")
     config.dump("params1.json")
     # compare both
     print(config)
+
+    '''
 
 
 
