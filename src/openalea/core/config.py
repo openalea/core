@@ -58,17 +58,31 @@ def _dump_json(data, filename: str):
 
 class Config:
     """Configuration of OpenAlea models
-
-    
     
     TODO : Documentation to write
     """
-    def __init__(self, model_unit_configs: dict):
+    def __init__(self, model_unit_configs: list):
         """Initialize the configuration with a list of unit configurations."""
         self.model_unit_configs = model_unit_configs
 
+    def to_dict(self):
+        dict = {}
+        for unit in self.model_unit_configs:
+            dict.update(unit.to_dict())
+        return dict
+
+    def __len__(self):
+        return len(self.model_unit_configs)
+
+    def __getitem__(self, key):
+        return self.to_dict()[key]
+
     def __str__(self):
         return f"{self.model_unit_configs}"
+
+    
+    def add_section(self, unit):
+        self.model_unit_configs.append(unit)
 
     #@staticmethod
     def load(self, filename: str):
@@ -76,7 +90,7 @@ class Config:
         
         Dispatch method based on file extension (YAML, JSON, etc.).
         """
-        
+
         extension = filename.split(".")[-1]
 
         if extension in ("yml", "yaml"):
@@ -93,45 +107,12 @@ class Config:
         """Dump configuration to a file."""
 
         extension = filename.split(".")[-1]
+        data = self.to_dict()
 
         if extension in ("yml", "yaml"):
-            _dump_yml(self.model_unit_configs, filename)
+            _dump_yml(data, filename)
 
         elif extension == "json":
-            _dump_json(self.model_unit_configs, filename)
-
-   
+            _dump_json(data, filename)
 
     
-#   update()
-#   to_dict()
-#   build_model() --create a model object
-#   generate()
-
-# class ModelUnitConfig
-#   [Parameters]
-#   name
-#   uid
-#   uri
-#   description
-#   validate() --validation des sections
-#   to_dict()
-
-# class Parameter
-#   name
-#   value
-#   unit
-#   type
-#   description
-#   default value
-#   uid
-#   uri
-
-# class ModelConfig
-#   [ModelUnitConfig]
-#   name
-#   def MyModel()
-#      p = params() --recover parameters
-#      c = Config(p)
-#      c.generate('config.yml')
-#   return Model(c)
