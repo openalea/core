@@ -1,42 +1,12 @@
 from __future__ import absolute_import
 import os
 
-from openalea.core.config import Config
+#from openalea.core.config import Config
+from openalea.core.config import Parameter, MyModelUnit, Config
+
 
 import yaml
 import json
-
-class Parameter:
-    def __init__(self, name, value=None, unit=None, param_type=None, description="", uid=None, uri=None):
-        self.name =  name
-        self.value = value
-        self.unit = unit
-        self.param_type = param_type
-        self.description = description
-        self.uid = uid
-        self.uri = uri
-
-    def to_dict(self):
-        return {
-            self.name:self.value
-        }
-
-    def __str__(self):
-        return f"name={self.name}, value={self.value}, unit={self.unit}, param_type={self.param_type}, description={self.description}, uid={self.uid}, uri={self.uri}"
-
-class MyModelUnit:
-    def __init__(self, name, parameters: list):
-        self.name = name
-        self.parameters=parameters
-    
-    def to_dict(self):
-        params = {k : v  for param in self.parameters for k, v in param.to_dict().items()}
-        return {
-            self.name : params
-        }
-    
-    def __str__(self):
-        return f"name={self.name}, parameters={self.to_dict()}"
 
 def hydroshoot_simulation_config():
 
@@ -79,7 +49,9 @@ def hydroshoot_phenology_config():
 def test_config_hs():
     unit = hydroshoot_simulation_config()
     config = Config([unit])
-    config.dump("params3.json")
+    config.dump("params3.yml")
+    print("test")
+    config.load("params3.json")
 
     # tests
     
@@ -89,7 +61,7 @@ def test_config_hs():
     planting = hydroshoot_planting_config()
     config.add_section(planting)
     config.dump("params3.json")
-
+   
     assert len(config) == 2
     assert len(config["planting"]) == 3
 
@@ -97,14 +69,8 @@ def test_config_hs():
     config.add_section(phenology)
     config.dump("params3.json")
 
-    #assert len(config) == 3
-    #assert len(config["planting"]) == 2
-
-
-
-
-
-
+    assert len(config) == 3
+    assert len(config["planting"]) == 3
 
 '''def test_config_hs_simu_plant():
     simu = hydroshoot_simulation_config()
