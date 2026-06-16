@@ -56,6 +56,46 @@ def _dump_json(data, filename: str):
         json.dump(data, f, indent=4)
 
 
+class Parameter:
+    def __init__(self, name, value=None, unit=None, param_type=None, description="", uid=None, uri=None):
+        self.name =  name
+        self.value = value
+        self.unit = unit
+        self.param_type = param_type
+        self.description = description
+        self.uid = uid
+        self.uri = uri
+
+    def to_dict(self):
+        return {
+            self.name: {
+            "value": self.value,
+            "unit": self.unit,
+            "description": self.description,
+            "type": self.param_type,
+            "uid": self.uid,
+            "uri": self.uri
+            }
+        }
+
+    def __str__(self):
+        return f"name={self.name}, value={self.value}, unit={self.unit}, param_type={self.param_type}, description={self.description}, uid={self.uid}, uri={self.uri}"
+
+class MyModelUnit:
+    def __init__(self, name, parameters: list):
+        self.name = name
+        self.parameters=parameters
+    
+    def to_dict(self):
+        params = {k : v  for param in self.parameters for k, v in param.to_dict().items()}
+        return {
+            self.name : params
+        }
+    
+    def __str__(self):
+        return f"name={self.name}, parameters={self.to_dict()}"
+
+
 class Config:
     """Configuration of OpenAlea models
     
@@ -99,9 +139,35 @@ class Config:
         elif extension == "json":
             data = _load_json(filename)
 
-        print(data)
+        units = []
 
-        return Config(data)
+        '''
+        for unit_name, params in data.items():
+            parameters = [Parameter(name=k, value=v) for k, v in params.items()]
+            unit = MyModelUnit(unit_name, parameters)
+            units.append(unit)
+        '''
+        for unit_name, params in data.items():
+            parameters = [
+            Parameter(
+            name=name,
+            value=params[name]["value"],
+            unit=params[name].get("unit"),
+            description=params[name].get("description"),
+            param_type=params[name].get("type"),
+            uid=params[name].get("uid"),
+            uri=params[name].get("uri")
+        )
+            for name in params
+    ]
+
+            unit = MyModelUnit(unit_name, parameters)
+            units.append(unit)
+
+       
+        #print(data)
+
+        return Config(units)
 
     def dump(self, filename: str):
         """Dump configuration to a file."""
@@ -115,4 +181,4 @@ class Config:
         elif extension == "json":
             _dump_json(data, filename)
 
-    
+
