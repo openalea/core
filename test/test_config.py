@@ -51,7 +51,7 @@ def test_config_hs():
     config = Config([unit])
     config.dump("params3.yml")
     print("test")
-    config.load("params3.json")
+    config.load("params3.yml")
 
     # tests
     
