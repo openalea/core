@@ -24,6 +24,7 @@ import json
 from openalea.core.singleton import Singleton
 from openalea.core.observer import Observed
 from pathlib import Path
+from dataclasses import dataclass, asdict
 
 def _load_json(filename: str):
     """Load configuration from a JSON file."""
@@ -43,7 +44,7 @@ def _load_yml(filename: str):
 
 def _dump_yml(data, filename: str, sort_keys=False):
     """Dump configuration to a YAML file."""
-    
+
     file = Path(filename)
     with file.open("w") as f:
         yaml.dump(data, f, sort_keys=sort_keys)
@@ -56,73 +57,99 @@ def _dump_json(data, filename: str):
         json.dump(data, f, indent=4)
 
 
+@dataclass 
 class Parameter:
-    def __init__(self, name, value=None, unit=None, param_type=None, description="", uid=None, uri=None):
-        self.name =  name
-        self.value = value
-        self.unit = unit
-        self.param_type = param_type
-        self.description = description
-        self.uid = uid
-        self.uri = uri
+    name: str
+    value: any = None
+    unit: str = None
+    param_type: str = None
+    description: str = ""
+    uid: str = None
+    uri: str = None
 
-    def to_dict(self):
-        return {
-            self.name: {
-            "value": self.value,
-            "unit": self.unit,
-            "description": self.description,
-            "type": self.param_type,
-            "uid": self.uid,
-            "uri": self.uri
-            }
-        }
+    def __to_dict__(self):
+        d = asdict(self)
+        name = d.pop("name")
+        return {name: d}
+    
+    '''
+    def to_commented_yaml(self):
+        cm = CommentedMap()
+        cm["value"] = self.value
+
+        for field in ["unit", "param_type", "description", "uid", "uri"]:
+            value = getattr(self, field)
+            cm._yaml_add_comment(f"{field}: {value}", key="value")
+
+        return cm
+        '''
+
+    def to_commented_yaml(self):
+        cm = CommentedMap()
+        cm["value"] = self.value
+
+        for field in ["unit", "param_type", "description", "uid", "uri"]:
+            value = getattr(self, field)
+            comment = [[], [f"{field}: {value}"]]
+            cm._yaml_add_comment(comment, key="value")
+
+        return cm
 
     def __str__(self):
-        return f"name={self.name}, value={self.value}, unit={self.unit}, param_type={self.param_type}, description={self.description}, uid={self.uid}, uri={self.uri}"
+        return (
+            f"name={self.name}, value={self.value}, unit={self.unit}, "
+            f"param_type={self.param_type}, description={self.description}, "
+            f"uid={self.uid}, uri={self.uri}"
+        )
 
-class MyModelUnit:
+
+class ModelUnit(dict):
     def __init__(self, name, parameters: list):
+    
+        params_dict = {}
+        for p in parameters:
+            params_dict.update(p.__to_dict__())
+
+        super().__init__({name: params_dict})
         self.name = name
         self.parameters=parameters
-    
+        
+    '''
     def to_dict(self):
-        params = {k : v  for param in self.parameters for k, v in param.to_dict().items()}
+        params = {k : v  for param in self.parameters for k, v in param.__to_dict__().items()}
         return {
             self.name : params
         }
-    
+    '''
+
     def __str__(self):
-        return f"name={self.name}, parameters={self.to_dict()}"
+        return f"name={self.name}, parameters={dict(self)}"
 
 
-class Config:
+class Config(dict):
     """Configuration of OpenAlea models
     
     TODO : Documentation to write
     """
+
     def __init__(self, model_unit_configs: list):
         """Initialize the configuration with a list of unit configurations."""
-        self.model_unit_configs = model_unit_configs
 
-    def to_dict(self):
-        dict = {}
-        for unit in self.model_unit_configs:
-            dict.update(unit.to_dict())
-        return dict
+        super().__init__()
+        self.model_unit_configs = model_unit_configs
+        for unit in model_unit_configs:
+            self.update(unit)
 
     def __len__(self):
         return len(self.model_unit_configs)
 
-    def __getitem__(self, key):
-        return self.to_dict()[key]
 
     def __str__(self):
         return f"{self.model_unit_configs}"
 
-    
     def add_section(self, unit):
         self.model_unit_configs.append(unit)
+        self.update(unit)
 
     #@staticmethod
     def load(self, filename: str):
@@ -161,11 +188,7 @@ class Config:
             for name in params
     ]
 
-            unit = MyModelUnit(unit_name, parameters)
-            units.append(unit)
-
-       
-        #print(data)
+            units.append(ModelUnit(unit_name, parameters))
 
         return Config(units)
 
@@ -173,12 +196,11 @@ class Config:
         """Dump configuration to a file."""
 
         extension = filename.split(".")[-1]
-        data = self.to_dict()
 
         if extension in ("yml", "yaml"):
-            _dump_yml(data, filename)
+            _dump_yml(dict(self), filename)
 
         elif extension == "json":
-            _dump_json(data, filename)
+            _dump_json(dict(self), filename)
 
 
