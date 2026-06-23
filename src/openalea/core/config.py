@@ -20,11 +20,15 @@
 __license__ = "Cecill-C"
 
 import yaml
+from ruamel.yaml import YAML
+from ruamel.yaml.comments import CommentedMap
 import json
 from openalea.core.singleton import Singleton
 from openalea.core.observer import Observed
 from pathlib import Path
 from dataclasses import dataclass, asdict
+import io
+from ruamel.yaml import YAML
 
 def _load_json(filename: str):
     """Load configuration from a JSON file."""
@@ -56,6 +60,25 @@ def _dump_json(data, filename: str):
     with file.open("w") as f:
         json.dump(data, f, indent=4)
 
+def to_commented_map(obj):
+    if isinstance(obj, dict):
+        cm = CommentedMap()
+        for k, v in obj.items():
+            cm[k] = to_commented_map(v)
+        return cm
+    else:
+        return obj
+
+
+def add_comment(cm):
+  
+    for name, param in cm["simulation"].items():
+        for key, value in param.items():
+            param.yaml_set_comment_before_after_key(
+                key,
+                before=f"{key}: {value}"
+            )
+
 
 @dataclass 
 class Parameter:
@@ -72,29 +95,6 @@ class Parameter:
         name = d.pop("name")
         return {name: d}
     
-    '''
-    def to_commented_yaml(self):
-        cm = CommentedMap()
-        cm["value"] = self.value
-
-        for field in ["unit", "param_type", "description", "uid", "uri"]:
-            value = getattr(self, field)
-            cm._yaml_add_comment(f"{field}: {value}", key="value")
-
-        return cm
-        '''
-
-    def to_commented_yaml(self):
-        cm = CommentedMap()
-        cm["value"] = self.value
-
-        for field in ["unit", "param_type", "description", "uid", "uri"]:
-            value = getattr(self, field)
-            comment = [[], [f"{field}: {value}"]]
-            cm._yaml_add_comment(comment, key="value")
-
-        return cm
-
     def __str__(self):
         return (
             f"name={self.name}, value={self.value}, unit={self.unit}, "
@@ -113,14 +113,6 @@ class ModelUnit(dict):
         super().__init__({name: params_dict})
         self.name = name
         self.parameters=parameters
-        
-    '''
-    def to_dict(self):
-        params = {k : v  for param in self.parameters for k, v in param.__to_dict__().items()}
-        return {
-            self.name : params
-        }
-    '''
 
     def __str__(self):
         return f"name={self.name}, parameters={dict(self)}"
@@ -197,8 +189,16 @@ class Config(dict):
 
         extension = filename.split(".")[-1]
 
+        #add_comment(self)
+
         if extension in ("yml", "yaml"):
-            _dump_yml(dict(self), filename)
+            yaml = YAML()
+            cm = to_commented_map(self)
+            add_comment(cm)
+
+            with open(filename, "w") as f:
+                yaml.dump(cm, f)
+                #_dump_yml(dict(self), filename)
 
         elif extension == "json":
             _dump_json(dict(self), filename)
