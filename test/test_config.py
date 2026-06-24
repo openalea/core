@@ -48,10 +48,6 @@ def test_config_hs():
     unit = hydroshoot_simulation_config()
     config = Config([unit])
     config.dump("params4.yml")
-    #print(len(config))
-    #print(config)
-
-    # Test
     
     assert(len(config) == 1)
     assert(len(config['simulation'])==11)
@@ -65,24 +61,20 @@ def test_config_hs():
 
     phenology = hydroshoot_phenology_config()
     config.add_section(phenology)
+    config.custom_comments["sdate"] = "date of simulation"
+    config.custom_comments["latitude"] = [
+    "param_type : float",
+    "unit : degrees"
+]
     config.dump("params4.yml")
+
+    config.load("params4.yml")
 
     assert len(config) == 3
     assert len(config["planting"]) == 3
     
 
-'''def test_config_hs_simu_plant():
-    simu = hydroshoot_simulation_config()
-    planting = hydroshoot_planting_config()
-    config = Config([simu, planting])
-    config.dump("params2.json")
-
-    assert len(config) == 2
-    assert len(config["simulation"]) == 11
-    assert len(config["planting"]) == 3'''
-
-
 test_config_hs()
-#test_config_hs_simu_plant()
+
 
 
