@@ -25,6 +25,7 @@ build:
 requirements:
   host:
     - python
+    - ruamel.yaml
     - pyyaml
     {% for dep in build_deps %}
     - {{ dep }}
@@ -32,6 +33,7 @@ requirements:
 
   run:
     - python
+    - ruamel.yaml
     - pyyaml
     {% for dep in deps + conda_deps %}
     - {{ dep }}
