@@ -69,37 +69,34 @@ def to_commented_map(obj):
     else:
         return obj
 
+def add_comment(cm, custom_comments=None):
+    if custom_comments is None:
+        custom_comments = {}
 
-def add_comment(cm):
-  
-    for name, param in cm["simulation"].items():
-        for key, value in param.items():
-            param.yaml_set_comment_before_after_key(
-                key,
-                before=f"{key}: {value}"
-            )
+    for section_name, section in cm.items():
+        for param_name, param_value in section.items():
+            if param_name in custom_comments:
+                comment = custom_comments[param_name]
 
+                if isinstance(comment, list):
+                    comment = "\n".join(comment)
+
+                section.yaml_set_comment_before_after_key(
+                    param_name,
+                    before=comment
+                )
 
 @dataclass 
 class Parameter:
     name: str
     value: any = None
-    unit: str = None
-    param_type: str = None
-    description: str = ""
-    uid: str = None
-    uri: str = None
 
     def __to_dict__(self):
-        d = asdict(self)
-        name = d.pop("name")
-        return {name: d}
+        return {self.name: self.value}
     
     def __str__(self):
         return (
-            f"name={self.name}, value={self.value}, unit={self.unit}, "
-            f"param_type={self.param_type}, description={self.description}, "
-            f"uid={self.uid}, uri={self.uri}"
+            f"name={self.name}, value={self.value}"
         )
 
 
@@ -129,6 +126,7 @@ class Config(dict):
 
         super().__init__()
         self.model_unit_configs = model_unit_configs
+        self.custom_comments = {}
         for unit in model_unit_configs:
             self.update(unit)
 
@@ -143,62 +141,43 @@ class Config(dict):
         self.model_unit_configs.append(unit)
         self.update(unit)
 
-    #@staticmethod
-    def load(self, filename: str):
-        """Load configuration from a file.
-        
-        Dispatch method based on file extension (YAML, JSON, etc.).
-        """
 
+    def load(self, filename: str):
         extension = filename.split(".")[-1]
 
         if extension in ("yml", "yaml"):
-            data = _load_yml(filename)
+            yaml = YAML()
+            with open(filename, "r") as f:
+                data = yaml.load(f)
 
         elif extension == "json":
             data = _load_json(filename)
 
         units = []
 
-        '''
-        for unit_name, params in data.items():
-            parameters = [Parameter(name=k, value=v) for k, v in params.items()]
-            unit = MyModelUnit(unit_name, parameters)
-            units.append(unit)
-        '''
         for unit_name, params in data.items():
             parameters = [
-            Parameter(
-            name=name,
-            value=params[name]["value"],
-            unit=params[name].get("unit"),
-            description=params[name].get("description"),
-            param_type=params[name].get("type"),
-            uid=params[name].get("uid"),
-            uri=params[name].get("uri")
-        )
-            for name in params
-    ]
+                Parameter(name=param_name, value=param_value)
+                for param_name, param_value in params.items()
+            ]
 
             units.append(ModelUnit(unit_name, parameters))
 
         return Config(units)
+
 
     def dump(self, filename: str):
         """Dump configuration to a file."""
 
         extension = filename.split(".")[-1]
 
-        #add_comment(self)
-
         if extension in ("yml", "yaml"):
             yaml = YAML()
             cm = to_commented_map(self)
-            add_comment(cm)
+            add_comment(cm, self.custom_comments)
 
             with open(filename, "w") as f:
                 yaml.dump(cm, f)
-                #_dump_yml(dict(self), filename)
 
         elif extension == "json":
             _dump_json(dict(self), filename)
