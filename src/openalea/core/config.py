@@ -70,6 +70,11 @@ def to_commented_map(obj):
         return obj
 
 def add_comment2(cm, model_unit_configs):
+    '''Add automatic new comments on Parameters (description, unit, param_type, uid and uri).
+    parameters: -cm (CommentedMap) that contains sections and values from parameters.
+                -model_unit_configs: is a list of ModelUnit
+        If the value is None, this function don't add a new comment. If the value is not None, we add the comment.             
+    '''
     
     param_index = {}
     for unit in model_unit_configs:
@@ -95,6 +100,7 @@ def add_comment2(cm, model_unit_configs):
 
 
 def add_comment(cm, custom_comments=None):
+    '''Add personalized new comment for each parameter.'''
     if custom_comments is None:
         custom_comments = {}
 
@@ -113,6 +119,7 @@ def add_comment(cm, custom_comments=None):
 
 
 def add_section_comments(cm, section_comments):
+    '''Add personalized new comment for each section.'''
     for section_name in cm.keys():
         if section_name in section_comments:
             comment = section_comments[section_name]
@@ -127,6 +134,8 @@ def add_section_comments(cm, section_comments):
 
 @dataclass 
 class Parameter:
+    '''The dataclass Parameter has two mandatory parameters name and value, the others parameters are optional to the config, if
+    we add them this would be commented, if we don't add them, we don't have comment. We also convert this class in dictionary.'''
     name: str
     value: any = None
     description : any = None
@@ -161,6 +170,7 @@ class ModelUnit(dict):
 '''
 
 class ModelUnit(dict):
+    '''ModelUnit is a dictionary with a section name and a list of parameters '''
     def __init__(self, name, parameters: list):
         super().__init__({name: {p.name: p.value for p in parameters}})
         self.name = name
@@ -172,6 +182,12 @@ class ModelUnit(dict):
 
 class Config(dict):
     """Configuration of OpenAlea models
+    Config is a dictionary that contains a list of model units. With the config can:
+    -Load a new JSON or YAML file.
+    -Dump a JSON or YAML file.
+    -Add new sections.
+    -Add new comments.
+    -The quantity of units.
     
     TODO : Documentation to write
     """
@@ -200,6 +216,7 @@ class Config(dict):
 
 
     def load(self, filename: str):
+        """Load configuration to a file."""
         extension = filename.split(".")[-1]
 
         if extension in ("yml", "yaml"):
