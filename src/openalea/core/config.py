@@ -69,6 +69,29 @@ def to_commented_map(obj):
     else:
         return obj
 
+def add_unit_comment(cm, model_unit_configs):
+    """
+    Add automatic comments above each ModelUnit section
+    using the optional fields of ModelUnit (description, unit, param_type, uid, uri).
+    """
+
+    fields = ["description", "unit", "param_type", "uid", "uri"]
+
+    for unit in model_unit_configs:
+        comments = []
+
+        for field in fields:
+            value = getattr(unit, field, None)
+            if value is not None:
+                comments.append(f"{field}: {value}")
+
+        if comments:
+            cm.yaml_set_comment_before_after_key(
+                unit.name,
+                before="\n".join(comments)
+            )
+
+
 def add_comment2(cm, model_unit_configs):
     '''Add automatic new comments on Parameters (description, unit, param_type, uid and uri).
     parameters: -cm (CommentedMap) that contains sections and values from parameters.
@@ -98,9 +121,9 @@ def add_comment2(cm, model_unit_configs):
                     before="\n".join(comments)
                 )
 
-
+'''
 def add_comment(cm, custom_comments=None):
-    '''Add personalized new comment for each parameter.'''
+    
     if custom_comments is None:
         custom_comments = {}
 
@@ -119,7 +142,7 @@ def add_comment(cm, custom_comments=None):
 
 
 def add_section_comments(cm, section_comments):
-    '''Add personalized new comment for each section.'''
+    
     for section_name in cm.keys():
         if section_name in section_comments:
             comment = section_comments[section_name]
@@ -131,6 +154,7 @@ def add_section_comments(cm, section_comments):
                 section_name,
                 before=comment
             )
+'''
 
 @dataclass 
 class Parameter:
@@ -171,10 +195,15 @@ class ModelUnit(dict):
 
 class ModelUnit(dict):
     '''ModelUnit is a dictionary with a section name and a list of parameters '''
-    def __init__(self, name, parameters: list):
+    def __init__(self, name, parameters: list, description=None, unit=None, param_type=None, uid=None, uri=None):
         super().__init__({name: {p.name: p.value for p in parameters}})
         self.name = name
         self.parameters = parameters
+        self.description = description
+        self.unit = unit
+        self.param_type = param_type
+        self.uid = uid
+        self.uri = uri
 
     def __str__(self):
         return f"name={self.name}, parameters={dict(self)}"
@@ -250,9 +279,10 @@ class Config(dict):
             cm = to_commented_map(self)
             
 
-            add_comment(cm, self.params_comments)
+            #add_comment(cm, self.params_comments)
             add_comment2(cm, self.model_unit_configs)
-            add_section_comments(cm, self.section_comments)
+            add_unit_comment(cm, self.model_unit_configs)
+            #add_section_comments(cm, self.section_comments)
 
 
             with open(filename, "w") as f:
