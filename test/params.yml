@@ -1,0 +1,91 @@
+# description: Simulations parameters
+simulation:
+# description: Start date of the simulation
+# param_type: datetime
+  sdate: '2012-08-01 00:00:00'
+# description: End date of the simulation
+# param_type: datetime
+  edate: '2012-08-04 23:00:00'
+# unit: degrees
+# param_type: float
+  latitude: 43.61
+# description: Longitude of the simulation
+# unit: degrees
+# param_type: float
+  longitude: 3.87
+# description: Elevation of the simulation
+# unit: meters
+# param_type: float
+  elevation: 44.0
+# description: Time zone
+# param_type: string
+  tzone: Europe/Paris
+# description: Output index
+# param_type: string
+  output_index: ''
+# description: Unit of scene length
+# param_type: string
+  unit_scene_length: cm
+# description: Hydraulic structure
+# param_type: boolean
+  hydraulic_structure: true
+# description: Negligible short resistance
+# param_type: boolean
+  negligible_shoot_resistance: false
+# description: Energy budget
+# param_type: boolean
+  energy_budget: true
+# description: Planting section
+planting:
+# description: Distance between planting rows
+# unit: meters
+# param_type: float
+  spacing_between_rows: 3.6
+# description: Spacing on the row
+# unit: meters
+# param_type: float
+  spacing_on_row: 1
+# description: Row angle with south
+# unit: degrees
+# param_type: float
+  row_angle_with_south: 140.0
+# description: Phenology section
+phenology:
+# description: Emergence date
+# param_type: datetime
+  emdate: '2012-04-01 00:00:00'
+# description: Base temperature
+# unit: degrees
+# param_type: float
+  t_base: 10.0
+# description: Mtg api section
+mtg_api:
+# description: Collar label
+# param_type: string
+  collar_label: inT
+# description: Leaf label prefix
+# param_type: string
+  leaf_lbl_prefix: L
+# description: Stem label prefix
+# param_type: list
+  stem_lbl_prefix:
+  - in
+  - Pet
+  - cx
+# description: Numerical section
+numerical_resolution:
+# description: Maximum number of iterations
+# param_type: integer
+  max_iter: 100
+# description: Psi step
+# param_type: float
+  psi_step: 1.0
+# description: Psi error threshold
+# unit: seconds
+  psi_error_threshold: 0.05
+# description: Time step
+# param_type: float
+  t_step: 1.0
+# description: Time error threshold
+# unit: float
+  t_error_threshold: 0.02

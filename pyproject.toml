@@ -45,6 +45,7 @@ dependencies = [
     "configobj",
     "six",
     "setuptools",
+    "pyyaml",
 ]
 
 [tool.setuptools.dynamic]
