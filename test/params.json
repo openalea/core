@@ -1,0 +1,40 @@
+{
+    "simulation": {
+        "sdate": "2012-08-01 00:00:00",
+        "edate": "2012-08-04 23:00:00",
+        "latitude": 43.61,
+        "longitude": 3.87,
+        "elevation": 44.0,
+        "tzone": "Europe/Paris",
+        "output_index": "",
+        "unit_scene_length": "cm",
+        "hydraulic_structure": true,
+        "negligible_shoot_resistance": false,
+        "energy_budget": true
+    },
+    "planting": {
+        "spacing_between_rows": 3.6,
+        "spacing_on_row": 1,
+        "row_angle_with_south": 140.0
+    },
+    "phenology": {
+        "emdate": "2012-04-01 00:00:00",
+        "t_base": 10.0
+    },
+    "mtg_api": {
+        "collar_label": "inT",
+        "leaf_lbl_prefix": "L",
+        "stem_lbl_prefix": [
+            "in",
+            "Pet",
+            "cx"
+        ]
+    },
+    "numerical_resolution": {
+        "max_iter": 100,
+        "psi_step": 1.0,
+        "psi_error_threshold": 0.05,
+        "t_step": 1.0,
+        "t_error_threshold": 0.02
+    }
+}
